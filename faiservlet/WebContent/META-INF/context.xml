@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" crossContext="true" reloadable="true">
+  <Resource name="jdbc/anag" type="javax.sql.DataSource" 
+			driverClassName="oracle.jdbc.driver.OracleDriver" 
+			password="fai" 
+			maxIdle="5" 
+			maxWait="5000" 
+			username="fai" 
+			url= "jdbc:oracle:thin:@192.168.21.245:1521:odb"
+			maxActive="10" />
+</Context>

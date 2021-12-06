@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SERVLET_CONFIGURATION class="it.swdes.servlet.models.ServletConfiguration" oracleStoredProcedure="false" connectionPrepared="true">
+   <IMPLICIT_CLASSES class="it.swdes.servlet.models.ImplicitClass" name="fai.services.Methods" order="1" />     
+</SERVLET_CONFIGURATION>

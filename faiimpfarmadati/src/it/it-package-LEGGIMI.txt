@@ -1,0 +1,9 @@
+Sorgenti WebService FARMDATI:
+
+    .\src\it\farmadati
+    .\src\it\farmadati\webservices
+    .\src\it\farmadati\webservices\FarmadatiItaliaWebServicesM2.java
+
+--- 2021.05.20-09.34
+
+        

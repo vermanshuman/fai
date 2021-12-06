@@ -1,0 +1,12 @@
+SET DEFINE OFF;
+Insert into FAI.FAI_GENERIC_TASK
+   (OID, ACRONYM, DESCR, CLASS_NAME, SCHEDULED_TIMES, 
+    SCHEDULED_SMTWTFS, LAST_RUN_START_TS, LAST_RUN_END_TS, LAST_RUN_DONE, ENABLED)
+ Values
+   (20381, 'IMP_ORDINE_IN', 'import Ordini CSV', 'fai.broker.task.impord.OrdineInImporterTask', '11:00,12:00', 
+    'XXXXXXX', TO_DATE('07/20/2021 16:34:30', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE('07/20/2021 16:35:24', 'MM/DD/YYYY HH24:MI:SS'), 'S', 'S');
+Insert into FAI.FAI_GENERIC_TASK
+   (OID, ACRONYM, DESCR, CLASS_NAME, ENABLED)
+ Values
+   (20264, 'MAGAZZINO_UPS', 'Magazzino UPS di Formello', 'fai.broker.AncoraNonEsiste', 'N');
+COMMIT;
