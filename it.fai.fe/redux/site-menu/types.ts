@@ -1,0 +1,5 @@
+const TOGGLE_SITE_MENU = 'TOT/TOGGLE_SITE_MENU';
+
+export {
+  TOGGLE_SITE_MENU,
+};
