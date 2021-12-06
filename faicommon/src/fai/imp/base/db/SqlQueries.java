@@ -138,6 +138,7 @@ public class SqlQueries {
         cfg.setLastRunType(rs.getString("LAST_RUN_TYPE"));
         cfg.setLastRunDone("S".equals(rs.getString("LAST_RUN_DONE")));
         cfg.setLastRunDescr(rs.getString("LAST_RUN_DESCR"));
+        cfg.setServicePassSecondLevel(rs.getString("SERVICE_PASS_SECOND_LEVEL"));
         list.add(cfg);
       }
     }

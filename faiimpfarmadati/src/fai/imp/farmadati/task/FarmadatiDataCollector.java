@@ -279,5 +279,8 @@ public class FarmadatiDataCollector extends AbstractDataCollector {
     SqlQueries.setAllFarmadatiDdlAsNoLongerExists(conn);
   }
   
-
+  @Override
+  protected String doCollectData_getAvailability() throws Exception {
+  	return null;
+  }
 }

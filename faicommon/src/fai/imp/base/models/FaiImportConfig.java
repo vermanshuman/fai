@@ -22,6 +22,7 @@ public class FaiImportConfig extends AbstractModel {
   public static int LAST_RUN_TYPE;
   public static int LAST_RUN_DONE;
   public static int LAST_RUN_DESCR;
+  public static int SERVICE_PASS_SECOND_LEVEL;
 
   public static final Attribute[] attributes = buildAttributes(FaiImportConfig.class, new Attribute[] { //@formatter:off
     new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -41,6 +42,7 @@ public class FaiImportConfig extends AbstractModel {
     new Attribute("lastRunType", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("lastRunDone", null, Boolean.class, Boolean.FALSE, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("lastRunDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("servicePassSecondLevel", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
   }); //@formatter:on
 
 
@@ -228,6 +230,15 @@ public class FaiImportConfig extends AbstractModel {
 
   public String getLastRunDescr() {
     return getString(LAST_RUN_DESCR);
+  }
+  
+  /** SERVICE_PASS_SECOND_LEVEL **/
+  public boolean setServicePassSecondLevel(String servicePassSecondLevel) {
+    return setString(SERVICE_PASS_SECOND_LEVEL, servicePassSecondLevel);
+  }
+
+  public String getServicePassSecondLevel() {
+    return getString(SERVICE_PASS_SECOND_LEVEL);
   }
 
  //@formatter:on

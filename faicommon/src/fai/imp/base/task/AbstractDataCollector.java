@@ -20,6 +20,7 @@ public abstract class AbstractDataCollector {
   protected boolean onlyVariationQueryType = false;
   protected boolean resumePrevSession = false;
   protected String sessionQueryType = null;
+  private String minSan;
 
   public AbstractDataCollector(FaiImportConfig config, Connection conn) {
     super();
@@ -203,7 +204,31 @@ public abstract class AbstractDataCollector {
    */
   protected abstract void doCollectData_prepare_startNewSession() throws Exception;
       
-  
-  
+  public String doGetAvailiblityData(String minSan) throws Exception {
+		String error = null;
+		try {
+			reloadConfig();
+			setMinSan(minSan);
+			doCollectData_prepare_specificSetup();
+			error = doCollectData_getAvailability();
+		}
+		catch (Throwable th) {
+			error = "Eccezione " + th.getClass().getName() + ", " + th.getMessage() + "";
+			logger.error(error, th);
+			throw new Exception(error, th);
+		}
+		return error;
+	}
 
+	protected abstract String doCollectData_getAvailability() throws Exception;
+
+
+	public String getMinSan() {
+		return minSan;
+	}
+
+	public void setMinSan(String minSan) {
+		this.minSan = minSan;
+	}
+  
 }

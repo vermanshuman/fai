@@ -390,14 +390,9 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
        SqlQueries.setAllTablesRecordsActionFromNoLongerExistingFornitore("C", conn);
      }
   }
-  
 
-  
-
-
-  
- 
-  
-  
-
+  @Override
+  protected String doCollectData_getAvailability() throws Exception {
+  	return null;
+  }
 }
