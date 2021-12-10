@@ -1,5 +1,8 @@
 package fai.imp.comifar.tools;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -44,11 +47,12 @@ public class ComifarDataCollectorApp {
 
 		Class.forName(jdbcDriver);
 		conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPass);
-		
+		conn.setAutoCommit(false);
 		FaiImportConfig config = SqlQueries.getFaiImportConfig("COMIFAR", conn);
 		ComifarDataCollector dataCollector = new ComifarDataCollector(config, conn);
 		//dataCollector.doCollectData();
-		dataCollector.doGetAvailiblityData("900266077");
+		//dataCollector.doGetAvailiblityData("900266077");
+		dataCollector.doCollectData();
 	}
 
 }

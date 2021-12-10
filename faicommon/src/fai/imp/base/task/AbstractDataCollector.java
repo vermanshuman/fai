@@ -90,7 +90,7 @@ public abstract class AbstractDataCollector {
       noSessionForToday = true;
       return;
     }
-    else if ("C".equals(sessionQueryType)) {
+    else if ("C".equals(sessionQueryType) || "A".equals(sessionQueryType) || "R".equals(sessionQueryType)) {
       onlyVariationQueryType = false;
     }
     else if ("V".equals(sessionQueryType)) {

@@ -19,6 +19,7 @@ public class ComifarSoapWS{
 	private String endDate;
 	private String primeLevelPassword;
 	private String secondLevelPassword;
+	private String sessionQueryType;
 
 	private String args;
 	private String wsUrl = null;
@@ -41,15 +42,10 @@ public class ComifarSoapWS{
 	}
 	
 	public ComifarSoapWS(String cliente, String rifinterno, String startDate, String endDate,
-			String primeLevelPassword, String secondLevelPassword, String minSan) {
+			String primeLevelPassword, String secondLevelPassword, String minSan, String sessionQueryType) {
 		this(cliente, rifinterno, startDate, endDate, primeLevelPassword, secondLevelPassword);
-		this.cliente = cliente;
-		this.rifinterno = rifinterno;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.primeLevelPassword = primeLevelPassword;
-		this.secondLevelPassword = secondLevelPassword;
 		this.minSan = minSan;
+		this.sessionQueryType = sessionQueryType;
 	}
 
 	private SoapcomifarStub getBinding() {
@@ -85,6 +81,13 @@ public class ComifarSoapWS{
 		lastCallSucceed = false;
 		SoapcomifarStub binding = getBinding();
 		String value = binding.disponibilita(cliente, minSan, args, primeLevelPassword, secondLevelPassword);
+		return value;
+	}
+	
+	public String getProductList() throws Exception {
+		lastCallSucceed = false;
+		SoapcomifarStub binding = getBinding();
+		String value = binding.listino(cliente, primeLevelPassword, secondLevelPassword, args, sessionQueryType);
 		return value;
 	}
 
