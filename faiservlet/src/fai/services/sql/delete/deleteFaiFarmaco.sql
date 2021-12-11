@@ -1,0 +1,2 @@
+DELETE FAI_FARMACO
+WHERE oid = ?oid? 

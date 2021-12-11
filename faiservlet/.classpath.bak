@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="../jars/standard/servlet-api.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/faicommon.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/faimodels.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/genericservlet.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/investmodels.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/itswdesdatabase.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/itswdeshttp.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/itswdesmodels.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>
