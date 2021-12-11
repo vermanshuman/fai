@@ -1,1 +1,0 @@
-select oid.nextval as OID from dual 

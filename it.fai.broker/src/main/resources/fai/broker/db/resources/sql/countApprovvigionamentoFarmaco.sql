@@ -1,7 +1,0 @@
-SELECT COUNT(*) 
-FROM
-	FAI_APPROVVIGIONAMENTO_FARMACO
-WHERE	
-	OID = ?OID?
-	?fornitoreOrdMagazzinoFk?
-	?otherWC?
