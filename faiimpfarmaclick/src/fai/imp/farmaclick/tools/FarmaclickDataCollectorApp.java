@@ -41,10 +41,9 @@ public class FarmaclickDataCollectorApp {
     
     Connection conn = null;
     String jdbcDriver = "oracle.jdbc.driver.OracleDriver";
-    String jdbcUrl = "jdbc:oracle:thin:@192.168.21.245:1521:odb";
-    String jdbcUser = "FAI";
-    String jdbcPass = "FAI";
-
+	String jdbcUrl = "jdbc:oracle:thin:@localhost:1521:XE";
+	String jdbcUser = "FAI";
+	String jdbcPass = "india123";
     Class.forName(jdbcDriver);
     conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPass);
     
