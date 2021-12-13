@@ -20,7 +20,6 @@ public class ComifarSoapWS{
 	private String primeLevelPassword;
 	private String secondLevelPassword;
 	private String sessionQueryType;
-
 	private String args;
 	private String wsUrl = null;
 
@@ -151,4 +150,11 @@ public class ComifarSoapWS{
 		this.cliente = cliente;
 	}
 
+	public String getSessionQueryType() {
+		return sessionQueryType;
+	}
+
+	public void setSessionQueryType(String sessionQueryType) {
+		this.sessionQueryType = sessionQueryType;
+	}
 }

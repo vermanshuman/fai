@@ -17,7 +17,7 @@ public class ComifarDataCollectorApp {
 		java.util.Properties properties = new java.util.Properties();
 		setLoggerProperty(properties, "log4j.rootLogger", "INFO, ConsoleAppender, FileAppender");
 		setLoggerProperty(properties, "log4j.appender.FileAppender", "org.apache.log4j.RollingFileAppender");
-		setLoggerProperty(properties, "log4j.appender.FileAppender.File", "C:/log/TEST-" + (new java.text.SimpleDateFormat("yyMMdd-HHmmss")).format(java.util.Calendar.getInstance().getTime()) + ".log");
+		setLoggerProperty(properties, "log4j.appender.FileAppender.File", "E:/log/TEST-" + (new java.text.SimpleDateFormat("yyMMdd-HHmmss")).format(java.util.Calendar.getInstance().getTime()) + ".log");
 		setLoggerProperty(properties, "log4j.appender.FileAppender.MaxFileSize", "100MB");
 		setLoggerProperty(properties, "log4j.appender.FileAppender.MaxBackupIndex", "10");
 		setLoggerProperty(properties, "log4j.appender.FileAppender.layout", "org.apache.log4j.PatternLayout");

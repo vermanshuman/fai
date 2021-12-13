@@ -35,7 +35,9 @@ public class ComifarTable {
 	private String [] productPriceFields = new String[]{"OID_COMIFAR_LISTINO", "QUANTITA", "PREZZO_NETTO"}; 
 
 	private static final String COMIFAR_DATE_FORMAT = "dd/MM/yyyy";
+	private static final String SQL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	private static final SimpleDateFormat sdfComifar = new SimpleDateFormat(COMIFAR_DATE_FORMAT);
+	private static final SimpleDateFormat sdfSQL = new SimpleDateFormat(SQL_DATE_FORMAT);
 
 
 	private ComifarTable() {
@@ -87,7 +89,7 @@ public class ComifarTable {
 
 				debugPurposeFieldsInfo.add("#"+(i+1)+"/"+productFields.length+" "+fieldName+"= "+valueAsString);
 
-				if(fieldName.equalsIgnoreCase("VALID_TO_TS") || fieldName.equalsIgnoreCase("VALID_FROM_TS")){
+				if(fieldName.equalsIgnoreCase("VALID_TO_TS") || fieldName.equalsIgnoreCase("VALID_FROM_TS") && valueAsString != null){
 					SqlUtilities.setDate(pstmt, i+1, parseComifarDate(valueAsString));
 				}else {
 					SqlUtilities.setString(pstmt, i+1, valueAsString);
@@ -258,7 +260,7 @@ public class ComifarTable {
 	private  java.util.Date parseComifarDate(String s) throws Exception {
 		if (s == null || (s != null && "".equals(s.trim()))) return null;
 		try {
-			return sdfComifar.parse(s);
+			return sdfSQL.parse(sdfSQL.format(sdfComifar.parse(s)));
 		}
 		catch (Throwable th) {
 			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "»; \""+s+"\" non è una data nel formato atteso \""+COMIFAR_DATE_FORMAT+"\"";
@@ -291,6 +293,7 @@ public class ComifarTable {
 		SqlUtilities.closeWithNoException(pstmt);
 		sql = null;
 		pstmt = null;
+		recordCount = 0;
 		return this;
 	}
 
