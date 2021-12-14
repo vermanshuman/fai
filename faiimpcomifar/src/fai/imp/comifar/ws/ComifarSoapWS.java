@@ -22,7 +22,7 @@ public class ComifarSoapWS{
 	private String sessionQueryType;
 	private String args;
 	private String wsUrl = null;
-
+	
 	private boolean lastCallSucceed = false;
 
 	public ComifarSoapWS() {
@@ -87,6 +87,13 @@ public class ComifarSoapWS{
 		lastCallSucceed = false;
 		SoapcomifarStub binding = getBinding();
 		String value = binding.listino(cliente, primeLevelPassword, secondLevelPassword, args, sessionQueryType);
+		return value;
+	}
+	
+	public String getProductList(Integer args) throws Exception {
+		lastCallSucceed = false;
+		SoapcomifarStub binding = getBinding();
+		String value = binding.listino(cliente, primeLevelPassword, secondLevelPassword, args.toString(), sessionQueryType);
 		return value;
 	}
 
@@ -156,5 +163,9 @@ public class ComifarSoapWS{
 
 	public void setSessionQueryType(String sessionQueryType) {
 		this.sessionQueryType = sessionQueryType;
+	}
+	
+	public void setArgs(String args) {
+		this.args = args;
 	}
 }

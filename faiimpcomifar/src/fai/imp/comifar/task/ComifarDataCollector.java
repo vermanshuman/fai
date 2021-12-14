@@ -1,7 +1,5 @@
 package fai.imp.comifar.task;
 
-import it.swdes.decrypt.Decryptor;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -31,6 +29,8 @@ import fai.imp.comifar.dto.ProductData;
 import fai.imp.comifar.ws.ComifarSoapWS;
 import fai.imp.comifar.ws.ComifarSoapWSMethFormatter;
 import fai.imp.farmadati.db.ComifarTable;
+import fai.imp.farmadati.db.SqlQueries;
+import it.swdes.decrypt.Decryptor;
 
 public class ComifarDataCollector extends AbstractDataCollector{
 	static Logger logger = Logger.getLogger(ComifarDataCollector.class);
@@ -43,11 +43,33 @@ public class ComifarDataCollector extends AbstractDataCollector{
 		super(config, conn);
 	}
 
+	private String loadGetDataSet() throws Exception {
+		String serviceID = ComifarSoapWSMethFormatter.formatProductList();
+		productList = SqlQueries.searchGetDataSet(conn);
+		if (productList != null) { 
+			logger.info(serviceID+" recuperato dalla banca dati");
+			Listino listino = parseComifar(productList);
+			if (!listino.getInfo().getOutcome().contains("OK.")) throw new IllegalStateException("inammissibile, codice esito "+listino.getInfo().getOutcome()+" NON ammesso in questo punto");
+			ws.getProductList(listino.getInfo().getProgressive()-1);
+		}
+		
+		return null;
+	}
+
+	private static Listino parseComifar(String productList) throws Exception {
+		JAXBContext jc = JAXBContext.newInstance(Listino.class);
+		Unmarshaller unmarshaller = jc.createUnmarshaller();
+		org.w3c.dom.Document xmlDoc = XmlUtil.asDocument(productList);
+		return  (Listino) unmarshaller.unmarshal(xmlDoc);
+	}
+	
 	@Override
 	protected String doCollectData_executeAll() throws Exception {
 		String error = null; 
 		try {
 			logger.info("recupero dati get list ...");
+			error = loadGetDataSet();
+			if (error != null) return error;
 			String queryType = null;
 			if ("A".equals(sessionQueryType)) {
 				queryType = "AGG";
@@ -115,14 +137,13 @@ public class ComifarDataCollector extends AbstractDataCollector{
 
 	@Override
 	protected void doCollectData_prepare_resumePrevSession() throws Exception {
-		// TODO Auto-generated method stub
+		SqlQueries.deleteAllFailedComifarWS(conn);
 
 	}
 
 	@Override
 	protected void doCollectData_prepare_startNewSession() throws Exception {
-		// TODO Auto-generated method stub
-
+		SqlQueries.deleteAllComifarWS(conn);
 	}
 
 	private String loadGetDDTList() throws Exception {
@@ -202,7 +223,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 						logger.error(" rollback completata");
 						throw new IllegalStateException(msg);
 					}
-					
+
 					if(productData != null && productData.getArt() != null && !productData.getArt().isEmpty()){
 						table.insertPriceRecordsPrepare();
 						table.insertPriceRecords(productData.getArt());
@@ -226,94 +247,99 @@ public class ComifarDataCollector extends AbstractDataCollector{
 		logger.info("recupero dati "+serviceID+", invocazione WebService ...");
 		ComifarTable table = new ComifarTable(conn, config.getServiceLogin());
 		table.setUseBatchInsert(Boolean.TRUE);
-		
-		 boolean thereAreMoreRecords = true;
-         do {
-        	 table.insertRecordsPrepare();
-        	 productList = ws.getProductList();
-     		logger.info("Listino Resposne : {}" + productList);
-     		if(productList != null){
 
-     			JAXBContext jc = JAXBContext.newInstance(Listino.class);
-     			Unmarshaller unmarshaller = jc.createUnmarshaller();
-     			org.w3c.dom.Document xmlDoc = XmlUtil.asDocument(productList);
-     			Listino listino = (Listino) unmarshaller.unmarshal(xmlDoc);
-     			String actualResponse = "";
-     			String successResponse = "OK." + queryType;
-     			if(listino != null && listino.getInfo() != null && listino.getInfo().getOutcome() != null){
-     				actualResponse = listino.getInfo().getOutcome();
-     			}
-     			
-     			if(listino != null && listino.getInfo() != null && listino.getInfo().getContinueStatus() != null && 
-     					listino.getInfo().getContinueStatus().equalsIgnoreCase("N")){
-     				thereAreMoreRecords = false;
-     			}
-     			if ( !successResponse.equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
+		boolean thereAreMoreRecords = true;
+		do {
+			table.insertRecordsPrepare();
+			productList = ws.getProductList();
 
-     			try {
-     				org.apache.commons.codec.binary.Base64 base64 = new org.apache.commons.codec.binary.Base64();
-     				if(listino.getEncodedData() != null){
-     					byte[] decoded = base64.decode(listino.getEncodedData());
-     					InputStream zippedInputStream = new ByteArrayInputStream(decoded);
-     					GZIPInputStream gZIPInputStream = new GZIPInputStream(zippedInputStream);
-     					StringBuilder textBuilder = new StringBuilder();
-     					try (Reader reader = new BufferedReader(new InputStreamReader
-     							(gZIPInputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
-     						int c = 0;
-     						while ((c = reader.read()) != -1) {
-     							textBuilder.append((char) c);
-     						}
-     					}
-     					if(textBuilder != null){
-     						int recordCount = 0;
-     					
-     						String xmlString = "<comifar>" + textBuilder.toString() + "</comifar>";
-     						JAXBContext jaxbContext = JAXBContext.newInstance(ProductData.class);
-     						Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-     						ProductData productData = (ProductData) jaxbUnmarshaller.unmarshal(
-     								new ByteArrayInputStream(xmlString.getBytes()));	
-     						if(productData != null && productData.getArt() != null && !productData.getArt().isEmpty()){
-     							recordCount = productData.getArt().size();
-     							productData
-     							.getArt()
-     							.stream()
-     							.forEach(art -> {
-     								try {
-     									table.insertRecord(art);
-     								} catch (Exception e) {
-     									e.printStackTrace();
-     								}
-     							});
-     						}
-     						table.insertRecordsCompleted();
-     						if (recordCount != table.getRecordCount()) {
-     							String msg = "record attesi da inserire; inseriti: "+table.getRecordCount();
-     							logger.error(msg);
-     							logger.error(" rollback ...");
-     							SqlUtilities.rollbackWithNoException(conn);
-     							logger.error(" rollback completata");
-     							throw new IllegalStateException(msg);
-     						}
-     						if(productData != null && productData.getArt() != null && !productData.getArt().isEmpty()){
-     							table.insertPriceRecordsPrepare();
-     							table.insertPriceRecords(productData.getArt());
-     							table.insertPriceRecordsCompleted();
-     						}
-     						
-     						logger.info(" Comifar commit ...");
-     						SqlUtilities.commitWithNoException(conn);
-     						logger.info(" Comifar commit completata");
-     					}
-     					gZIPInputStream.close();
-     					zippedInputStream.close();
-     				}
-     			} catch (Exception e) {
-     				e.printStackTrace();
-     			}
 
-     		}
-         } while (thereAreMoreRecords);
-		
+			logger.info("Listino Resposne : {}" + productList);
+			if(productList != null){
+
+				JAXBContext jc = JAXBContext.newInstance(Listino.class);
+				Unmarshaller unmarshaller = jc.createUnmarshaller();
+				org.w3c.dom.Document xmlDoc = XmlUtil.asDocument(productList);
+				Listino listino = (Listino) unmarshaller.unmarshal(xmlDoc);
+
+				SqlQueries.insertGetProductList(productList, listino, conn);
+				conn.commit();
+				String actualResponse = "";
+				String successResponse = "OK." + queryType;
+				if(listino != null && listino.getInfo() != null && listino.getInfo().getOutcome() != null){
+					actualResponse = listino.getInfo().getOutcome();
+				}
+
+				if(listino != null && listino.getInfo() != null && listino.getInfo().getContinueStatus() != null && 
+						listino.getInfo().getContinueStatus().equalsIgnoreCase("N")){
+					thereAreMoreRecords = false;
+				}
+				if ( !successResponse.equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
+
+				try {
+					org.apache.commons.codec.binary.Base64 base64 = new org.apache.commons.codec.binary.Base64();
+					if(listino.getEncodedData() != null){
+						byte[] decoded = base64.decode(listino.getEncodedData());
+						InputStream zippedInputStream = new ByteArrayInputStream(decoded);
+						GZIPInputStream gZIPInputStream = new GZIPInputStream(zippedInputStream);
+						StringBuilder textBuilder = new StringBuilder();
+						try (Reader reader = new BufferedReader(new InputStreamReader
+								(gZIPInputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
+							int c = 0;
+							while ((c = reader.read()) != -1) {
+								textBuilder.append((char) c);
+							}
+						}
+						if(textBuilder != null){
+							int recordCount = 0;
+
+							String xmlString = "<comifar>" + textBuilder.toString() + "</comifar>";
+							JAXBContext jaxbContext = JAXBContext.newInstance(ProductData.class);
+							Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+							ProductData productData = (ProductData) jaxbUnmarshaller.unmarshal(
+									new ByteArrayInputStream(xmlString.getBytes()));	
+							if(productData != null && productData.getArt() != null && !productData.getArt().isEmpty()){
+								recordCount = productData.getArt().size();
+								productData
+								.getArt()
+								.stream()
+								.forEach(art -> {
+									try {
+										table.insertRecord(art);
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								});
+							}
+							table.insertRecordsCompleted();
+							if (recordCount != table.getRecordCount()) {
+								String msg = "record attesi da inserire; inseriti: "+table.getRecordCount();
+								logger.error(msg);
+								logger.error(" rollback ...");
+								SqlUtilities.rollbackWithNoException(conn);
+								logger.error(" rollback completata");
+								throw new IllegalStateException(msg);
+							}
+							if(productData != null && productData.getArt() != null && !productData.getArt().isEmpty()){
+								table.insertPriceRecordsPrepare();
+								table.insertPriceRecords(productData.getArt());
+								table.insertPriceRecordsCompleted();
+							}
+
+							logger.info(" Comifar commit ...");
+							SqlUtilities.commitWithNoException(conn);
+							logger.info(" Comifar commit completata");
+						}
+						gZIPInputStream.close();
+						zippedInputStream.close();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
+		} while (thereAreMoreRecords);
+
 		return "";
 	}
 
