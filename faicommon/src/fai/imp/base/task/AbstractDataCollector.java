@@ -63,7 +63,7 @@ public abstract class AbstractDataCollector {
     }
     finally {
       if (noSessionForToday == false) {
-        SqlQueries.updateStatusSessionCompleted(config.getOid(), sessionQueryType, error == null, error, conn);
+        SqlQueries.updateStatusSessionCompleted(config.getOid(), sessionQueryType, error == null || error.length() == 0, error, conn);
         conn.commit();
         reloadConfig();
         logger.info("sessione completata"+(error == null ? "" : " con errori ("+error+")"));

@@ -123,6 +123,8 @@ public class ComifarDataCollector extends AbstractDataCollector{
 			ComifarTable table  = new ComifarTable(conn,config.getServiceLogin());
 			table.deleteAllRecords("FAI_COMIFAR_LISTINO_PRICE");
 			table.deleteAllRecords("FAI_COMIFAR_LISTINO");
+			SqlQueries.deleteAllComifarWS(conn);
+			
 			conn.commit();
 			queryType = "RESET";
 		}
