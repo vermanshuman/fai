@@ -26,6 +26,7 @@ import fai.common.util.CollectionsTool;
 import fai.common.util.Filesystem;
 import fai.common.util.PersistentProeprties;
 import fai.common.util.XmlUtil;
+import fai.imp.base.bean.ProductAvailibilityBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
 import fai.imp.farmadati.db.FarmadatiDDL;
@@ -280,7 +281,7 @@ public class FarmadatiDataCollector extends AbstractDataCollector {
   }
   
   @Override
-  protected Boolean doCollectData_getAvailability() throws Exception {
+  protected List<ProductAvailibilityBean> doCollectData_getAvailability(List<String> productCodes) throws Exception {
   	return null;
   }
 

@@ -9,6 +9,8 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
 
@@ -22,6 +24,7 @@ import org.apache.log4j.Logger;
 
 import fai.common.db.SqlUtilities;
 import fai.common.util.XmlUtil;
+import fai.imp.base.bean.ProductAvailibilityBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
 import fai.imp.comifar.dto.Disponibilita;
@@ -36,7 +39,6 @@ import it.swdes.decrypt.Decryptor;
 public class ComifarDataCollector extends AbstractDataCollector{
 	static Logger logger = Logger.getLogger(ComifarDataCollector.class);
 	private String ddtList = null;
-	private String availibility = null;
 	private String productList = null;
 	private ComifarSoapWS ws = null;
 	private String client = null;
@@ -324,24 +326,38 @@ public class ComifarDataCollector extends AbstractDataCollector{
 	}
 
 	@Override
-	protected Boolean doCollectData_getAvailability() throws Exception {
-		logger.info("recupero dati disponibilit\u00E0");
+	protected List<ProductAvailibilityBean> doCollectData_getAvailability(List<String> productCodes) throws Exception {
+		
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		List<ProductAvailibilityBean> productAvailibilityBeans = new ArrayList<>();
 		String serviceID = ComifarSoapWSMethFormatter.formatGetAvailibility();
 		logger.info("recupero dati "+serviceID+", invocazione WebService ...");
-		availibility = ws.getAvailibility();
-		logger.info("Disponibilit\u00E0 Resposne : {}" + availibility);
-		if(availibility != null){
-			Disponibilita availibilty = parseComifarDisponibilita(availibility);
-			String actualResponse = "";
-			if(availibilty != null && availibilty.getOutcome() != null){
-				actualResponse = availibilty.getOutcome().getOutcome();
-			}
 
-			if (!"OK".equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
-			if(availibilty.getAvail() != null && availibilty.getAvail().getAvailable() != null && availibilty.getAvail().getAvailable().equalsIgnoreCase("S"))
-				return Boolean.TRUE;
+		for(String productCode : productCodes) {
+			String availibility = ws.getAvailibility();
+			logger.info("Disponibilit\u00E0 Resposne : {}" + availibility);
+			if(availibility != null){
+				Disponibilita disponibilita = parseComifarDisponibilita(availibility);
+				String actualResponse = "";
+				if(disponibilita != null && disponibilita.getOutcome() != null){
+					actualResponse = disponibilita.getOutcome().getOutcome();
+				}
+				if (!"OK".equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
+				ProductAvailibilityBean productAvailibilityBean = new ProductAvailibilityBean();
+				productAvailibilityBean.setProductCode(productCode);
+				if(disponibilita.getAvail() != null && disponibilita.getAvail().getAvailable() != null 
+						&& disponibilita.getAvail().getAvailable().equalsIgnoreCase("S")) {
+					productAvailibilityBean.setAvailibility(Boolean.TRUE);
+				}else {
+					productAvailibilityBean.setAvailibility(Boolean.FALSE);
+				}
+				productAvailibilityBeans.add(productAvailibilityBean);
+			}
 		}
-		return Boolean.FALSE;
+		
+		return productAvailibilityBeans;
 	}
 
 	@Override
@@ -384,7 +400,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 			queryType = "RESET";
 		}
 		
-		ws = new ComifarSoapWS(getClient(), "", "01/08/2021", "21/08/2021", getPrimeLevelPassword(), getSecondLevelPassword(), getMinSan(), queryType);
+		ws = new ComifarSoapWS(getClient(), "", "01/08/2021", "21/08/2021", getPrimeLevelPassword(), getSecondLevelPassword(), getProductCodes().get(0), queryType);
 		ws.setWsUrl(config.getServiceQueryUrl());
 	}
 

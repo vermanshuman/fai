@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import fai.imp.base.db.SqlQueries;
 import fai.imp.base.models.FaiImportConfig;
@@ -51,7 +53,7 @@ public class ComifarDataCollectorApp {
 		FaiImportConfig config = SqlQueries.getFaiImportConfig("COMIFAR", conn);
 		ComifarDataCollector dataCollector = new ComifarDataCollector(config, conn);
 		//dataCollector.doCollectData();
-		System.out.println(dataCollector.doGetAvailiblityData("9002660771"));
+		System.out.println(dataCollector.doGetAvailiblityData(Stream.of("900266077").collect(Collectors.toList())));
 		//dataCollector.doCollectData();
 	}
 

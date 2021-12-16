@@ -1,23 +1,25 @@
 package fai.imp.farmaclick.task;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 
 import fai.common.csv.CsvException;
 import fai.common.http.Http;
-import fai.common.util.ExceptionsTool;
 import fai.common.util.Filesystem;
 import fai.common.util.Timeout;
+import fai.imp.base.bean.ProductAvailibilityBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
 import fai.imp.farmaclick.csv.CsvRecordFarmaclick;
@@ -32,6 +34,9 @@ import fai.imp.farmaclick.csv.CsvRecordFarmaclickZ;
 import fai.imp.farmaclick.csv.CsvRecordFieldsTester;
 import fai.imp.farmaclick.db.SqlQueries;
 import fai.imp.farmaclick.models.Fornitore;
+import fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloInputBean;
+import fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloOutputBean;
+import fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.DettaglioArticoliOutputBean;
 import fai.imp.farmaclick.soap.api_2010_001.FCKLogin.FornitoreBean;
 import fai.imp.farmaclick.ws.FarmaclickWS;
 import fai.imp.farmaclick.ws.bean.DownloadListinoOutputBean;
@@ -75,7 +80,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
-		
+
 		loginWebService();
 
 		Set<String> codiciFornitoreToSkip = new HashSet<String>();
@@ -373,24 +378,39 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 	}
 
 	@Override
-	protected Boolean doCollectData_getAvailability() throws Exception {
+	protected List<ProductAvailibilityBean> doCollectData_getAvailability(List<String> productCodes) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
-		loginWebService();
-		List<FornitoreBean> fornitoreBeanList = ws.getFornitoreBeanList();
-		for (FornitoreBean fornitoreBean : fornitoreBeanList) {
-			String codiceFornitore = fornitoreBean.getCodice();
-			logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
-			DownloadListinoOutputBean dlob = ws.callDownloadListino(fornitoreBean, onlyVariationQueryType, config.isServiceQureyZippedContent());
-			
+		List<ProductAvailibilityBean> productAvailibilityBeans = new ArrayList<>();
+		if(productCodes != null && !productCodes.isEmpty()) {
+			loginWebService();
+			List<FornitoreBean> fornitoreBeanList = ws.getFornitoreBeanList();
+			for (FornitoreBean fornitoreBean : fornitoreBeanList) {
+				String codiceFornitore = fornitoreBean.getCodice();
+				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
+				List<ArticoloInputBean> articles = productCodes
+						.stream()
+						.filter(productCode -> productCode != null)
+						.map(productCode -> new ArticoloInputBean(1, -1, -1, productCode, true, 10))
+						.collect(Collectors.toList());
+				DettaglioArticoliOutputBean daob = ws.callDisponibilita(fornitoreBean, true, false, false, articles);
+				if(daob != null && daob.getEsitoServizio() == 0 && daob.getArrayArticoli() != null 
+						&& daob.getArrayArticoli().length > 0) {
+					for(int a = 0; a < daob.getArrayArticoli().length; a++) {
+						ArticoloOutputBean articoloOutputBean = daob.getArrayArticoli()[a];
+						ProductAvailibilityBean productAvailibilityBean = new ProductAvailibilityBean();
+						productAvailibilityBean.setProductCode(articoloOutputBean.getCodiceProdotto());
+						productAvailibilityBean.setAvailibility(articoloOutputBean.getQuantitaConsegnata() > 0 ? 
+								Boolean.TRUE : Boolean.FALSE);
+						productAvailibilityBeans.add(productAvailibilityBean);
+					}
+				}
+			}
 		}
-		System.out.println(">>>>>>>>>>>>>>>>>> " + fornitoreBeanList.size());
-		
-		
-		return null;
+		return productAvailibilityBeans;
 	}
-	
+
 	private void loginWebService() {
 		String login = config.getServiceLogin();
 		if (login != null && login.trim().equals("")) login = null;

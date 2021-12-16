@@ -8,7 +8,9 @@
 package fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita;
 
 public class ArticoloInputBean  implements java.io.Serializable {
-    private int accettazioneAllinemantoColloInVendita;
+	private static final long serialVersionUID = 1989944493737098504L;
+
+	private int accettazioneAllinemantoColloInVendita;
 
     private int accettazioneConsegnaDifferita;
 
@@ -30,14 +32,12 @@ public class ArticoloInputBean  implements java.io.Serializable {
            int accettazioneConsegnaDifferita,
            int accettazioneProdottoSostitutivo,
            java.lang.String codiceProdotto,
-           java.lang.String noteRiga,
            boolean prenotazione,
            int quantitaRichiesta) {
            this.accettazioneAllinemantoColloInVendita = accettazioneAllinemantoColloInVendita;
            this.accettazioneConsegnaDifferita = accettazioneConsegnaDifferita;
            this.accettazioneProdottoSostitutivo = accettazioneProdottoSostitutivo;
            this.codiceProdotto = codiceProdotto;
-           this.noteRiga = noteRiga;
            this.prenotazione = prenotazione;
            this.quantitaRichiesta = quantitaRichiesta;
     }

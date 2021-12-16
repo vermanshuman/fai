@@ -2,9 +2,13 @@ package fai.imp.base.task;
 
 import java.sql.Connection;
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 
+import fai.imp.base.bean.ProductAvailibilityBean;
 import fai.imp.base.db.SqlQueries;
 import fai.imp.base.models.FaiImportConfig;
 
@@ -20,7 +24,8 @@ public abstract class AbstractDataCollector {
   protected boolean onlyVariationQueryType = false;
   protected boolean resumePrevSession = false;
   protected String sessionQueryType = null;
-  private String minSan;
+  private List<String> productCodes;
+  
 
   public AbstractDataCollector(FaiImportConfig config, Connection conn) {
     super();
@@ -205,12 +210,12 @@ public abstract class AbstractDataCollector {
    */
   protected abstract void doCollectData_prepare_startNewSession() throws Exception;
       
-  public Boolean doGetAvailiblityData(String minSan) throws Exception {
+  public List<ProductAvailibilityBean> doGetAvailiblityData(List<String> productCodes) throws Exception {
 		try {
 			reloadConfig();
-			setMinSan(minSan);
+			setProductCodes(productCodes);
 			do_prepare_specificSetup();
-			return doCollectData_getAvailability();
+			return doCollectData_getAvailability(productCodes);
 		}
 		catch (Throwable th) {
 			String error = "Eccezione " + th.getClass().getName() + ", " + th.getMessage() + "";
@@ -219,16 +224,15 @@ public abstract class AbstractDataCollector {
 		}
 	}
 
-	protected abstract Boolean doCollectData_getAvailability() throws Exception;
+	protected abstract List<ProductAvailibilityBean> doCollectData_getAvailability(List<String> productCodes) throws Exception;
 
 	protected abstract void do_prepare_specificSetup() throws Exception;
 
-	public String getMinSan() {
-		return minSan;
+	public List<String> getProductCodes() {
+		return productCodes;
 	}
 
-	public void setMinSan(String minSan) {
-		this.minSan = minSan;
+	public void setProductCodes(List<String> productCodes) {
+		this.productCodes = productCodes;
 	}
-  
 }
