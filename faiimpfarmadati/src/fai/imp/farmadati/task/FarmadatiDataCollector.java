@@ -280,7 +280,14 @@ public class FarmadatiDataCollector extends AbstractDataCollector {
   }
   
   @Override
-  protected String doCollectData_getAvailability() throws Exception {
+  protected Boolean doCollectData_getAvailability() throws Exception {
   	return null;
   }
+
+
+@Override
+protected void do_prepare_specificSetup() throws Exception {
+	// TODO Auto-generated method stub
+	
+}
 }

@@ -24,6 +24,7 @@ import fai.common.db.SqlUtilities;
 import fai.common.util.XmlUtil;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
+import fai.imp.comifar.dto.Disponibilita;
 import fai.imp.comifar.dto.Listino;
 import fai.imp.comifar.dto.ProductData;
 import fai.imp.comifar.ws.ComifarSoapWS;
@@ -38,6 +39,9 @@ public class ComifarDataCollector extends AbstractDataCollector{
 	private String availibility = null;
 	private String productList = null;
 	private ComifarSoapWS ws = null;
+	private String client = null;
+	private String primeLevelPassword = null;
+	private String secondLevelPassword = null;
 
 	public ComifarDataCollector(FaiImportConfig config, Connection conn) {
 		super(config, conn);
@@ -48,21 +52,29 @@ public class ComifarDataCollector extends AbstractDataCollector{
 		productList = SqlQueries.searchGetDataSet(conn);
 		if (productList != null) { 
 			logger.info(serviceID+" recuperato dalla banca dati");
-			Listino listino = parseComifar(productList);
+			Listino listino = parseComifarListino(productList);
 			if (!listino.getInfo().getOutcome().contains("OK.")) throw new IllegalStateException("inammissibile, codice esito "+listino.getInfo().getOutcome()+" NON ammesso in questo punto");
 			ws.getProductList(listino.getInfo().getProgressive()-1);
 		}
-		
+
 		return null;
 	}
 
-	private static Listino parseComifar(String productList) throws Exception {
+	private static Listino parseComifarListino(String productList) throws Exception {
 		JAXBContext jc = JAXBContext.newInstance(Listino.class);
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		org.w3c.dom.Document xmlDoc = XmlUtil.asDocument(productList);
 		return  (Listino) unmarshaller.unmarshal(xmlDoc);
 	}
 	
+	
+	private static Disponibilita parseComifarDisponibilita(String disponibilitaResponse) throws Exception {
+		JAXBContext jc = JAXBContext.newInstance(Disponibilita.class);
+		Unmarshaller unmarshaller = jc.createUnmarshaller();
+		org.w3c.dom.Document xmlDoc = XmlUtil.asDocument(disponibilitaResponse);
+		return  (Disponibilita) unmarshaller.unmarshal(xmlDoc);
+	}
+
 	@Override
 	protected String doCollectData_executeAll() throws Exception {
 		String error = null; 
@@ -88,34 +100,6 @@ public class ComifarDataCollector extends AbstractDataCollector{
 
 	@Override
 	protected void doCollectData_prepare_specificSetup() throws Exception {
-		logger.info("creazione proxy Web Service ...");
-		String client = config.getServiceLogin();
-		if (client != null && client.trim().equals("")) client = null;
-		String primeLevelPassword = config.getServicePass();
-		String secondLevelPassword = config.getServicePassSecondLevel();
-		if (primeLevelPassword != null) {
-			if (primeLevelPassword.trim().equals("")) { 
-				primeLevelPassword = null;
-			}
-			else {
-				if (Boolean.TRUE.equals(config.isServicePassEncr())) {
-					logger.info("decrittazione primo password del WebService ...");
-					primeLevelPassword = Decryptor.decrypt(primeLevelPassword);
-				}
-			}
-		}
-		if (secondLevelPassword != null) {
-			if (secondLevelPassword.trim().equals("")) { 
-				secondLevelPassword = null;
-			}
-			else {
-				if (Boolean.TRUE.equals(config.isServicePassEncr())) {
-					logger.info("decrittazione secondo password del WebService ...");
-					secondLevelPassword = Decryptor.decrypt(secondLevelPassword);
-				}
-			}
-		}
-
 		String queryType = null;
 		if ("A".equals(sessionQueryType)) {
 			queryType = "AGG";
@@ -124,12 +108,11 @@ public class ComifarDataCollector extends AbstractDataCollector{
 			table.deleteAllRecords("FAI_COMIFAR_LISTINO_PRICE");
 			table.deleteAllRecords("FAI_COMIFAR_LISTINO");
 			SqlQueries.deleteAllComifarWS(conn);
-			
+
 			conn.commit();
 			queryType = "RESET";
 		}
-		ws = new ComifarSoapWS(client, "", "01/08/2021", "21/08/2021", primeLevelPassword, secondLevelPassword, getMinSan(), queryType);
-		ws.setWsUrl(config.getServiceQueryUrl());
+
 		if(queryType.equals("RESET")){
 			ws.getProductList();
 			ws.setSessionQueryType("AGG");
@@ -258,12 +241,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 
 			logger.info("Listino Resposne : {}" + productList);
 			if(productList != null){
-
-				JAXBContext jc = JAXBContext.newInstance(Listino.class);
-				Unmarshaller unmarshaller = jc.createUnmarshaller();
-				org.w3c.dom.Document xmlDoc = XmlUtil.asDocument(productList);
-				Listino listino = (Listino) unmarshaller.unmarshal(xmlDoc);
-
+				Listino listino = parseComifarListino(productList);
 				SqlQueries.insertGetProductList(productList, listino, conn);
 				conn.commit();
 				String actualResponse = "";
@@ -346,26 +324,92 @@ public class ComifarDataCollector extends AbstractDataCollector{
 	}
 
 	@Override
-	protected String doCollectData_getAvailability() throws Exception {
+	protected Boolean doCollectData_getAvailability() throws Exception {
 		logger.info("recupero dati disponibilit\u00E0");
 		String serviceID = ComifarSoapWSMethFormatter.formatGetAvailibility();
 		logger.info("recupero dati "+serviceID+", invocazione WebService ...");
 		availibility = ws.getAvailibility();
 		logger.info("Disponibilit\u00E0 Resposne : {}" + availibility);
 		if(availibility != null){
-			org.w3c.dom.Document xmlDoc = XmlUtil.asDocument(availibility);
-			XPath xPath = XPathFactory.newInstance().newXPath();
-			org.w3c.dom.NodeList nodes = (org.w3c.dom.NodeList)xPath.evaluate("disponibilita/esito/sigla",
-					xmlDoc, XPathConstants.NODESET);
-			String status = "";
-
-			if(nodes.getLength() > 0){
-				status = nodes.item(0).getTextContent();
+			Disponibilita availibilty = parseComifarDisponibilita(availibility);
+			String actualResponse = "";
+			if(availibilty != null && availibilty.getOutcome() != null){
+				actualResponse = availibilty.getOutcome().getOutcome();
 			}
-			if (!"OK".equalsIgnoreCase(status)) throw new IllegalStateException("inammissibile, codice esito "+status+" NON ammesso in questo punto");
 
+			if (!"OK".equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
+			if(availibilty.getAvail() != null && availibilty.getAvail().getAvailable() != null && availibilty.getAvail().getAvailable().equalsIgnoreCase("S"))
+				return Boolean.TRUE;
 		}
-		return "";
+		return Boolean.FALSE;
+	}
+
+	@Override
+	protected void do_prepare_specificSetup() throws Exception {
+		logger.info("creazione proxy Web Service ...");
+		String client = config.getServiceLogin();
+		if (client != null && client.trim().equals("")) client = null;
+		setClient(client);
+		String primeLevelPassword = config.getServicePass();
+		String secondLevelPassword = config.getServicePassSecondLevel();
+		if (primeLevelPassword != null) {
+			if (primeLevelPassword.trim().equals("")) { 
+				primeLevelPassword = null;
+			}
+			else {
+				if (Boolean.TRUE.equals(config.isServicePassEncr())) {
+					logger.info("decrittazione primo password del WebService ...");
+					primeLevelPassword = Decryptor.decrypt(primeLevelPassword);
+				}
+			}
+		}
+		if (secondLevelPassword != null) {
+			if (secondLevelPassword.trim().equals("")) { 
+				secondLevelPassword = null;
+			}
+			else {
+				if (Boolean.TRUE.equals(config.isServicePassEncr())) {
+					logger.info("decrittazione secondo password del WebService ...");
+					secondLevelPassword = Decryptor.decrypt(secondLevelPassword);
+				}
+			}
+		}
+		setPrimeLevelPassword(primeLevelPassword);
+		setSecondLevelPassword(secondLevelPassword);
+		
+		String queryType = null;
+		if ("A".equals(sessionQueryType)) {
+			queryType = "AGG";
+		}else {
+			queryType = "RESET";
+		}
+		
+		ws = new ComifarSoapWS(getClient(), "", "01/08/2021", "21/08/2021", getPrimeLevelPassword(), getSecondLevelPassword(), getMinSan(), queryType);
+		ws.setWsUrl(config.getServiceQueryUrl());
+	}
+
+	public String getClient() {
+		return client;
+	}
+
+	public void setClient(String client) {
+		this.client = client;
+	}
+
+	public String getPrimeLevelPassword() {
+		return primeLevelPassword;
+	}
+
+	public void setPrimeLevelPassword(String primeLevelPassword) {
+		this.primeLevelPassword = primeLevelPassword;
+	}
+
+	public String getSecondLevelPassword() {
+		return secondLevelPassword;
+	}
+
+	public void setSecondLevelPassword(String secondLevelPassword) {
+		this.secondLevelPassword = secondLevelPassword;
 	}
 }
 

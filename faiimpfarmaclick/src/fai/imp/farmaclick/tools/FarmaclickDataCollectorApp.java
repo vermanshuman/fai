@@ -49,7 +49,8 @@ public class FarmaclickDataCollectorApp {
     conn.setAutoCommit(false);
     FaiImportConfig config = SqlQueries.getFaiImportConfig("FARMACLICK", conn);
     FarmaclickDataCollector dataCollector = new FarmaclickDataCollector(config, conn);
-    dataCollector.doCollectData();
+    //dataCollector.doCollectData();
+    dataCollector.doGetAvailiblityData("902980616");
     
   }
 

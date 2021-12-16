@@ -125,6 +125,7 @@ public abstract class AbstractDataCollector {
     //
     // --- completamento inzializzazione con inizializzazioni ---
     //
+    do_prepare_specificSetup();
     doCollectData_prepare_specificSetup();
     //
     // --- avvio nuova sessione o ripristino precedente ---
@@ -204,24 +205,23 @@ public abstract class AbstractDataCollector {
    */
   protected abstract void doCollectData_prepare_startNewSession() throws Exception;
       
-  public String doGetAvailiblityData(String minSan) throws Exception {
-		String error = null;
+  public Boolean doGetAvailiblityData(String minSan) throws Exception {
 		try {
 			reloadConfig();
 			setMinSan(minSan);
-			doCollectData_prepare_specificSetup();
-			error = doCollectData_getAvailability();
+			do_prepare_specificSetup();
+			return doCollectData_getAvailability();
 		}
 		catch (Throwable th) {
-			error = "Eccezione " + th.getClass().getName() + ", " + th.getMessage() + "";
+			String error = "Eccezione " + th.getClass().getName() + ", " + th.getMessage() + "";
 			logger.error(error, th);
 			throw new Exception(error, th);
 		}
-		return error;
 	}
 
-	protected abstract String doCollectData_getAvailability() throws Exception;
+	protected abstract Boolean doCollectData_getAvailability() throws Exception;
 
+	protected abstract void do_prepare_specificSetup() throws Exception;
 
 	public String getMinSan() {
 		return minSan;

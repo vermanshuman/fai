@@ -51,8 +51,8 @@ public class ComifarDataCollectorApp {
 		FaiImportConfig config = SqlQueries.getFaiImportConfig("COMIFAR", conn);
 		ComifarDataCollector dataCollector = new ComifarDataCollector(config, conn);
 		//dataCollector.doCollectData();
-		//dataCollector.doGetAvailiblityData("900266077");
-		dataCollector.doCollectData();
+		System.out.println(dataCollector.doGetAvailiblityData("9002660771"));
+		//dataCollector.doCollectData();
 	}
 
 }
