@@ -32,7 +32,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
   protected void loadBestOffers() throws Exception {
     offersByMinSan = new Hashtable<String, Offer>(); 
     offersByEan = new Hashtable<String, Offer>(); 
-    List<Object[]> bestOffers = SqlQueries.getAllBestOffersFornitori(conn);
+    List<Object[]> bestOffers = SqlQueries.getAllBestOffersFornitori(conn, env.getSelectedFornitori());
     for (Object[] o : bestOffers) {
       Offer offer = new Offer();
       offer.fornitore = env.getFornitoreByOid(((Long)o[0]), true);

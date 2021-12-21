@@ -1,13 +1,17 @@
 package fai.broker.task.apprmgr;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
 import fai.broker.models.ApprovvigionamentoFarmaco;
 import fai.broker.models.Fornitore;
+import fai.broker.models.FornitoreCalendar;
 import fai.broker.models.ItemStatus;
 import fai.broker.models.Magazzino;
 import fai.broker.supplier.SupplierService;
@@ -34,10 +38,40 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     //
     AnagraficaFarmaciMinSanEanCache anagrafica = new AnagraficaFarmaciMinSanEanCache();//SqlQueries.getAnagraficaFarmaciMinSanEanCache(conn);
     env.setAnagrafica(anagrafica);
+    
+  //check FAI_FORNITORE_CALENDAR
+    Calendar current = Calendar.getInstance();
+    int dateOfWeek = current.get(Calendar.DAY_OF_WEEK);
+    List<FornitoreCalendar> fornitoriCalendars = SqlQueries.getAllFornitoreCalendarByDateOfWeek(conn, dateOfWeek);
+    Set<Long> selectedFornitori =  new HashSet<Long>();
+    for(FornitoreCalendar c : fornitoriCalendars) {
+    	Calendar start = c.getHourStart();
+    	Calendar end = c.getHourEnd();
+    	
+    	start.set(Calendar.YEAR, current.get(Calendar.YEAR));
+    	start.set(Calendar.MONTH, current.get(Calendar.MONTH));
+    	start.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
+    	
+    	end.set(Calendar.YEAR, current.get(Calendar.YEAR));
+    	end.set(Calendar.MONTH, current.get(Calendar.MONTH));
+    	end.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
+    	
+    	if(start.compareTo(current) <= 0 && end.compareTo(current) >= 0) {
+    		selectedFornitori.add(c.getOidFornitore());
+    	}
+    }
+    env.setSelectedFornitori(selectedFornitori);
+    
     //
     // --- caricamento dell'Anagrafica di tutti i Fornitori ---
     //
-    List<Fornitore> fornitori = SqlQueries.getAllFornitore(conn);
+    List<Fornitore> allFornitori = SqlQueries.getAllFornitore(conn);
+    List<Fornitore> fornitori = new ArrayList<Fornitore>();
+    for(Fornitore f : allFornitori) {
+    	if(selectedFornitori.contains(f.getOid())) {
+    		fornitori.add(f);
+    	}
+    }
     env.setFornitori(fornitori);
     //
     // --- caricamento dei SupplierService per i Fornitori ---

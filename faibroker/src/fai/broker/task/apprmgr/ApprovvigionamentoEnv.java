@@ -2,8 +2,10 @@ package fai.broker.task.apprmgr;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 import fai.broker.models.ApprovToRiga;
 import fai.broker.models.ApprovvigionamentoFarmaco;
@@ -30,6 +32,7 @@ class ApprovvigionamentoEnv {
   private List<Fornitore> fornitori = new ArrayList<Fornitore>();
   private Hashtable<Long, Fornitore> fornitoreByOid = new Hashtable<Long, Fornitore>();
   private List<Magazzino> magazzini = new ArrayList<Magazzino>();
+  private Set<Long> selectedFornitori = new HashSet<Long>();
 
   public AnagraficaFarmaciMinSanEanCache getAnagrafica() {
     return anagrafica;
@@ -94,4 +97,12 @@ class ApprovvigionamentoEnv {
       }
     }
   }
+  
+  public Set<Long> getSelectedFornitori() {
+	return selectedFornitori;
   }
+	
+  public void setSelectedFornitori(Set<Long> selectedFornitori) {
+	this.selectedFornitori = selectedFornitori;
+  }
+}

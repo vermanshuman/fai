@@ -44,8 +44,8 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
     //
     // --- verifica che le tabelle di lavoro non siano in stato inconsistente ---
     //
-    error = SqlQueries.isUnableToRunStatusError("FAI_APPROVVIGIONAMENTO_FARMACO", "Fabbisogno/Approvvigionamento di Farmaci", conn);
-    if (error != null) return error;
+    //error = SqlQueries.isUnableToRunStatusError("FAI_APPROVVIGIONAMENTO_FARMACO", "Fabbisogno/Approvvigionamento di Farmaci", conn);
+    //if (error != null) return error;
     //
     // --- calcolo effettivoa dell'approvvigionamento ---
     //

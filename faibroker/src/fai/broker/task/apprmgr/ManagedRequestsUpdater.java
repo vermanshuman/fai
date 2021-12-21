@@ -70,8 +70,10 @@ class ManagedRequestsUpdater {
         // nel caso di Fornitori, se il Fornitore da disponibilità per 100 pezzi
         // non è possibile conservare la richiesta di 70, perché l'ordine 
         // sucessivo per 70 verrebbe poi rigettato
-        if (isMagazzino == false)  throw new IllegalStateException("nel caso dei Fornitori, l'operazione di "+operationName+" avente per oggetto l'Approvvigionamento Farmaci per Gruppo di Ordini (FAI_APPROVVIGIONAMENTO_FARMACO) non può accettare una disponibilità di "+quantitaDisponibile.getQuantita() +" elementi per una richiesta di "+quantitaRichiesta.getQuantita()); 
-        //
+        //if (isMagazzino == false)  throw new IllegalStateException("nel caso dei Fornitori, l'operazione di "+operationName+" avente per oggetto l'Approvvigionamento Farmaci per Gruppo di Ordini (FAI_APPROVVIGIONAMENTO_FARMACO) non può accettare una disponibilità di "+quantitaDisponibile.getQuantita() +" elementi per una richiesta di "+quantitaRichiesta.getQuantita()); 
+    	if (quantitaDisponibile.getQuantita() > quantitaRichiesta.getQuantita())  throw new IllegalStateException("nel caso dei Fornitori, l'operazione di "+operationName+" avente per oggetto l'Approvvigionamento Farmaci per Gruppo di Ordini (FAI_APPROVVIGIONAMENTO_FARMACO) non può accettare una disponibilità di "+quantitaDisponibile.getQuantita() +" elementi per una richiesta di "+quantitaRichiesta.getQuantita()); 
+          
+    	  //
         storeApprovvigionamentoFarmaco(quantitaRichiesta, ItemStatus.VALUE_PROCESSING, false);
         approvSoddisfatto.add(quantitaRichiesta);
         logger.info(LOG_PREFIX+"soddisfatto");
