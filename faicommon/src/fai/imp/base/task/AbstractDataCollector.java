@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import fai.imp.base.bean.ProcessedOrderBean;
 import fai.imp.base.bean.ProductAvailibilityBean;
-import fai.imp.base.bean.ProductOrderRequestBean;
+import fai.imp.base.bean.ProductBean;
 import fai.imp.base.db.SqlQueries;
 import fai.imp.base.models.FaiImportConfig;
 
@@ -28,7 +28,7 @@ public abstract class AbstractDataCollector {
 	protected boolean resumePrevSession = false;
 	protected String sessionQueryType = null;
 	private List<String> productCodes;
-	private List<ProductOrderRequestBean> productOrderRequests;
+	private List<ProductBean> productOrderRequests;
 
 	public AbstractDataCollector(FaiImportConfig config, Connection conn) {
 		super();
@@ -213,12 +213,15 @@ public abstract class AbstractDataCollector {
 	 */
 	protected abstract void doCollectData_prepare_startNewSession() throws Exception;
 
-	public List<ProductAvailibilityBean> doGetAvailiblityData(List<String> productCodes) throws Exception {
+	public List<ProductBean> doGetAvailiblityData(List<ProductBean> products) throws Exception {
 		try {
 			reloadConfig();
-			setProductCodes(productCodes);
+			setProductCodes(
+					products.stream()
+					.map(p -> p.getProductCode() )
+					.collect(Collectors.toList()));
 			do_prepare_specificSetup();
-			return doCollectData_getAvailability(productCodes);
+			return doCollectData_getAvailability(products);
 		}
 		catch (Throwable th) {
 			String error = "Eccezione " + th.getClass().getName() + ", " + th.getMessage() + "";
@@ -228,7 +231,7 @@ public abstract class AbstractDataCollector {
 	}
 
 
-	public List<ProcessedOrderBean> doOrderProducts(List<ProductOrderRequestBean> productOrderRequests) throws Exception {
+	public List<ProcessedOrderBean> doOrderProducts(List<ProductBean> productOrderRequests) throws Exception {
 		try {
 			reloadConfig();
 			setProductOrderRequests(productOrderRequests);
@@ -242,13 +245,13 @@ public abstract class AbstractDataCollector {
 		}
 	}
 
-	protected abstract List<ProductAvailibilityBean> doCollectData_getAvailability(List<String> productCodes) throws Exception;
+	protected abstract List<ProductBean> doCollectData_getAvailability(List<ProductBean> productCodes) throws Exception;
 
 	protected abstract void do_prepare_specificSetup() throws Exception;
 
 	protected abstract void doCollectData_getDDTList(Date dataInzio, Date dataFine) throws Exception;
 
-	protected abstract List<ProcessedOrderBean> do_OrderProducts(List<ProductOrderRequestBean> productOrderRequests) throws Exception;
+	protected abstract List<ProcessedOrderBean> do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception;
 
 	public List<String> getProductCodes() {
 		return productCodes;
@@ -258,11 +261,11 @@ public abstract class AbstractDataCollector {
 		this.productCodes = productCodes;
 	}
 
-	public List<ProductOrderRequestBean> getProductOrderRequests() {
+	public List<ProductBean> getProductOrderRequests() {
 		return productOrderRequests;
 	}
 
-	public void setProductOrderRequests(List<ProductOrderRequestBean> productOrderRequests) {
+	public void setProductOrderRequests(List<ProductBean> productOrderRequests) {
 		this.productOrderRequests = productOrderRequests;
 	}
 }

@@ -4,6 +4,8 @@ public class ProductAvailibilityBean {
 	
 	private String productCode;
 	
+	private Integer requesQuantity;
+	
 	private Boolean availibility;
 
 	public String getProductCode() {

@@ -9,11 +9,14 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.PKIXRevocationChecker.Option;
 import java.sql.Connection;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
@@ -29,14 +32,14 @@ import org.apache.log4j.Logger;
 import fai.common.db.SqlUtilities;
 import fai.common.util.XmlUtil;
 import fai.imp.base.bean.ProcessedOrderBean;
-import fai.imp.base.bean.ProductAvailibilityBean;
-import fai.imp.base.bean.ProductOrderRequestBean;
+import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
 import fai.imp.comifar.dto.Disponibilita;
 import fai.imp.comifar.dto.Head;
 import fai.imp.comifar.dto.Listino;
 import fai.imp.comifar.dto.MyXML;
+import fai.imp.comifar.dto.Offer;
 import fai.imp.comifar.dto.Order;
 import fai.imp.comifar.dto.OrderBody;
 import fai.imp.comifar.dto.OrderItem;
@@ -345,38 +348,55 @@ public class ComifarDataCollector extends AbstractDataCollector{
 	}
 
 	@Override
-	protected List<ProductAvailibilityBean> doCollectData_getAvailability(List<String> productCodes) throws Exception {
+	protected List<ProductBean> doCollectData_getAvailability(List<ProductBean> products) throws Exception {
 		
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
-		List<ProductAvailibilityBean> productAvailibilityBeans = new ArrayList<>();
+		
 		String serviceID = ComifarSoapWSMethFormatter.formatGetAvailibility();
 		logger.info("recupero dati "+serviceID+", invocazione WebService ...");
 
-		for(String productCode : productCodes) {
-			String availibility = ws.getAvailibility();
-			logger.info("Disponibilit\u00E0 Resposne : {}" + availibility);
-			if(availibility != null){
-				Disponibilita disponibilita = parseComifarDisponibilita(availibility);
-				String actualResponse = "";
-				if(disponibilita != null && disponibilita.getOutcome() != null){
-					actualResponse = disponibilita.getOutcome().getOutcome();
+		for(ProductBean product : products) {
+			if(product.getQuantity() != null && product.getQuantity() > 0) {
+				String availibility = ws.getAvailibility();
+				logger.info("Disponibilit\u00E0 Resposne : {}" + availibility);
+				if(availibility != null){
+					Disponibilita disponibilita = parseComifarDisponibilita(availibility);
+					String actualResponse = "";
+					if(disponibilita != null && disponibilita.getOutcome() != null){
+						actualResponse = disponibilita.getOutcome().getOutcome();
+					}
+					if (!"OK".equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
+//					ProductAvailibilityBean productAvailibilityBean = new ProductAvailibilityBean();
+//					productAvailibilityBean.setProductCode(product.getProductCode());
+					if(disponibilita.getAvail() != null && disponibilita.getAvail().getAvailable() != null 
+							&& disponibilita.getAvail().getAvailable().equalsIgnoreCase("S")) {
+						
+						if(disponibilita.getOffers() != null) {
+							List<Offer> offers = disponibilita.getOffers().getOffers();
+							if(offers != null && !offers.isEmpty()) {
+								Optional<Offer> validOffer =
+								offers.stream()
+								.filter(o -> o.getQuantity() != null && o.getQuantity() <= product.getQuantity())
+								.findFirst();
+								if(validOffer.isPresent()) {
+									product.setAvailibility(Boolean.TRUE);
+								}else 
+									product.setAvailibility(Boolean.FALSE);
+							}
+						}
+					}else {
+						product.setAvailibility(Boolean.FALSE);
+					}
+					
 				}
-				if (!"OK".equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
-				ProductAvailibilityBean productAvailibilityBean = new ProductAvailibilityBean();
-				productAvailibilityBean.setProductCode(productCode);
-				if(disponibilita.getAvail() != null && disponibilita.getAvail().getAvailable() != null 
-						&& disponibilita.getAvail().getAvailable().equalsIgnoreCase("S")) {
-					productAvailibilityBean.setAvailibility(Boolean.TRUE);
-				}else {
-					productAvailibilityBean.setAvailibility(Boolean.FALSE);
-				}
-				productAvailibilityBeans.add(productAvailibilityBean);
+			}else {
+				product.setAvailibility(null);
 			}
-		}
 		
-		return productAvailibilityBeans;
+		}
+		return products;
 	}
 	
 	@Override
@@ -384,7 +404,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 	}
 
 	@Override
-	protected List<ProcessedOrderBean> do_OrderProducts(List<ProductOrderRequestBean> productOrderRequests) throws Exception {
+	protected List<ProcessedOrderBean> do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");

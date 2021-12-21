@@ -1,10 +1,12 @@
 package fai.imp.base.bean;
 
-public class ProductOrderRequestBean {
+public class ProductBean {
 	
 	private String productCode;
 	
 	private Integer quantity;
+	
+	private Boolean availibility;
 
 	public String getProductCode() {
 		return productCode;
@@ -21,5 +23,12 @@ public class ProductOrderRequestBean {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
-	
+
+	public Boolean getAvailibility() {
+		return availibility;
+	}
+
+	public void setAvailibility(Boolean availibility) {
+		this.availibility = availibility;
+	}
 }

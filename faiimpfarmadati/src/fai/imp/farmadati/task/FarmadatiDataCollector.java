@@ -18,7 +18,7 @@ import fai.common.util.Filesystem;
 import fai.common.util.XmlUtil;
 import fai.imp.base.bean.ProcessedOrderBean;
 import fai.imp.base.bean.ProductAvailibilityBean;
-import fai.imp.base.bean.ProductOrderRequestBean;
+import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
 import fai.imp.farmadati.db.FarmadatiDDL;
@@ -272,7 +272,7 @@ public class FarmadatiDataCollector extends AbstractDataCollector {
 	}
 
 	@Override
-	protected List<ProductAvailibilityBean> doCollectData_getAvailability(List<String> productCodes) throws Exception {
+	protected List<ProductBean> doCollectData_getAvailability(List<ProductBean> products) throws Exception {
 		return null;
 	}
 
@@ -289,7 +289,7 @@ public class FarmadatiDataCollector extends AbstractDataCollector {
 
 
 	@Override
-	protected List<ProcessedOrderBean>  do_OrderProducts(List<ProductOrderRequestBean> productOrderRequests) throws Exception {
+	protected List<ProcessedOrderBean>  do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception {
 		return null;
 		
 	}

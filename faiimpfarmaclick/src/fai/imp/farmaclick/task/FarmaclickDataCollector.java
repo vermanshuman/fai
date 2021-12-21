@@ -22,7 +22,7 @@ import fai.common.util.Filesystem;
 import fai.common.util.Timeout;
 import fai.imp.base.bean.ProcessedOrderBean;
 import fai.imp.base.bean.ProductAvailibilityBean;
-import fai.imp.base.bean.ProductOrderRequestBean;
+import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
 import fai.imp.farmaclick.csv.CsvRecordFarmaclick;
@@ -383,32 +383,33 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 	}
 
 	@Override
-	protected List<ProductAvailibilityBean> doCollectData_getAvailability(List<String> productCodes) throws Exception {
+	protected List<ProductBean> doCollectData_getAvailability(List<ProductBean> products) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
-		List<ProductAvailibilityBean> productAvailibilityBeans = new ArrayList<>();
-		if(productCodes != null && !productCodes.isEmpty()) {
+		List<ProductBean> productAvailibilityBeans = new ArrayList<>();
+		if(products != null && !products.isEmpty()) {
 			loginWebService();
 			List<FornitoreBean> fornitoreBeanList = ws.getFornitoreBeanList();
 			for (FornitoreBean fornitoreBean : fornitoreBeanList) {
 				String codiceFornitore = fornitoreBean.getCodice();
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
-				List<fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloInputBean> articles = productCodes
+				List<fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloInputBean> articles = products
 						.stream()
 						.filter(productCode -> productCode != null)
-						.map(productCode -> new fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloInputBean(1, -1, -1, productCode, true, 10))
+						.map(productCode -> new fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloInputBean(1, -1, -1, productCode.getProductCode(), true, productCode.getQuantity()))
 						.collect(Collectors.toList());
 				DettaglioArticoliOutputBean daob = ws.callDisponibilita(fornitoreBean, true, false, false, articles);
 				if(daob != null && daob.getEsitoServizio() == 0 && daob.getArrayArticoli() != null 
 						&& daob.getArrayArticoli().length > 0) {
 					for(int a = 0; a < daob.getArrayArticoli().length; a++) {
 						ArticoloOutputBean articoloOutputBean = daob.getArrayArticoli()[a];
-						ProductAvailibilityBean productAvailibilityBean = new ProductAvailibilityBean();
-						productAvailibilityBean.setProductCode(articoloOutputBean.getCodiceProdotto());
-						productAvailibilityBean.setAvailibility(articoloOutputBean.getQuantitaConsegnata() > 0 ? 
+						ProductBean productBean = new ProductBean();
+						productBean.setProductCode(articoloOutputBean.getCodiceProdotto());
+						productBean.setAvailibility(articoloOutputBean.getQuantitaConsegnata() > 0 ? 
 								Boolean.TRUE : Boolean.FALSE);
-						productAvailibilityBeans.add(productAvailibilityBean);
+						productBean.setQuantity(articoloOutputBean.getQuantitaConsegnata());
+						productAvailibilityBeans.add(productBean);
 					}
 				}
 			}
@@ -452,7 +453,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 
 
 	@Override
-	protected List<ProcessedOrderBean> do_OrderProducts(List<ProductOrderRequestBean> productOrderRequests) throws Exception {
+	protected List<ProcessedOrderBean> do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");

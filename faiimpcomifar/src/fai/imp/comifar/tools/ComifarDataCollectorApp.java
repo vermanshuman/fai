@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fai.common.ftp.Ftp;
+import fai.common.ftp.FtpFactory;
+import fai.common.models.FtpConfig;
 import fai.imp.base.bean.ProcessedOrderBean;
-import fai.imp.base.bean.ProductOrderRequestBean;
+import fai.imp.base.bean.ProductBean;
 import fai.imp.base.db.SqlQueries;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.comifar.task.ComifarDataCollector;
@@ -41,6 +44,13 @@ public class ComifarDataCollectorApp {
 
 	public static void main(String[] args) throws Exception {
 
+//		FtpConfig ftpConfig = new FtpConfig();
+//		ftpConfig.setFtpProtocol("LOCAL");
+//		ftpConfig.setFtpHost("localhost");
+//		ftpConfig.setFtpLogin("anshuman");
+//		ftpConfig.setFtpPassword("india123");
+//		Ftp ftp = FtpFactory.newFtp(ftpConfig);
+//		ftp.getInputStream("/web_order.csv");
 		Connection conn = null;
 		String jdbcDriver = "oracle.jdbc.driver.OracleDriver";
 		String jdbcUrl = "jdbc:oracle:thin:@localhost:1521:XE";
@@ -58,28 +68,36 @@ public class ComifarDataCollectorApp {
 		// End Collecting data
 		
 		// Check availibility
-		//System.out.println(dataCollector.doGetAvailiblityData(Stream.of("900266077").collect(Collectors.toList())));
-		//dataCollector.doCollectData();
+		ProductBean productBean = new ProductBean();
+		productBean.setProductCode("900266077");
+		productBean.setQuantity(1);
+		
+		List<ProductBean> products = dataCollector.doGetAvailiblityData(Stream.of(productBean).collect(Collectors.toList()));
+
+		products.stream()
+		.forEach(p -> {
+			System.out.println(p.getProductCode() + ">>>>>" + p.getQuantity() + "::: " + p.getAvailibility());
+		});
 		// End Check availibility
 		
 		// Start Order Products
-		ProductOrderRequestBean productOrderRequestOne = new ProductOrderRequestBean();
-		productOrderRequestOne.setProductCode("28725125");
-		productOrderRequestOne.setQuantity(1);
-	    
-		ProductOrderRequestBean productOrderRequestTwo = new ProductOrderRequestBean();
-		productOrderRequestTwo.setProductCode("28740013");
-		productOrderRequestTwo.setQuantity(5);
-	    List<ProcessedOrderBean> processedOrderBeans = dataCollector.doOrderProducts(Stream.of(productOrderRequestOne, productOrderRequestTwo).collect(Collectors.toList()));
-	    
-	    processedOrderBeans
-	    .stream()
-	    .forEach(p -> {
-	    	System.out.println("Order status for product: " + p.getProductCode() + " is " + p.getOrderFailed());
-	    	if(p.getOrderFailed()) {
-	    		System.out.println("reason for order failure " + p.getErrorCode() + " : " + p.getErrorDescription());
-	    	}
-	    });
+//		ProductOrderRequestBean productOrderRequestOne = new ProductOrderRequestBean();
+//		productOrderRequestOne.setProductCode("28725125");
+//		productOrderRequestOne.setQuantity(1);
+//	    
+//		ProductOrderRequestBean productOrderRequestTwo = new ProductOrderRequestBean();
+//		productOrderRequestTwo.setProductCode("28740013");
+//		productOrderRequestTwo.setQuantity(5);
+//	    List<ProcessedOrderBean> processedOrderBeans = dataCollector.doOrderProducts(Stream.of(productOrderRequestOne, productOrderRequestTwo).collect(Collectors.toList()));
+//	    
+//	    processedOrderBeans
+//	    .stream()
+//	    .forEach(p -> {
+//	    	System.out.println("Order status for product: " + p.getProductCode() + " is " + p.getOrderFailed());
+//	    	if(p.getOrderFailed()) {
+//	    		System.out.println("reason for order failure " + p.getErrorCode() + " : " + p.getErrorDescription());
+//	    	}
+//	    });
+		// End Order Products
 	}
-	// End Order Products
 }
