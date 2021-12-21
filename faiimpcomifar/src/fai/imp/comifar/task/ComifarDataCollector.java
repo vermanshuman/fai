@@ -6,15 +6,19 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -24,11 +28,20 @@ import org.apache.log4j.Logger;
 
 import fai.common.db.SqlUtilities;
 import fai.common.util.XmlUtil;
+import fai.imp.base.bean.ProcessedOrderBean;
 import fai.imp.base.bean.ProductAvailibilityBean;
+import fai.imp.base.bean.ProductOrderRequestBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
 import fai.imp.comifar.dto.Disponibilita;
+import fai.imp.comifar.dto.Head;
 import fai.imp.comifar.dto.Listino;
+import fai.imp.comifar.dto.MyXML;
+import fai.imp.comifar.dto.Order;
+import fai.imp.comifar.dto.OrderBody;
+import fai.imp.comifar.dto.OrderItem;
+import fai.imp.comifar.dto.OrderResponse;
+import fai.imp.comifar.dto.OrderResponseBody;
 import fai.imp.comifar.dto.ProductData;
 import fai.imp.comifar.ws.ComifarSoapWS;
 import fai.imp.comifar.ws.ComifarSoapWSMethFormatter;
@@ -69,12 +82,18 @@ public class ComifarDataCollector extends AbstractDataCollector{
 		return  (Listino) unmarshaller.unmarshal(xmlDoc);
 	}
 	
-	
 	private static Disponibilita parseComifarDisponibilita(String disponibilitaResponse) throws Exception {
 		JAXBContext jc = JAXBContext.newInstance(Disponibilita.class);
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		org.w3c.dom.Document xmlDoc = XmlUtil.asDocument(disponibilitaResponse);
 		return  (Disponibilita) unmarshaller.unmarshal(xmlDoc);
+	}
+	
+	private static OrderResponse parseComifarOrdine(String orderResponse) throws Exception {
+		JAXBContext jc = JAXBContext.newInstance(OrderResponse.class);
+		Unmarshaller unmarshaller = jc.createUnmarshaller();
+		org.w3c.dom.Document xmlDoc = XmlUtil.asDocument(orderResponse);
+		return  (OrderResponse) unmarshaller.unmarshal(xmlDoc);
 	}
 
 	@Override
@@ -359,6 +378,89 @@ public class ComifarDataCollector extends AbstractDataCollector{
 		
 		return productAvailibilityBeans;
 	}
+	
+	@Override
+	protected void doCollectData_getDDTList(Date dataInzio, Date dataFine) throws Exception {
+	}
+
+	@Override
+	protected List<ProcessedOrderBean> do_OrderProducts(List<ProductOrderRequestBean> productOrderRequests) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String serviceID = ComifarSoapWSMethFormatter.formatOrderProduct();
+		logger.info("recupero dati "+serviceID+", invocazione WebService ...");
+
+		List<ProcessedOrderBean> processedOrders = new ArrayList<>();
+		if(productOrderRequests != null && !productOrderRequests.isEmpty()) {
+			
+			List<OrderItem> items = productOrderRequests
+			.stream()
+			.filter(p -> p.getProductCode() != null && !p.getProductCode().isEmpty() 
+			&& p.getQuantity() != null && p.getQuantity() > 0)
+			.map(p -> new OrderItem(p.getProductCode(), p.getQuantity()))
+			.collect(Collectors.toList());
+			if(items.size() > 0) {
+				MyXML myxml = new MyXML();
+				Order order = new Order();
+				Head head = new Head();
+				head.setCliente(getClient());
+				head.setNumord("miotest00001");
+				order.setHead(head);
+				
+				OrderBody body = new OrderBody();
+				body.setItems(items);
+				order.setBody(body);
+				
+				myxml.setOrder(order);
+				
+				String orderXML = prepareOrderXML(myxml);
+
+				String orderResponse = ws.orderProducts(orderXML);
+				
+				OrderResponse response = parseComifarOrdine(orderResponse);
+				
+				if(response != null && response.getHead() != null && response.getHead().getEsito() != null &&
+						response.getHead().getEsito().getOutcome() != null && "OK".equalsIgnoreCase(response.getHead().getEsito().getOutcome())) {
+					
+					OrderResponseBody orderResponseBody = response.getBody();
+					if(orderResponseBody != null) {
+						if(orderResponseBody.getOrderMissing() != null && orderResponseBody.getOrderMissing().getItems() != null
+								&& orderResponseBody.getOrderMissing().getItems().size() > 0) {
+							processedOrders.addAll(orderResponseBody.getOrderMissing().getItems()
+							.stream()
+							.map(item -> 
+							new ProcessedOrderBean(item.getProductCode(), item.getQuantity(),
+									Boolean.TRUE, item.getOutcome(), item.getOutcomeDescription()))
+							.collect(Collectors.toList()));
+							
+						}
+						
+						if(orderResponseBody.getProcessedOrder() != null && orderResponseBody.getProcessedOrder().getItems() != null
+								&& orderResponseBody.getProcessedOrder().getItems().size() > 0) {
+							processedOrders.addAll(orderResponseBody.getProcessedOrder().getItems()
+							.stream()
+							.map(item -> 
+							new ProcessedOrderBean(item.getProductCode(), item.getQuantity(), Boolean.FALSE))
+							.collect(Collectors.toList()));
+						}
+					}
+				}
+				
+			}
+		}
+
+		return processedOrders;
+	}
+	
+	private static String prepareOrderXML(MyXML myXML) throws Exception {
+		JAXBContext jc = JAXBContext.newInstance(MyXML.class);
+		Marshaller marshaller = jc.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+		StringWriter sw = new StringWriter();
+		marshaller.marshal(myXML, sw);
+		return sw.toString();
+	}
 
 	@Override
 	protected void do_prepare_specificSetup() throws Exception {
@@ -400,7 +502,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 			queryType = "RESET";
 		}
 		
-		ws = new ComifarSoapWS(getClient(), "", "01/08/2021", "21/08/2021", getPrimeLevelPassword(), getSecondLevelPassword(), getProductCodes().get(0), queryType);
+		ws = new ComifarSoapWS(getClient(), "", "01/08/2021", "21/08/2021", getPrimeLevelPassword(), getSecondLevelPassword(), getProductCodes() != null ? getProductCodes().get(0) : null, queryType);
 		ws.setWsUrl(config.getServiceQueryUrl());
 	}
 

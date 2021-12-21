@@ -464,9 +464,10 @@ public class FarmaclickWS extends AbstractFarmaclickWS {
       // --- invocazione servizio ---
       //
       String idSessione = fornitore.getIDSessione();
+      oib.setIDSessione(idSessione);
       String fornitoreLivelloAPI = fornitore.getLivelloAPI();
       logger.info(LOG_PREFIX+"livello API "+fornitoreLivelloAPI+" ...");
-      String serviceName = "FCKDisponibilita";
+      String serviceName = "FCKOrdine";
       ServiziBean servizio = (new ServiziBeanChooser().setFornitoreBean(fornitore)).getServiziBean(serviceName);
       if (servizio == null) {
         logger.error(LOG_PREFIX+"servizio "+serviceName+" non disponibile, impossibile procedere con l'interrogazione");

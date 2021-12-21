@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import fai.imp.base.bean.ProductAvailibilityBean;
+import fai.imp.base.bean.ProductOrderRequestBean;
 import fai.imp.base.db.SqlQueries;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.farmaclick.task.FarmaclickDataCollector;
@@ -54,7 +55,12 @@ public class FarmaclickDataCollectorApp {
     FaiImportConfig config = SqlQueries.getFaiImportConfig("FARMACLICK", conn);
     FarmaclickDataCollector dataCollector = new FarmaclickDataCollector(config, conn);
     //dataCollector.doCollectData();
-    List<ProductAvailibilityBean> productAvailibilityBeans = dataCollector.doGetAvailiblityData(Stream.of("012745028", "029401027").collect(Collectors.toList()));
+    //List<ProductAvailibilityBean> productAvailibilityBeans = dataCollector.doGetAvailiblityData(Stream.of("012745028", "029401027").collect(Collectors.toList()));
+    
+    ProductOrderRequestBean productOrderRequestBean = new ProductOrderRequestBean();
+    productOrderRequestBean.setProductCode("902980616");
+    productOrderRequestBean.setQuantity(1);
+    dataCollector.doOrderProducts(Stream.of(productOrderRequestBean).collect(Collectors.toList()));
   }
 
 }

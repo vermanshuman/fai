@@ -25,5 +25,13 @@ public class ComifarSoapWSMethFormatter {
 	public static String formatProductList(boolean onlyParams) throws Exception {
 		return (onlyParams == true ? "" : "listino")+"()";
 	}
+	
+	public static String formatOrderProduct() throws Exception {
+		return formatGetAvailibility(false);
+	}
+
+	public static String formatOrderProduct(boolean onlyParams) throws Exception {
+		return (onlyParams == true ? "" : "ordine")+"()";
+	}
 
 }

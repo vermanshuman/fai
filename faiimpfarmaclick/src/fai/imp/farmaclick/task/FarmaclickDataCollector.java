@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -19,7 +20,9 @@ import fai.common.csv.CsvException;
 import fai.common.http.Http;
 import fai.common.util.Filesystem;
 import fai.common.util.Timeout;
+import fai.imp.base.bean.ProcessedOrderBean;
 import fai.imp.base.bean.ProductAvailibilityBean;
+import fai.imp.base.bean.ProductOrderRequestBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
 import fai.imp.farmaclick.csv.CsvRecordFarmaclick;
@@ -34,12 +37,14 @@ import fai.imp.farmaclick.csv.CsvRecordFarmaclickZ;
 import fai.imp.farmaclick.csv.CsvRecordFieldsTester;
 import fai.imp.farmaclick.db.SqlQueries;
 import fai.imp.farmaclick.models.Fornitore;
-import fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloInputBean;
 import fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloOutputBean;
 import fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.DettaglioArticoliOutputBean;
 import fai.imp.farmaclick.soap.api_2010_001.FCKLogin.FornitoreBean;
 import fai.imp.farmaclick.ws.FarmaclickWS;
+import fai.imp.farmaclick.ws.bean.ArticoloInputBean;
 import fai.imp.farmaclick.ws.bean.DownloadListinoOutputBean;
+import fai.imp.farmaclick.ws.bean.OrdineInputBean;
+import fai.imp.farmaclick.ws.bean.OrdineOutputBean;
 import it.swdes.decrypt.Decryptor;
 
 public class FarmaclickDataCollector extends AbstractDataCollector {
@@ -389,10 +394,10 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			for (FornitoreBean fornitoreBean : fornitoreBeanList) {
 				String codiceFornitore = fornitoreBean.getCodice();
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
-				List<ArticoloInputBean> articles = productCodes
+				List<fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloInputBean> articles = productCodes
 						.stream()
 						.filter(productCode -> productCode != null)
-						.map(productCode -> new ArticoloInputBean(1, -1, -1, productCode, true, 10))
+						.map(productCode -> new fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloInputBean(1, -1, -1, productCode, true, 10))
 						.collect(Collectors.toList());
 				DettaglioArticoliOutputBean daob = ws.callDisponibilita(fornitoreBean, true, false, false, articles);
 				if(daob != null && daob.getEsitoServizio() == 0 && daob.getArrayArticoli() != null 
@@ -436,5 +441,43 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 	@Override
 	protected void do_prepare_specificSetup() throws Exception {
 		doCollectData_prepare_specificSetup();
+	}
+
+
+	@Override
+	protected void doCollectData_getDDTList(Date dataInzio, Date dataFine) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	protected List<ProcessedOrderBean> do_OrderProducts(List<ProductOrderRequestBean> productOrderRequests) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		if(productOrderRequests != null && !productOrderRequests.isEmpty()) {
+			loginWebService();
+			List<FornitoreBean> fornitoreBeanList = ws.getFornitoreBeanList();
+			for (FornitoreBean fornitoreBean : fornitoreBeanList) {
+				String codiceFornitore = fornitoreBean.getCodice();
+				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
+				List<ArticoloInputBean> articles = productOrderRequests
+						.stream()
+						.filter(por -> por != null)
+						.map(por -> new ArticoloInputBean(1, -1, -1, por.getProductCode(), true, por.getQuantity()))
+						.collect(Collectors.toList());
+				OrdineInputBean oib = new OrdineInputBean();
+				oib.setCodiceFornitore(codiceFornitore);
+				oib.setDescrizioneArticoli(true);
+				oib.setDescrizioneMotivazioneMancanza(false);
+				oib.setIndicazioneDepositoAllestimento(false);
+				oib.setIndicazioneDatiConsegna(false);
+				oib.setArticoli(articles);
+				OrdineOutputBean oob = ws.callOrdine(oib);
+				System.out.println(">>>>>" + oob.getEsitoServizio());
+			}
+		}
+		return null;
 	}
 }

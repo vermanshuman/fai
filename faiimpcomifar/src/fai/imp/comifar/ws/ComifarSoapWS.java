@@ -97,6 +97,13 @@ public class ComifarSoapWS{
 		return value;
 	}
 
+	public String orderProducts(String myXML) throws Exception {
+		lastCallSucceed = false;
+		SoapcomifarStub binding = getBinding();
+		String value = binding.ordine(myXML, primeLevelPassword, secondLevelPassword);
+		return value;
+	}
+	
 	public String getRifinterno() {
 		return rifinterno;
 	}

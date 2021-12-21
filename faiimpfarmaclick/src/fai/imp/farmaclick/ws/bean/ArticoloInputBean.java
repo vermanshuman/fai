@@ -30,6 +30,21 @@ public class ArticoloInputBean {
 		this.noteRiga = noteRiga;
 	}
 	
+    public ArticoloInputBean(
+            int accettazioneAllinemantoColloInVendita,
+            int accettazioneConsegnaDifferita,
+            int accettazioneProdottoSostitutivo,
+            java.lang.String codiceProdotto,
+            boolean prenotazione,
+            int quantitaRichiesta) {
+            this.accettazioneAllinemantoColloInVendita = accettazioneAllinemantoColloInVendita;
+            this.accettazioneConsegnaDifferita = accettazioneConsegnaDifferita;
+            this.accettazioneProdottoSostitutivo = accettazioneProdottoSostitutivo;
+            this.codiceProdotto = codiceProdotto;
+            this.prenotazione = prenotazione;
+            this.quantitaRichiesta = quantitaRichiesta;
+     }
+	
 	public boolean isPrenotazione() {
 		return prenotazione;
 	}
