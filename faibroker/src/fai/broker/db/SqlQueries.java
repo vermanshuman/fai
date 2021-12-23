@@ -579,6 +579,7 @@ public class SqlQueries {
 					m.setCap(rs.getString("MAGAZZINO_CAP"));
 					m.setIndirizzo(rs.getString("MAGAZZINO_INDIRIZZO"));
 					m.setSupplierServiceClassName(rs.getString("SUPPLIERSERVICE_CLASS_NAME"));
+					m.setOrganizationCode(rs.getString("MAGAZZINO_ORGANIZATION_CODICE"));
 					list.add(m);
 				}
 				//

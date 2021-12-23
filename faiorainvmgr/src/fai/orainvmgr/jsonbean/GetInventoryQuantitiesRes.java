@@ -67,6 +67,9 @@ public class GetInventoryQuantitiesRes {
   @SerializedName("links")
   @Expose
   private List<Link> links = null;
+  @SerializedName("AvailableToTransact")
+  @Expose
+  private Integer availableToTransact;
 
   public String getOrganizationCode() {
     return organizationCode;
@@ -132,4 +135,13 @@ public class GetInventoryQuantitiesRes {
     this.links = links;
   }
 
+  public Integer getAvailableToTransact() {
+	return availableToTransact;
+  }
+	
+  public void setAvailableToTransact(Integer availableToTransact) {
+	this.availableToTransact = availableToTransact;
+  }
+
+  
 }

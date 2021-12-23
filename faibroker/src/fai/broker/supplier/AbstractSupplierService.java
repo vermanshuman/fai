@@ -344,7 +344,7 @@ public abstract class AbstractSupplierService implements SupplierService {
    * @param statusTechDescr
    * @throws Exception
    */
-  private void setRichiestaDisponibilitaReq(List<ApprovvigionamentoFarmaco> afList, ItemStatus status, String statusDescr, String statusTechDescr) throws Exception {
+  protected void setRichiestaDisponibilitaReq(List<ApprovvigionamentoFarmaco> afList, ItemStatus status, String statusDescr, String statusTechDescr) throws Exception {
     if (status == null) status = ItemStatus.VALUE_PROCESSING;
     if (statusDescr == null) statusDescr = "inoltro richiesta di disponibilità a "+asShortDescr()+" ...";
     //
@@ -365,7 +365,7 @@ public abstract class AbstractSupplierService implements SupplierService {
    * @param statusTechDescr
    * @throws Exception
    */
-  private void setRichiestaDisponibilitaRes(List<ApprovvigionamentoFarmaco> afList, ItemStatus status, String statusDescr, String statusTechDescr) throws Exception {
+  protected void setRichiestaDisponibilitaRes(List<ApprovvigionamentoFarmaco> afList, ItemStatus status, String statusDescr, String statusTechDescr) throws Exception {
     if (status == null) status = ItemStatus.VALUE_PROCESSING;
     if (statusDescr == null) statusDescr = "inoltro richiesta di disponibilità a "+asShortDescr()+" completato (risposta ricevuta)";
     //
