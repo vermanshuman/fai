@@ -65,7 +65,7 @@ public class SqlQueries {
       stmt.executeUpdate(sql);
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -160,7 +160,7 @@ public class SqlQueries {
     }
     catch (Throwable th) {
       list = new ArrayList<FaiImportConfig>();
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -188,7 +188,7 @@ public class SqlQueries {
       stmt.executeUpdate(sql);
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
       throw new Exception(msg, th);
     }

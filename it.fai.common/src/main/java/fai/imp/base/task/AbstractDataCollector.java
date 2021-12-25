@@ -65,7 +65,7 @@ public abstract class AbstractDataCollector {
 			}
 		}
 		catch (Throwable th) {
-			error = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "»";
+			error = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â»";
 			logger.error(error, th);
 			throw new Exception(error, th);
 		}
@@ -128,7 +128,7 @@ public abstract class AbstractDataCollector {
 			// nothing todo
 		}
 		else {
-			throw new IllegalStateException("modalità di ripristino della sessione precedente non gestita: "+config.getServiceResumePrevSession());
+			throw new IllegalStateException("modalitÃ  di ripristino della sessione precedente non gestita: "+config.getServiceResumePrevSession());
 		}
 		//
 		// --- completamento inzializzazione con inizializzazioni ---
