@@ -96,11 +96,26 @@ public class SqlQueries {
       throw new IllegalStateException("inammisisbile, trovati "+FaiImportConfig.class.getName()+" per OID "+oidConfig+"; attesi: 0 oppure 1");
   }
 
+  public static FaiImportConfig getFaiImportConfig(String acronym, String customQuery, Connection conn) throws Exception {
+    List<FaiImportConfig> list = findFaiImportConfig(acronym, null, customQuery, conn);
+    if (list.size() == 0)
+      return null;
+    else if (list.size() == 1)
+      return list.get(0);
+    else
+      throw new IllegalStateException("inammisisbile, trovati "+FaiImportConfig.class.getName()+" per ACRONYM "+acronym+"; attesi: 0 oppure 1");
+  }
+
   public static List<FaiImportConfig> findAllFaiImportConfig(Connection conn) throws Exception {
     return findFaiImportConfig(null, null, conn);
   }
 
   private static List<FaiImportConfig> findFaiImportConfig(String acronym, Long oidConfig, Connection conn) throws Exception {
+    return findFaiImportConfig(acronym, oidConfig, null, conn);
+  }
+
+  private static List<FaiImportConfig> findFaiImportConfig(String acronym, Long oidConfig,
+                                                           String customQuery, Connection conn) throws Exception {
     final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
     logger.debug("method: " + METH_NAME);
     String sql = null;
@@ -113,13 +128,14 @@ public class SqlQueries {
         wc = "WHERE 1=1";
         if (acronym != null) wc += " AND ACRONYM = "+SqlUtilities.getAsStringFieldValue(acronym);
         if (oidConfig != null) wc += " AND OID = "+oidConfig;
+        if(customQuery != null) wc +=  customQuery;
       }
       Properties params = new Properties();
       params.setProperty("whereCondition", wc);
       sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "findFaiImportConfig.sql", params);
       stmt = conn.createStatement();
       rs = stmt.executeQuery(sql);
-      while (rs.next()) {        
+      while (rs.next()) {
         FaiImportConfig cfg = new FaiImportConfig();
         cfg.setOid(rs.getLong("OID"));
         cfg.setAcronym(rs.getString("ACRONYM"));

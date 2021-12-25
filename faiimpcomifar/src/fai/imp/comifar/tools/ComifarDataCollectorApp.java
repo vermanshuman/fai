@@ -64,20 +64,20 @@ public class ComifarDataCollectorApp {
 		ComifarDataCollector dataCollector = new ComifarDataCollector(config, conn);
 		
 		// Start Collecting data
-		//dataCollector.doCollectData();
+		dataCollector.doCollectData();
 		// End Collecting data
 		
 		// Check availibility
-		ProductBean productBean = new ProductBean();
-		productBean.setProductCode("900266077");
-		productBean.setQuantity(1);
-		
-		List<ProductBean> products = dataCollector.doGetAvailiblityData(Stream.of(productBean).collect(Collectors.toList()));
-
-		products.stream()
-		.forEach(p -> {
-			System.out.println(p.getProductCode() + ">>>>>" + p.getQuantity() + "::: " + p.getAvailibility());
-		});
+//		ProductBean productBean = new ProductBean();
+//		productBean.setProductCode("900266077");
+//		productBean.setQuantity(1);
+//		
+//		List<ProductBean> products = dataCollector.doGetAvailiblityData(Stream.of(productBean).collect(Collectors.toList()));
+//
+//		products.stream()
+//		.forEach(p -> {
+//			System.out.println(p.getProductCode() + ">>>>>" + p.getQuantity() + "::: " + p.getAvailibility());
+//		});
 		// End Check availibility
 		
 		// Start Order Products

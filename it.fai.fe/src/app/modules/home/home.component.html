@@ -1,0 +1,41 @@
+<div class="animated fadeIn">
+  <div class="">
+    <div class="d-flex align-items-end pb-3">
+      <div class="">
+        <label class="form-label mb-0" for="daInputDate">{{'from' | translate | uppercase}}</label>
+        <input class="form-control" type="text" placeholder="da" aria-label="default input example" type="date" id="daInputDate">
+      </div>
+      <div class="ml-2">
+        <label class="form-label mb-0" for="aInputDate">{{'a' | translate | uppercase}}</label>
+        <input class="form-control" type="text" placeholder="a" aria-label="default input example" type="date" id="aInputDate">
+      </div>
+      <div class="ml-2">
+        <button class="btn btn-primary" type="button">{{'search' | translate}}</button>
+      </div>
+      <div class="ml-3">
+        <label class="form-label mb-0" for="fileOrdiniInputSearch">{{'ordersFile' | translate}}</label>
+        <input class="form-control" type="text" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
+      </div>
+      <div class="ml-2">
+        <label class="form-label mb-0" for="idVenditaInputSearch">{{'idSale' | translate}}</label>
+        <input class="form-control" type="text" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 mb-4">
+      <!-- Nav tabs -->
+      <tabset>
+        <tab [heading]="'ordersFile' | translate">
+          1. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </tab>
+        <tab [heading]="'orders' | translate">
+          2. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </tab>
+        <tab [heading]="'products' | translate">
+          3. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </tab>
+      </tabset>
+    </div><!--/.col-->
+  </div><!--/.row-->
+</div>

@@ -337,7 +337,6 @@
 							<packaging>jar</packaging>
 						</configuration>
 					</execution>
-
 				</executions>
 			</plugin>
 		</plugins>

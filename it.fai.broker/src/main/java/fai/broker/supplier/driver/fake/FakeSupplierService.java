@@ -17,15 +17,15 @@ public class FakeSupplierService extends AbstractSupplierService {
   public List<DisponibilitaTemp> getAvailabilityNoCache(List<DisponibilitaTemp> fabbisogno) throws Exception {
     //
     // A seconda che il "RequestMode" restituito sia "OneProductOneRequest"
-    // o "MoreProductOneRequest" la List ricevuta in input sar‡ caratterizzata
+    // o "MoreProductOneRequest" la List ricevuta in input sar√† caratterizzata
     // da 1 o N elementi (con N pari al numero di farmaci/prodotti per i quali
-    // richiedere la disponibilit‡)
+    // richiedere la disponibilit√†)
     // 
     for (DisponibilitaTemp fabb : fabbisogno) {
       //
       // --- tracciamento nel log della richiesta che sta per essere inoltrata ---
       //
-      fai.common.db.SqlQueries.logInfo("inoltro richiesta di disponibilit‡ al "+asShortDescr()+" ...", fabb.toXml(), null, conn);
+      fai.common.db.SqlQueries.logInfo("inoltro richiesta di disponibilit√† al "+asShortDescr()+" ...", fabb.toXml(), null, conn);
       conn.commit();
       //
       // --- aggiornamento delle FAI_DISPONIBILITA_TEMP/FAI_DISPONIBILITA_REQ_TEMP ---
@@ -54,7 +54,7 @@ public class FakeSupplierService extends AbstractSupplierService {
       //
       // --- tracciamento nel log della risposta ricevuta ---
       //
-      fai.common.db.SqlQueries.logInfo("risposta ricevuta per la richiesta di disponibilit‡ inoltrata "+asShortDescr(), fabb.toXml(), null, conn);
+      fai.common.db.SqlQueries.logInfo("risposta ricevuta per la richiesta di disponibilit√† inoltrata "+asShortDescr(), fabb.toXml(), null, conn);
       conn.commit();
       //
       // --- aggiornamento delle FAI_DISPONIBILITA_TEMP/FAI_DISPONIBILITA_RES_TEMP ---
@@ -70,17 +70,17 @@ public class FakeSupplierService extends AbstractSupplierService {
   
   @Override
   protected void setupMagazzino() throws Exception {
-    // nothing to do ... Ë un fake ...    
+    // nothing to do ... √® un fake ...    
   }
 
   @Override
   protected void setupFornitore() throws Exception {
-    // nothing to do ... Ë un fake ...
+    // nothing to do ... √® un fake ...
   }
   
   public RequestMode getRequestMode() throws Exception {
     //
-    // random... cosÏ le provo entrambe!
+    // random... cos√¨ le provo entrambe!
     return Math.random() < 0.5 ? RequestMode.MoreProductOneRequest : RequestMode.OneProductOneRequest; 
   }
 

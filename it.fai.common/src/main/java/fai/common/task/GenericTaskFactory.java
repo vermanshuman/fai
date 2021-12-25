@@ -24,16 +24,16 @@ public class GenericTaskFactory {
 		public static void main(String args[]) {
 			try {
 				Class.forName("oracle.jdbc.driver.OracleDriver");
-				Connection con = DriverManager.getConnection("jdbc:oracle:thin:@HENRY-WP2:1521:xe", "FAI", "FAI");
+				Connection con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "FAI", "FAI");
 				con.setAutoCommit(false);
 
 				// step 1
-				 //GenericTaskFactory.newGenericTask("IMP_ORDINE_IN", Calendar.getInstance(),
-				//con).doJob();
+				 GenericTaskFactory.newGenericTask("IMP_ORDINE_IN", Calendar.getInstance(),
+				con).doJob();
 
 				// step 2
-				//GenericTaskFactory.newGenericTask("FABBISOGNO_CALCULATOR",
-				//Calendar.getInstance(), con).doJob();
+				 GenericTaskFactory.newGenericTask("FABBISOGNO_CALCULATOR",
+				 Calendar.getInstance(), con).doJob();
 
 				// setp 3
 				 GenericTask gt = GenericTaskFactory.newGenericTask("APPROVVIGIONAMENTO_MGR",

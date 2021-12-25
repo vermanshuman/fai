@@ -39,7 +39,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     AnagraficaFarmaciMinSanEanCache anagrafica = new AnagraficaFarmaciMinSanEanCache();//SqlQueries.getAnagraficaFarmaciMinSanEanCache(conn);
     env.setAnagrafica(anagrafica);
     
-    //check FAI_FORNITORE_CALENDAR
+  //check FAI_FORNITORE_CALENDAR
     Calendar current = Calendar.getInstance();
     int dateOfWeek = current.get(Calendar.DAY_OF_WEEK);
     List<FornitoreCalendar> fornitoriCalendars = SqlQueries.getAllFornitoreCalendarByDateOfWeek(conn, dateOfWeek);
@@ -73,7 +73,6 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     	}
     }
     env.setFornitori(fornitori);
-    
     //
     // --- caricamento dei SupplierService per i Fornitori ---
     //

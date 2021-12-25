@@ -17,6 +17,7 @@ public class Magazzino extends AbstractModel {
   public static int TIPO_FARMACO;
   public static int SUPPLIER_SERVICE_CLASS_NAME;
   public static int PROPERTIES;
+  public static int ORGANIZATION_CODE;
 
   public static final Attribute[] attributes = buildAttributes(Magazzino.class, new Attribute[] { //@formatter:off
     new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -30,6 +31,7 @@ public class Magazzino extends AbstractModel {
     new Attribute("tipoFarmaco", null, TipoFarmaco[].class, null, false, Attribute.DETAIL, true, Attribute.NO_OPTION),
     new Attribute("supplierServiceClassName", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("properties", null, Property[].class, null, false, Attribute.DETAIL, false, Attribute.NO_OPTION),
+    new Attribute("organizationCode", null, String.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
   }); //@formatter:on
 
 
@@ -228,6 +230,14 @@ public class Magazzino extends AbstractModel {
     return rp;
   }
 
+  /** ORGANIZATION_CODE **/
+  public boolean setOrganizationCode(String organizationCode) {
+    return setString(ORGANIZATION_CODE, organizationCode);
+  }
+
+  public String getOrganizationCode() {
+    return getString(ORGANIZATION_CODE);
+  }
   
  //@formatter:on
 

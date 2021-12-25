@@ -22,7 +22,7 @@ public interface SupplierService {
       this.requested = requested;
       this.available = available;
       for (ApprovvigionamentoFarmaco avail : this.available) {
-        if (avail.getOid() != null) throw new IllegalStateException("identificativo (OID) per l'Approvvigionamento Farmaci per Gruppo di Ordini (FAI_APPROVVIGIONAMENTO_FARMACO) risulta gi‡ assegnato ("+avail.getOid()+") per la risposta; ciÚ non Ë ammissibile perchÈ la risposta non puÚ gi‡ essere stata registrata in banca dati (e quindi non puÚ essere provvista di OID)");        
+        if (avail.getOid() != null) throw new IllegalStateException("identificativo (OID) per l'Approvvigionamento Farmaci per Gruppo di Ordini (FAI_APPROVVIGIONAMENTO_FARMACO) risulta gi√† assegnato ("+avail.getOid()+") per la risposta; ci√≤ non √® ammissibile perch√© la risposta non pu√≤ gi√† essere stata registrata in banca dati (e quindi non pu√≤ essere provvista di OID)");        
       }
     }
 
@@ -40,7 +40,7 @@ public interface SupplierService {
      * Restituisce una @{@link List} dei possibili {@link ApprovvigionamentoFarmaco}  
      * in risposta al fabbisogno richiesto {@link #getRequested()}.<br/>
      * E' una lista, in quanto il servizio potrebbe rispondere
-     * che non sono disponibil "8 unit‡ di prodotto", ma puÚ fornire
+     * che non sono disponibil "8 unit√† di prodotto", ma pu√≤ fornire
      * "5 oppure 10".
      * 
      * @return
@@ -54,15 +54,15 @@ public interface SupplierService {
      * Restituisce, dell'elenco {@link #getAvailable()}, l'opzione che
      * minimizza lo scarto rispetto alla {@link #getAvailable()} e,
      * se {@code canBeMoreThanRequested} == <tt>true</true>, permette
-     * anche di eccedere la quantit‡ richiesta.<br/>
+     * anche di eccedere la quantit√† richiesta.<br/>
      * <br/>
-     * Per esempio, se sono state richieste "18 unit‡ di prodotto", 
-     * ma il servizio puÚ renderne disponibili "5 o 10 o 15 o 20",
-     * se {@code canBeMoreThanRequested} == <tt>false</true> sar‡
-     * restituita l'opzione "15 unit‡" (3 unit‡ in meno delle 18 richieste),
+     * Per esempio, se sono state richieste "18 unit√† di prodotto", 
+     * ma il servizio pu√≤ renderne disponibili "5 o 10 o 15 o 20",
+     * se {@code canBeMoreThanRequested} == <tt>false</true> sar√†
+     * restituita l'opzione "15 unit√†" (3 unit√† in meno delle 18 richieste),
      * mentre se {@code canBeMoreThanRequested} == <tt>false</true>,
-     * allora sar‡ restituita l'opzione "20 unit‡" (2 in pi˘, ma
-     * con uno scarto pi˘ contentuto rispetto a 3) 
+     * allora sar√† restituita l'opzione "20 unit√†" (2 in pi√π, ma
+     * con uno scarto pi√π contentuto rispetto a 3) 
      * 
      * 
      * 
@@ -105,16 +105,16 @@ public interface SupplierService {
   public void setup(Fornitore magazzino, Connection conn) throws Exception;
 
   /**
-   * La classe implementante dovr‡ restituire {@link RequestMode#MoreProductOneRequest}
-   * se il servizio che andr‡ ad interrgogare consente puÚ essere interrogato
-   * circa la disponibilit‡ di pi˘ farmaci/prodotti con un'unica richiesta, e 
-   * dovr‡ restituire {@link RequestMode#OneProductOneRequest} nel caso in cui
+   * La classe implementante dovr√† restituire {@link RequestMode#MoreProductOneRequest}
+   * se il servizio che andr√† ad interrgogare consente pu√≤ essere interrogato
+   * circa la disponibilit√† di pi√π farmaci/prodotti con un'unica richiesta, e 
+   * dovr√† restituire {@link RequestMode#OneProductOneRequest} nel caso in cui
    * sia necessario una richiesta per ogni singolo farmaco/prodotto.<br>
    * <br/>
    * Nel primo caso, l'implementazione astratta {@link AbstractSupplierService}
-   * predisporr‡, in favore delle implementazioni concrete, gli elementi gerarchici
+   * predisporr√†, in favore delle implementazioni concrete, gli elementi gerarchici
    * della struttura dati {@link DisponibilitaTemp} --&gt; {@link DisponibilitaReqTemp}
-   * nel rapporto 1:N, nel secondo la stessa struttura sar‡ predisposta nel
+   * nel rapporto 1:N, nel secondo la stessa struttura sar√† predisposta nel
    * rapporto N:N 
    * 
    * @return
@@ -133,7 +133,7 @@ public interface SupplierService {
   public boolean isWarehouse() throws Exception;
 
   /**
-   * Restituisce la disponibilit‡ di quanto richiesto con la {@link #List} di 
+   * Restituisce la disponibilit√† di quanto richiesto con la {@link #List} di 
    * {@link ApprovvigionamentoFarmaco} fornita come input, nella {@link #List}  di 
    * {@link ManagedRequest}
    * 
@@ -158,12 +158,12 @@ public interface SupplierService {
   /**
    * Ha effetto sulla {@link #getAvailability(List)}:
    * <ul>
-   * <li>se viene reiterata una richiesta gi‡ fatta precedentemente, 
-   *     l'interrogazione vera e propria non avr‡ luogo, e sar‡ restituita 
+   * <li>se viene reiterata una richiesta gi√† fatta precedentemente, 
+   *     l'interrogazione vera e propria non avr√† luogo, e sar√† restituita 
    *     la riposta ottenuta in precedenza
    * </li>
    * <li>se il servizio rappresenta un Magazzino ({@link #isWarehouse()} == <tt>true</tt>), 
-   *     non avr‡ effettivamente luogo anche qualsiasi richiesta per quantit‡ inferiori 
+   *     non avr√† effettivamente luogo anche qualsiasi richiesta per quantit√† inferiori 
    *     a quelle che risultava possibile soddisafare in base a precedenti interrogazioni
    * </li>
    * </ul>

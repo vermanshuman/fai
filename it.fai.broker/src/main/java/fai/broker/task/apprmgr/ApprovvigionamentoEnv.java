@@ -97,13 +97,12 @@ class ApprovvigionamentoEnv {
       }
     }
   }
-
-	public Set<Long> getSelectedFornitori() {
-		return selectedFornitori;
-	}
+  
+  public Set<Long> getSelectedFornitori() {
+	return selectedFornitori;
+  }
 	
-	public void setSelectedFornitori(Set<Long> selectedFornitori) {
-		this.
-		selectedFornitori = selectedFornitori;
-	}
- }
+  public void setSelectedFornitori(Set<Long> selectedFornitori) {
+	this.selectedFornitori = selectedFornitori;
+  }
+}

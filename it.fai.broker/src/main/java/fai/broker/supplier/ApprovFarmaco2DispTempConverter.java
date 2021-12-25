@@ -24,7 +24,7 @@ import fai.broker.supplier.SupplierService.RequestMode;
  * @author Gianni Radice
  *
  */
-class ApprovFarmaco2DispTempConverter {
+public class ApprovFarmaco2DispTempConverter {
   
   protected Magazzino magazzino = null;
   protected Fornitore fornitore = null;

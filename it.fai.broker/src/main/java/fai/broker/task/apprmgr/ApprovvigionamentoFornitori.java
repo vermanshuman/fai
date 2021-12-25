@@ -60,7 +60,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
     for (ApprovvigionamentoFarmaco approv : approvList) {
       Offer offer = offersByMinSan.get(approv.getCodiceMinSan());
       if (offer == null) offer = offersByEan.get(approv.getCodiceEan());
-//      if (offer == null)  throw new IllegalStateException("inammissibile, nessuna offerta trovata, nÈ per il MinSan \""+approv.getCodiceMinSan()+"\", nÈ per l'EAN \""+approv.getCodiceEan()+"\"");
+//      if (offer == null)  throw new IllegalStateException("inammissibile, nessuna offerta trovata, n√© per il MinSan \""+approv.getCodiceMinSan()+"\", n√© per l'EAN \""+approv.getCodiceEan()+"\"");
       if (offer == null) {
     	  System.out.println("product code " + approv.getCodiceMinSan() + approv.getCodiceEan() + " is not existed in supplier");
     	  continue;
@@ -86,7 +86,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
     int listiniDispTempCountBak = Integer.MIN_VALUE;
     while((listiniDispTempCount = SqlQueries.countListiniDisponibilitaTemp(conn)) > 0 && this.approvvigionamentoToProcess.size() > 0) {
       if (listiniDispTempCount == listiniDispTempCountBak) {
-        throw new IllegalStateException("inammissibile, l'insieme dei Listini/Fornitori (FAI_LISTINI_DISPONIBILITA_TEMP) da consultare risulta invariato nonostante le richieste di disponibilit‡ gi‡ inoltrate");
+        throw new IllegalStateException("inammissibile, l'insieme dei Listini/Fornitori (FAI_LISTINI_DISPONIBILITA_TEMP) da consultare risulta invariato nonostante le richieste di disponibilit√† gi√† inoltrate");
       }
       listiniDispTempCountBak = listiniDispTempCount;
       //
@@ -112,7 +112,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
         List<ManagedRequest> managedRequests = service.getAvailability(abf.approvList);
         if (service.getError() != null) return service.getError();
         //
-        // --- la richiesta della disponibilit‡ DEVE aver impostato alcuni campi... ---
+        // --- la richiesta della disponibilit√† DEVE aver impostato alcuni campi... ---
         //     ==> verifica
         //
         //String error = areApprovvigionamentoFarmacoFieldsSetAsExpected(abf.approvList, ApprovvigionamentoFarmaco.FORNITORE, abf.fornitore.getOid(), abf.fornitore.getCodice(), new int [] { ApprovvigionamentoFarmaco.DISPONIBILITA_RICHIESTA_REQ,  ApprovvigionamentoFarmaco.DISPONIBILITA_RICHIESTA_RES }, new int [] { ApprovvigionamentoFarmaco.DISPONIBILITA_CONFERMATA_REQ,  ApprovvigionamentoFarmaco.DISPONIBILITA_CONFERMATA_RES  });
@@ -130,7 +130,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
             SqlQueries.deleteListiniDisponibilitaTemp(disponibile.getCodiceMinSan(), disponibile.getCodiceEan(), abf.fornitore.getOid(), conn);
           }
           else {
-//            throw new IllegalStateException("inammissibile, richieste "+richiesto.getQuantita()+" unit‡ di MinSan \""+richiesto.getCodiceMinSan()+"\"/EAN \""+richiesto.getCodiceEan()+"\", ma ottenuta dispponibilit‡ per "+disponibile.getQuantita()+" unit‡");
+//            throw new IllegalStateException("inammissibile, richieste "+richiesto.getQuantita()+" unit√† di MinSan \""+richiesto.getCodiceMinSan()+"\"/EAN \""+richiesto.getCodiceEan()+"\", ma ottenuta dispponibilit√† per "+disponibile.getQuantita()+" unit√†");
           }
         }
         //
@@ -139,7 +139,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
         ManagedRequestsUpdater mru = new ManagedRequestsUpdater(conn);
         boolean isMagazzino = false;
         boolean bestMatchCanBeMoreThanRequested = isMagazzino; 
-        mru.process("disponibilit‡ Fornitore", managedRequests, bestMatchCanBeMoreThanRequested, isMagazzino);
+        mru.process("disponibilit√† Fornitore", managedRequests, bestMatchCanBeMoreThanRequested, isMagazzino);
       }
       //
       // --- ricaricamento dei FAI_APPROVVIGIONAMENTO_FARMACO "TO_PROCESS" ---
