@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import fai.broker.task.AbstractGenericTask;
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
@@ -13,7 +14,6 @@ import fai.broker.models.ItemStatus;
 import fai.broker.models.OrdineInRigaDett;
 import fai.broker.models.StatusInfo;
 import fai.common.db.SqlUtilities;
-import fai.common.task.AbstractGenericTask;
 
 public class FabbisognoCalculatorTask extends AbstractGenericTask {
   
@@ -62,7 +62,7 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
     }
     catch (Throwable th) {
       SqlUtilities.rollbackWithNoException(conn);
-      error = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nel calcolo del Fabbisogno/Approvvigionamento di Farmaci (FAI_APPROVVIGIONAMENTO_FARMACO); le operazioni sono state annullate (rollback)";
+      error = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nel calcolo del Fabbisogno/Approvvigionamento di Farmaci (FAI_APPROVVIGIONAMENTO_FARMACO); le operazioni sono state annullate (rollback)";
       logger.error(error, th);
     }
     //
@@ -73,8 +73,8 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
   private String doJobExecute2() throws Exception {
     //
     // --- cancellazzzione FAI_APPROVVIGIONAMENTO_FARMACO delle sessioni ---
-    //     precedenti e che non sono più considerabili validi 
-    //     (es. disponibilità richiesta al Fornitore, ma non confermata)
+    //     precedenti e che non sono piï¿½ considerabili validi 
+    //     (es. disponibilitï¿½ richiesta al Fornitore, ma non confermata)
     //
     SqlQueries.deleteApprovvigionamentoToRecaulculate(conn);
     //
@@ -112,7 +112,7 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
         identificativoFarmacoBak = identificativoFarmaco;
       }
       //else if (!riga.getMagazzinoAcronym().equals(currApprov.getMagazzinoAcronym())) {
-        //return "individuata Riga (FAI_ORDINE_IN_RIGA_DETTAGLIO) dell'Ordine in ingresso (FAI_ORDINE_IN) che, per il farmaco "+identificativoFarmaco+", indica "+riga.getMagazzinoAcronym()+" quale Magazzino di approvvigionamento, mentre almeno una delle righe precedenti indicava "+currApprov.getMagazzinoAcronym()+"; l'indicazione di Magazzini differenti, per lo stesso Farmaco, non è ammessa";
+        //return "individuata Riga (FAI_ORDINE_IN_RIGA_DETTAGLIO) dell'Ordine in ingresso (FAI_ORDINE_IN) che, per il farmaco "+identificativoFarmaco+", indica "+riga.getMagazzinoAcronym()+" quale Magazzino di approvvigionamento, mentre almeno una delle righe precedenti indicava "+currApprov.getMagazzinoAcronym()+"; l'indicazione di Magazzini differenti, per lo stesso Farmaco, non ï¿½ ammessa";
       //}
       //
       ApprovToRiga a2r = new ApprovToRiga();
@@ -122,7 +122,7 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
       currApprov.addApprovRigaDett(a2r);
     }
     //
-    // --- inserimento degli FAI_APPROVVIGIONAMENTO_FARMACO così determinati ---
+    // --- inserimento degli FAI_APPROVVIGIONAMENTO_FARMACO cosï¿½ determinati ---
     //
     SqlQueries.insertAllApprovvigionamentoFarmaco(approvToInsert, conn);
     //

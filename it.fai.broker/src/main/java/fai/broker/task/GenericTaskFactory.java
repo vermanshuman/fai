@@ -1,10 +1,10 @@
-package fai.common.task;
+package fai.broker.task;
+
+import fai.common.db.SqlQueries;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Calendar;
-
-import fai.common.db.SqlQueries;
 
 public class GenericTaskFactory {
 
@@ -24,7 +24,7 @@ public class GenericTaskFactory {
 		public static void main(String args[]) {
 			try {
 				Class.forName("oracle.jdbc.driver.OracleDriver");
-				Connection con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "FAI", "FAI");
+				Connection con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "FAI", "india123");
 				con.setAutoCommit(false);
 
 				// step 1

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import fai.broker.task.AbstractGenericTask;
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
@@ -17,7 +18,6 @@ import fai.broker.models.Magazzino;
 import fai.broker.supplier.SupplierService;
 import fai.broker.supplier.SupplierServiceFactory;
 import fai.broker.util.AnagraficaFarmaciMinSanEanCache;
-import fai.common.task.AbstractGenericTask;
 import fai.common.util.CollectionsTool;
 
 public class ApprovvigionamentoMgr extends AbstractGenericTask {
@@ -129,7 +129,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     // --- cancellazione della tabella FAI_DISPONIBILITA_TEMP (e tabelle dipendenti) ---
     //     NOTA:
     //     nel momento in cui dovesse presentarsi l'esigenza, i criteri di 
-    //     cancellazione del contenuto potrebbero essere resi più articolati 
+    //     cancellazione del contenuto potrebbero essere resi piï¿½ articolati 
     //     rispetto a quelli attuali, ed il contenuo della tabella (almeno
     //     inizialmente - 2021.07.27 - conservato solo a scopo di tracciamento 
     //     dettagliato delle richieste e delle risposte, ma mai successivamente 
@@ -177,27 +177,27 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
         thisRecordError = true;
       }
       if (a.getOrdineOut() != null) {
-        errors.add(""+(errors.size()+1)+") è presente il rifermento ad un Ordine");
+        errors.add(""+(errors.size()+1)+") ï¿½ presente il rifermento ad un Ordine");
         techErrors.add(""+(techErrors.size()+1)+") referenzia FAI_ORDINE_OUT di OID "+a.getOrdineOut().getOid());
         thisRecordError = true;
       }
       if (a.getDisponibilitaConfermataReq() != null) {
-        errors.add(""+(errors.size()+1)+") è già stata inoltrata la RICHIESTA DI CONFERMA della disponibilità");
-        techErrors.add(""+(errors.size()+1)+") è già stata inoltrata la RICHIESTA DI CONFERMA della disponibilità");
+        errors.add(""+(errors.size()+1)+") ï¿½ giï¿½ stata inoltrata la RICHIESTA DI CONFERMA della disponibilitï¿½");
+        techErrors.add(""+(errors.size()+1)+") ï¿½ giï¿½ stata inoltrata la RICHIESTA DI CONFERMA della disponibilitï¿½");
         thisRecordError = true;
       }
       if (a.getDisponibilitaConfermataRes() != null) {
-        errors.add(""+(errors.size()+1)+") è già stata OTTENUTA CONFERMA della disponibilità");
-        techErrors.add(""+(errors.size()+1)+") è già stata OTTENUTA CONFERMA della disponibilità");
+        errors.add(""+(errors.size()+1)+") ï¿½ giï¿½ stata OTTENUTA CONFERMA della disponibilitï¿½");
+        techErrors.add(""+(errors.size()+1)+") ï¿½ giï¿½ stata OTTENUTA CONFERMA della disponibilitï¿½");
         thisRecordError = true;
       }
       if (a.getFornitore() != null) {
-        errors.add(""+(errors.size()+1)+") è già presente l'indicazione di un Fornitore per l'approvvigionamento");
+        errors.add(""+(errors.size()+1)+") ï¿½ giï¿½ presente l'indicazione di un Fornitore per l'approvvigionamento");
         techErrors.add(""+(techErrors.size()+1)+") referenzia FAI_FORNITORE di OID "+a.getFornitore().getOid()+" ("+a.getFornitore().getCodice()+")");
         thisRecordError = true;
       }
       if (a.getMagazzino() != null) {
-        errors.add(""+(errors.size()+1)+") è già presente l'indicazione di un Magazzino per l'approvvigionamento");
+        errors.add(""+(errors.size()+1)+") ï¿½ giï¿½ presente l'indicazione di un Magazzino per l'approvvigionamento");
         techErrors.add(""+(techErrors.size()+1)+") referenzia FAI_MAGAZZINO di OID "+a.getMagazzino().getOid()+" ("+a.getMagazzino().getAcronym()+")");
         thisRecordError = true;
       }

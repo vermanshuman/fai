@@ -1,15 +1,11 @@
 package fai.broker.task.orchestrator;
 
-import java.util.List;
-
-import org.apache.commons.logging.Log;
+import fai.broker.task.AbstractGenericTask;
 import org.apache.log4j.Logger;
 
 import fai.broker.task.apprmgr.ApprovvigionamentoMgr;
 import fai.broker.task.fabbcalc.FabbisognoCalculatorTask;
 import fai.broker.task.impord.OrdineInImporterTask;
-import fai.common.task.AbstractGenericTask;
-import fai.common.util.CollectionsTool;
 
 public class OrchestratorDisponibilita extends AbstractGenericTask {
   

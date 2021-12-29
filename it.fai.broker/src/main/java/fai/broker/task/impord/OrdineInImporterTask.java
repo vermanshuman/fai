@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import fai.broker.task.AbstractGenericTask;
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
@@ -19,7 +20,6 @@ import fai.broker.models.StatusInfo;
 import fai.broker.util.CsvToModels;
 import fai.common.ftp.Ftp;
 import fai.common.models.FtpConfig;
-import fai.common.task.AbstractGenericTask;
 import fai.common.util.Filesystem;
 import fai.common.util.MD5;
 import fai.common.util.Timeout;
@@ -72,10 +72,10 @@ public class OrdineInImporterTask extends AbstractGenericTask {
    * dell'intero contenuto, il semplice nome del file, 
    * ecc...).<br/>
    * <br/>
-   * Implementato come metodo dedicato perché, al momento
-   * (2021.06.21), non è stato ancora chiarito quale 
+   * Implementato come metodo dedicato perchÃ©, al momento
+   * (2021.06.21), non Ã¨ stato ancora chiarito quale 
    * caratteristica del file permette di distinguere un 
-   * file già scaricato e salvato da un nuovo file.
+   * file giÃ  scaricato e salvato da un nuovo file.
    * 
    * @return
    * @throws Exception
@@ -88,7 +88,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     InputStream is = null;
     try {
       //ftp = FtpFactory.newFtp(ftpConfig);
-      is = new FileInputStream("C:\\workspace\\anshuman_verma_ws\\web_order.csv"); //ftp.getInputStream(csvInFileName);
+      is = new FileInputStream("G:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);
       BufferedReader reader = new BufferedReader(new InputStreamReader(is));
       String md5 = null;
       String line = null;
@@ -96,10 +96,10 @@ public class OrdineInImporterTask extends AbstractGenericTask {
       Timeout timeout = new Timeout(5000, false);
       while((line = reader.readLine())!=null) {
         md5 = md5 == null ? MD5.getMD5(line) : MD5.getMD5(md5 + line);
-        // ^^ si, lo so, non è l "MD5 del file", ma, dal momento
-        //    che non posso prevedere quale sarà la dimensione del file
+        // ^^ si, lo so, non Ã¨ l "MD5 del file", ma, dal momento
+        //    che non posso prevedere quale sarÃ  la dimensione del file
         //    mi assicuro di non allocare mai dati che ecceedano
-        //    la lunghezza di un MD5 più il contenuto di una riga
+        //    la lunghezza di un MD5 piÃ¹ il contenuto di una riga
         lineCount++;
         if (timeout.isExpired()) {
           logger.info(LOG_PREFIX+" "+lineCount+" righe processate ...");
@@ -108,7 +108,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
       return md5;
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -146,7 +146,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
       fullpath = params.getProperty("protocol", true)+"://"+params.getProperty("host", true)+":"+params.getProperty("port", "(default port)")+"/"+params.getProperty("dir", true)+"/"+csvInFileName; 
     }
     oic.setInputResourceFullPath(fullpath);
-    oic.setStatus(StatusInfo.newProcessingInstance(null, null)); // "processing", perché il parsing è in corso
+    oic.setStatus(StatusInfo.newProcessingInstance(null, null)); // "processing", perchÃ© il parsing Ã¨ in corso
     SqlQueries.insertOrdineInCollection(oic, conn);
     conn.commit();
     //
@@ -157,7 +157,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     int lineCount = 0;
     try {
       //ftp = FtpFactory.newFtp(ftpConfig);
-      is = new FileInputStream("C:\\workspace\\anshuman_verma_ws\\web_order.csv"); //ftp.getInputStream(csvInFileName);;
+      is = new FileInputStream("G:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);;
       csvToModels = new CsvToModels();
       csvToModels.setInputStream(is);
       Timeout timeout = new Timeout(5000, false);
@@ -172,7 +172,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     catch (Throwable th) {
       String lineParsingInf = lineCount == 0 ? "nessuna riga processata" : "parsing riuscito fino alla riga n."+lineCount+" inclusa";
       String humanReadableError = "parsing del file "+csvInFileName+" non riuscito ("+th.getMessage()+"); "+lineParsingInf;
-      String techError = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME+"; "+lineParsingInf;
+      String techError = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME+"; "+lineParsingInf;
       logger.error(LOG_PREFIX+techError, th);
       oic.setStatus(SqlQueries.setOrdineInCollectionStatus(oic.getOid(), ItemStatus.VALUE_ERROR.getOid(), humanReadableError, techError, conn));
       conn.commit();
@@ -211,7 +211,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
             riga[j].setCodiceEan(numeroOggetto);
           }
           else {
-            String error = "inammissibile, trovato riscontro per Numero Oggetto "+numeroOggetto+" caratterizzante una delle righe dell'Ordine identificato dall'Id Ordine "+numeroOggetto+", tuttavia il Numero Oggetto non risulta essere né un codicde MinSan, né un codice EAN"; 
+            String error = "inammissibile, trovato riscontro per Numero Oggetto "+numeroOggetto+" caratterizzante una delle righe dell'Ordine identificato dall'Id Ordine "+numeroOggetto+", tuttavia il Numero Oggetto non risulta essere nÃ© un codicde MinSan, nÃ© un codice EAN"; 
             oic.setStatus(SqlQueries.setOrdineInCollectionStatus(oic.getOid(), ItemStatus.VALUE_ERROR.getOid(), error, error, conn));
             conn.commit();
             throw new IllegalStateException(error);
@@ -219,7 +219,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
         }
         else {
           String error = "nessun riscontro per Numero Oggetto "+numeroOggetto+" caratterizzante una delle righe dell'Ordine identificato dall'Id Ordine "+numeroOggetto+"; il Numero Oggetto non corrisponde nessun codice MinSan ed a nessun codice EAN tra quelli noti in anagrafica"; 
-          if (numeroOggetto.startsWith("P")) error+="; inoltre, data l'iniziale, il Numero Oggetto dovrebbe indicare un Coupon mentre, nel Titolo Inserizione, è indicato "+riga[j].getTitoloInserzione();
+          if (numeroOggetto.startsWith("P")) error+="; inoltre, data l'iniziale, il Numero Oggetto dovrebbe indicare un Coupon mentre, nel Titolo Inserizione, Ã¨ indicato "+riga[j].getTitoloInserzione();
           oic.setStatus(SqlQueries.setOrdineInCollectionStatus(oic.getOid(), ItemStatus.VALUE_ERROR.getOid(), error, error, conn));
           conn.commit();
           return error;
@@ -283,18 +283,18 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     //
     String warn = SqlQueries.isUnableToRunStatusError("FAI_ORDINE_IN_COLLECTION", "Ordini", new ItemStatus [] { ItemStatus.VALUE_VOIDED }, conn);
     if (warn != null) {
-      logger.warn(LOG_PREFIX+"trovati uno o più record FAI_ORDINE_IN_COLLECTION in stato "+ItemStatus.VALUE_VOIDED.getAcronym()+"; tutti gli FAI_ORDINE_IN della stessa FAI_ORDINE_IN_COLLECTION saranno considerati "+ItemStatus.VALUE_VOIDED.getAcronym()+" e, quindi, ignorati");
+      logger.warn(LOG_PREFIX+"trovati uno o piÃ¹ record FAI_ORDINE_IN_COLLECTION in stato "+ItemStatus.VALUE_VOIDED.getAcronym()+"; tutti gli FAI_ORDINE_IN della stessa FAI_ORDINE_IN_COLLECTION saranno considerati "+ItemStatus.VALUE_VOIDED.getAcronym()+" e, quindi, ignorati");
     }
     warn = SqlQueries.isUnableToRunStatusError("FAI_ORDINE_IN", "Ordini", new ItemStatus [] { ItemStatus.VALUE_VOIDED }, conn);
     if (warn != null) {
-      logger.warn(LOG_PREFIX+"trovati uno o più record FAI_ORDINE_IN in stato "+ItemStatus.VALUE_VOIDED.getAcronym());
+      logger.warn(LOG_PREFIX+"trovati uno o piÃ¹ record FAI_ORDINE_IN in stato "+ItemStatus.VALUE_VOIDED.getAcronym());
     }
     //
-    // --- verifica che il file oggetto di import non sia già stato elaborato ---
+    // --- verifica che il file oggetto di import non sia giÃ  stato elaborato ---
     //
     csvInFileNameUID = getInputCsvUID();
     if (SqlQueries.isOrdineInCollectionAlreadyCreated(csvInFileNameUID, conn)) {
-      logger.info(LOG_PREFIX+"l'ordine identificato da "+csvInFileNameUID+" risulta già essere stato processato");
+      logger.info(LOG_PREFIX+"l'ordine identificato da "+csvInFileNameUID+" risulta giÃ  essere stato processato");
       return null;
     }
     //

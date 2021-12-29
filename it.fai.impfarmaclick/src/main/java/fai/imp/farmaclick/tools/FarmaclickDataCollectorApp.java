@@ -56,20 +56,25 @@ public class FarmaclickDataCollectorApp {
     FarmaclickDataCollector dataCollector = new FarmaclickDataCollector(config, conn);
     //dataCollector.doCollectData();
 
-  ProductBean productOrderRequestBean = new ProductBean();
-  productOrderRequestBean.setProductCode("012745028");
-  productOrderRequestBean.setQuantity(1);
-  ProductBean productOrderRequestBeanTwo = new ProductBean();
-  productOrderRequestBeanTwo.setProductCode("029401027");
-  productOrderRequestBeanTwo.setQuantity(1);
-  
-  List<ProductBean> productBeans = dataCollector.doGetAvailiblityData(Stream.of(productOrderRequestBean, productOrderRequestBeanTwo).collect(Collectors.toList()));
+//  ProductBean productOrderRequestBean = new ProductBean();
+//  productOrderRequestBean.setProductCode("012745028");
+//  productOrderRequestBean.setQuantity(1);
+//  ProductBean productOrderRequestBeanTwo = new ProductBean();
+//  productOrderRequestBeanTwo.setProductCode("029401027");
+//  productOrderRequestBeanTwo.setQuantity(1);
+//
+//  List<ProductBean> productBeans = dataCollector.doGetAvailiblityData(Stream.of(productOrderRequestBean, productOrderRequestBeanTwo).collect(Collectors.toList()));
+//
+//  productBeans
+//          .stream()
+//          .forEach(p -> {
+//            System.out.println(p.getQuantity() + " " + p.getAvailibility());
+//          });
     
-    
-//    ProductBean productOrderRequestBean = new ProductBean();
-//    productOrderRequestBean.setProductCode("902980616");
-//    productOrderRequestBean.setQuantity(1);
-//    dataCollector.doOrderProducts(Stream.of(productOrderRequestBean).collect(Collectors.toList()));
+    ProductBean productOrderRequestBean = new ProductBean();
+    productOrderRequestBean.setProductCode("902980616");
+    productOrderRequestBean.setQuantity(1);
+    dataCollector.doOrderProducts(Stream.of(productOrderRequestBean).collect(Collectors.toList()));
   }
 
 }
