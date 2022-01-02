@@ -125,7 +125,8 @@ class FarmaclickWS_2005_001 extends AbstractFarmaclickWS {
       //
       logRequestAsXml(LOG_PREFIX, inBean);
       outBean = binding.FCKOrdine(inBean);
-      binding.FCKOrdine(null);
+      // not sure why it is called for null so commenting
+      //binding.FCKOrdine(null);
       //
       // --- gestione risposta ---
       //
@@ -141,7 +142,7 @@ class FarmaclickWS_2005_001 extends AbstractFarmaclickWS {
         throw new IllegalStateException(ExceptionsTool.getExceptionDescription(LOG_PREFIX+"operazione non riuscita", jre), jre);
     }
     catch (Throwable th) {
-      logger.error(ExceptionsTool.getExceptionDescription(LOG_PREFIX+"operazione non riuscita", th));
+      logger.error(ExceptionsTool.getExceptionDescription(LOG_PREFIX+"1111operazione non riuscita", th));
     }
     return outBean;
   }

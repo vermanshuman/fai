@@ -442,7 +442,6 @@ public class ComifarDataCollector extends AbstractDataCollector{
 				
 				if(response != null && response.getHead() != null && response.getHead().getEsito() != null &&
 						response.getHead().getEsito().getOutcome() != null && "OK".equalsIgnoreCase(response.getHead().getEsito().getOutcome())) {
-					
 					OrderResponseBody orderResponseBody = response.getBody();
 					if(orderResponseBody != null) {
 						if(orderResponseBody.getOrderMissing() != null && orderResponseBody.getOrderMissing().getItems() != null

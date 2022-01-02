@@ -136,7 +136,7 @@ class UniversalAPIUtil {
 
 
   /**
-   * Metodo di utilit‡ ... anzichÈ continuare a gestire in modo semi-manuale 
+   * Metodo di utilit√† ... anzich√© continuare a gestire in modo semi-manuale 
    * i get/set come fatto all'inzio (es., {@link #getDownloadListinoOutputBean(Object)),
    * questo metodo automatizza questa parte generalizzabile, limitando
    * l'intervento manuale ad eventuali trascodifiche
@@ -155,8 +155,11 @@ class UniversalAPIUtil {
     for (int i = 0; i < srcMethods.length; i++) {
       Method getMethod = srcMethods[i];
       String getMethodName = getMethod.getName();
-      if (getMethodName.startsWith("get")) {
-        String setMethodName = "set"+getMethodName.substring(3, getMethodName.length());
+      if (getMethodName.startsWith("get") || getMethodName.startsWith("is")) {
+        int index = 3;
+        if(getMethodName.startsWith("is"))
+          index = 2;
+        String setMethodName = "set"+getMethodName.substring(index, getMethodName.length());
         try {
           Method setMethod = targetClass.getMethod(setMethodName, getMethod.getReturnType());
           setMethod.invoke(target, getMethod.invoke(source));
@@ -166,7 +169,7 @@ class UniversalAPIUtil {
           // ma non su "target" in quanto non necessari.
           // Esempio: "getTypeDesc" sul "source" che restituisce una
           // variabile Apache AXIS e che non avrebbe senzo sul 
-          // target dove, appunto, per "setTypeDesc" si avr‡
+          // target dove, appunto, per "setTypeDesc" si avr√†
           // NoSuchMethodException
           if (debugMode) System.out.println(e.getMessage());
           
@@ -175,6 +178,6 @@ class UniversalAPIUtil {
     }
     return target;
   }
-  
-  
+
+
 }

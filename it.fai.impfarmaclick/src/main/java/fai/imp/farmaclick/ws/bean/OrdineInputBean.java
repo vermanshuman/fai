@@ -56,7 +56,7 @@ public class OrdineInputBean {
   /**
    * ATTENZIONE! SOLO API 2005_001!!<br>
    * <br>
-   * se true  nel bean di output si otterr‡ l'indicazione del deposito che allestir‡ 
+   * se true  nel bean di output si otterr√† l'indicazione del deposito che allestir√† 
    * fisicamente la merce nel caso il fornitore abbia attivo un sistema di deviazioni 
    * interne
    * 
@@ -95,8 +95,8 @@ public class OrdineInputBean {
   /**
    * ATTENZIONE! SOLO API 2005_001!!<br>
    * <br>
-   * se true, nella risposta si otterr‡ anche l'informazione circa _quale_ corriere 
-   * effettuer‡ la consegna e a quale _ora_
+   * se true, nella risposta si otterr√† anche l'informazione circa _quale_ corriere 
+   * effettuer√† la consegna e a quale _ora_
    * 
    * @param indicazioneDatiConsegna
    */
@@ -128,9 +128,9 @@ public class OrdineInputBean {
   /**
    * ATTENZIONE! SOLO API 2010_001!!<br>
    * <br>
-   * "Note da inviare al corriere che effettuer‡ la consegna della merce in farmacia.<br>
-   * Il testo specificato in questo campo verr‡ stampato sul DDT e, se il grossista Ë 
-   * dotato di un sistema per la tracciabilit‡ delle fasi consegna, l'informazione verr‡ 
+   * "Note da inviare al corriere che effettuer√† la consegna della merce in farmacia.<br>
+   * Il testo specificato in questo campo verr√† stampato sul DDT e, se il grossista √® 
+   * dotato di un sistema per la tracciabilit√† delle fasi consegna, l'informazione verr√† 
    * visualizzata sul palmare del corriere."
    * @param noteCorriere
    */

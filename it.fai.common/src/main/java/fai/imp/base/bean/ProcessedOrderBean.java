@@ -4,7 +4,9 @@ public class ProcessedOrderBean {
 	
 	private String productCode;
 	
-	private Integer orderedQuanity;
+	private Integer orderedQuantity;
+
+	private Integer missingQuantity;
 	
 	private Boolean orderFailed;
 	
@@ -12,10 +14,20 @@ public class ProcessedOrderBean {
 	
 	private String errorDescription;
 	
-	public ProcessedOrderBean(String productCode, Integer orderedQuanity, Boolean orderStatus, String errorCode,
+	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Boolean orderStatus, String errorCode,
 			String errorDescription) {
 		this.productCode = productCode;
-		this.orderedQuanity = orderedQuanity;
+		this.orderedQuantity = orderedQuantity;
+		this.orderFailed = orderStatus;
+		this.errorCode = errorCode;
+		this.errorDescription = errorDescription;
+	}
+
+	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
+							  String errorDescription) {
+		this.productCode = productCode;
+		this.orderedQuantity = orderedQuantity;
+		this.missingQuantity = missingQuantity;
 		this.orderFailed = orderStatus;
 		this.errorCode = errorCode;
 		this.errorDescription = errorDescription;
@@ -23,7 +35,7 @@ public class ProcessedOrderBean {
 	
 	public ProcessedOrderBean(String productCode, Integer orderedQuanity, Boolean orderStatus) {
 		this.productCode = productCode;
-		this.orderedQuanity = orderedQuanity;
+		this.orderedQuantity = orderedQuanity;
 		this.orderFailed = orderStatus;
 	}
 
@@ -35,12 +47,12 @@ public class ProcessedOrderBean {
 		this.productCode = productCode;
 	}
 
-	public Integer getOrderedQuanity() {
-		return orderedQuanity;
+	public Integer getOrderedQuantity() {
+		return orderedQuantity;
 	}
 
-	public void setOrderedQuanity(Integer orderedQuanity) {
-		this.orderedQuanity = orderedQuanity;
+	public void setOrderedQuantity(Integer orderedQuanity) {
+		this.orderedQuantity = orderedQuanity;
 	}
 
 	public String getErrorCode() {
@@ -65,5 +77,13 @@ public class ProcessedOrderBean {
 
 	public void setOrderFailed(Boolean orderFailed) {
 		this.orderFailed = orderFailed;
+	}
+
+	public Integer getMissingQuantity() {
+		return missingQuantity;
+	}
+
+	public void setMissingQuantity(Integer missingQuantity) {
+		this.missingQuantity = missingQuantity;
 	}
 }

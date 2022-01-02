@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Hashtable;
 
+import fai.imp.farmaclick.config.PropertiesLoader;
 import org.apache.log4j.Logger;
 
 import fai.common.util.CalendarWrapper;
@@ -52,8 +53,9 @@ class ServiziBeanChooser {
     final String LOG_PREFIX = METH_NAME+": ";
     ServiziBean [] servizi = fornitore.getArrayServizi();
     ServiziBean selezionato = null;
+    String serviceApiLevel = PropertiesLoader.getApplicationProperties().getProperty("service_api_level");
     for (int i = 0; i < servizi.length; i++) {
-      if (passed(servizi[i], serviceName)) {
+      if (passed(servizi[i], serviceName) && (serviceApiLevel == null || servizi[i].getLivelloAPI().equalsIgnoreCase(serviceApiLevel))) {
         if (selezionato == null || servizi[i].getLivelloAPI().compareTo(selezionato.getLivelloAPI()) > 0) {
           selezionato = servizi[i];
         }
@@ -96,7 +98,7 @@ class ServiziBeanChooser {
     final String LOG_PREFIX = METH_NAME+": ";
     boolean passed = false;
     if (es == null) {
-      logger.error(ErogazioneServiziBean.class.getName()+" istanza null non attesa; sar‡ restituito "+passed );
+      logger.error(ErogazioneServiziBean.class.getName()+" istanza null non attesa; sar√† restituito "+passed );
       return passed ;
     }
     //
@@ -108,11 +110,11 @@ class ServiziBeanChooser {
       // antecedente/successiovo a now
       if (orarioInizio == null) {
         orarioInizio = CalendarWrapper.getNowInstance().add(Calendar.DAY_OF_MONTH, -1).getCalendar();
-        logger.warn(LOG_PREFIX+"inizio inizio disponibililt‡ del servizoi non specificato; assegnato "+df.format(orarioInizio.getTime()));
+        logger.warn(LOG_PREFIX+"inizio inizio disponibililt√† del servizoi non specificato; assegnato "+df.format(orarioInizio.getTime()));
       }
       if (orarioFine == null) {
         orarioFine = CalendarWrapper.getNowInstance().add(Calendar.DAY_OF_MONTH, 1).getCalendar();
-        logger.warn(LOG_PREFIX+"inizio fine disponibililt‡ del servizio non specificato; assegnato "+df.format(orarioFine.getTime()));
+        logger.warn(LOG_PREFIX+"inizio fine disponibililt√† del servizio non specificato; assegnato "+df.format(orarioFine.getTime()));
       }
       if (now.before(orarioInizio) || now.after(orarioFine)) {
         logger.info(LOG_PREFIX+"servizio disponibile dalle "+df.format(orarioInizio.getTime())+" alle "+df.format(orarioFine.getTime())+"");

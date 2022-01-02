@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fai.imp.base.bean.ProcessedOrderBean;
 import fai.imp.base.bean.ProductAvailibilityBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.db.SqlQueries;
@@ -56,25 +57,34 @@ public class FarmaclickDataCollectorApp {
     FarmaclickDataCollector dataCollector = new FarmaclickDataCollector(config, conn);
     //dataCollector.doCollectData();
 
-//  ProductBean productOrderRequestBean = new ProductBean();
-//  productOrderRequestBean.setProductCode("012745028");
-//  productOrderRequestBean.setQuantity(1);
-//  ProductBean productOrderRequestBeanTwo = new ProductBean();
-//  productOrderRequestBeanTwo.setProductCode("029401027");
-//  productOrderRequestBeanTwo.setQuantity(1);
-//
+  ProductBean productOrderRequestBean = new ProductBean();
+  productOrderRequestBean.setProductCode("012745028");
+  productOrderRequestBean.setQuantity(1);
+  ProductBean productOrderRequestBeanTwo = new ProductBean();
+  productOrderRequestBeanTwo.setProductCode("029401027");
+  productOrderRequestBeanTwo.setQuantity(1);
+
 //  List<ProductBean> productBeans = dataCollector.doGetAvailiblityData(Stream.of(productOrderRequestBean, productOrderRequestBeanTwo).collect(Collectors.toList()));
 //
 //  productBeans
 //          .stream()
 //          .forEach(p -> {
-//            System.out.println(p.getQuantity() + " " + p.getAvailibility());
+//            System.out.println(p.getProductCode() + " " + p.getQuantity() + " " + p.getAvailibility());
 //          });
     
-    ProductBean productOrderRequestBean = new ProductBean();
-    productOrderRequestBean.setProductCode("902980616");
-    productOrderRequestBean.setQuantity(1);
-    dataCollector.doOrderProducts(Stream.of(productOrderRequestBean).collect(Collectors.toList()));
+    productOrderRequestBean = new ProductBean();
+    productOrderRequestBean.setProductCode("012745028");
+    productOrderRequestBean.setQuantity(10);
+    List<ProcessedOrderBean> processedOrderBeans =  dataCollector.doOrderProducts(Stream.of(productOrderRequestBean).collect(Collectors.toList()));
+
+    	    processedOrderBeans
+	    .stream()
+	    .forEach(p -> {
+	    	System.out.println("Order status for product: " + p.getProductCode() + " is " + p.getOrderFailed());
+	    	if(p.getOrderFailed()) {
+	    		System.out.println("reason for order failure " + p.getErrorCode() + " : " + p.getErrorDescription());
+	    	}
+	    });
   }
 
 }

@@ -1,40 +1,15 @@
 package fai.imp.farmaclick.task;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.log4j.Logger;
-
 import fai.common.csv.CsvException;
 import fai.common.http.Http;
 import fai.common.util.Filesystem;
 import fai.common.util.Timeout;
 import fai.imp.base.bean.ProcessedOrderBean;
-import fai.imp.base.bean.ProductAvailibilityBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclick;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickA;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickC;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickD;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickFactory;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickL;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickR;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickV;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickZ;
-import fai.imp.farmaclick.csv.CsvRecordFieldsTester;
+import fai.imp.farmaclick.config.PropertiesLoader;
+import fai.imp.farmaclick.csv.*;
 import fai.imp.farmaclick.db.SqlQueries;
 import fai.imp.farmaclick.models.Fornitore;
 import fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloOutputBean;
@@ -46,13 +21,22 @@ import fai.imp.farmaclick.ws.bean.DownloadListinoOutputBean;
 import fai.imp.farmaclick.ws.bean.OrdineInputBean;
 import fai.imp.farmaclick.ws.bean.OrdineOutputBean;
 import it.swdes.decrypt.Decryptor;
+import org.apache.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FarmaclickDataCollector extends AbstractDataCollector {
 
 
 	static Logger logger = Logger.getLogger(FarmaclickDataCollector.class);
 
-	static final boolean DEBUG_DO_NOT_CONFIRM_DOWNLOAD = true; // perché sennò otterrò sempre zero differenze se scarico le variazioni 
+	static final boolean DEBUG_DO_NOT_CONFIRM_DOWNLOAD = true; // perchÃ© sennÃ² otterrÃ² sempre zero differenze se scarico le variazioni 
 
 	private Http http = null;
 	private FarmaclickWS ws = null;
@@ -63,7 +47,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 
 
 	/**
-	 * Poiché gli url restituiti dal WebService contengono 
+	 * PoichÃ© gli url restituiti dal WebService contengono 
 	 * caratteri speciali "\n", questo metodo li rimuove
 	 * 
 	 * 
@@ -96,7 +80,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		for (FornitoreBean fornitoreBean : fornitoreBeanList) {
 			String codiceFornitore = fornitoreBean.getCodice();
 			if (codiciFornitoreToSkip.contains(codiceFornitore)) {
-				logger.info(LOG_PREFIX + " "+codiceFornitore+" ignorato (dati già scaricati)");
+				logger.info(LOG_PREFIX + " "+codiceFornitore+" ignorato (dati giÃ  scaricati)");
 			}
 			else {
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
@@ -124,7 +108,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 					logger.error(LOG_PREFIX + " "+fornitore.getCodice()+" download e registrazione dati in banca dati non riuscita");
 			}
 			catch (Throwable th) {
-				String msg = LOG_PREFIX + " "+fornitore.getCodice()+" download e registrazione dati in banca dati non riuscita causa eccezione "+th.getClass().getName()+" «"+th.getMessage()+"»; l'attività proseguirà col prossimo fornitore da processare";
+				String msg = LOG_PREFIX + " "+fornitore.getCodice()+" download e registrazione dati in banca dati non riuscita causa eccezione "+th.getClass().getName()+" Â«"+th.getMessage()+"Â»; l'attivitÃ  proseguirÃ  col prossimo fornitore da processare";
 				logger.error(msg, th);
 				conn.rollback();
 			} 
@@ -137,7 +121,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		final String LOG_PREFIX = METH_NAME + ", fornitore "+fornitore.getCodice()+": ";
 		List<CsvException> errors = new ArrayList<CsvException>();
 		//
-		// --- il CSV è già stato scaricato e confermato? ---
+		// --- il CSV Ã¨ giÃ  stato scaricato e confermato? ---
 		//
 		boolean downloadCsv = false;
 		if (fornitore.getLastCsvDownloadAtTs() == null && fornitore.getLastCsvConfirmedAtTs() == null) {
@@ -145,15 +129,15 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			downloadCsv = true;
 		}
 		else if (fornitore.getLastCsvDownloadAtTs() != null && fornitore.getLastCsvConfirmedAtTs() == null) {
-			logger.warn(LOG_PREFIX+"download del CSV iniziato, ma non confermato alla controparte; è una condizione anomala dato che i due timestamp dovrebbero esser \"committati\" insieme: il CSV deve essere scaricato/scaricato di nuovo");
+			logger.warn(LOG_PREFIX+"download del CSV iniziato, ma non confermato alla controparte; Ã¨ una condizione anomala dato che i due timestamp dovrebbero esser \"committati\" insieme: il CSV deve essere scaricato/scaricato di nuovo");
 			downloadCsv = true;
 		}
 		else  if (fornitore.getLastCsvDownloadAtTs() == null && fornitore.getLastCsvConfirmedAtTs() != null) {
-			logger.error(LOG_PREFIX+"download del CSV non iniziato, ma confermato alla controparte (!?); è una condizione fortemente anomala: il CSV deve essere scaricato/scaricato di nuovo");
+			logger.error(LOG_PREFIX+"download del CSV non iniziato, ma confermato alla controparte (!?); Ã¨ una condizione fortemente anomala: il CSV deve essere scaricato/scaricato di nuovo");
 			downloadCsv = true;
 		}
 		else if (fornitore.getLastCsvDownloadAtTs() != null && fornitore.getLastCsvConfirmedAtTs() != null) {
-			logger.warn(LOG_PREFIX+"download del CSV già inziiato e già confermato alla controparte");
+			logger.warn(LOG_PREFIX+"download del CSV giÃ  inziiato e giÃ  confermato alla controparte");
 			downloadCsv = false;
 		}
 		//
@@ -164,7 +148,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			Calendar downloadConfirmedAt = null;
 			logger.info(LOG_PREFIX+"url di download "+urlDownload);
 			logger.info(LOG_PREFIX+"url di conferma"+urConfirmation);
-			if (urlDownload == null || urConfirmation == null) throw new IllegalStateException(LOG_PREFIX+"inammissibile, almeno uno dei due url (donwload e/o conferma) è non disponibile");
+			if (urlDownload == null || urConfirmation == null) throw new IllegalStateException(LOG_PREFIX+"inammissibile, almeno uno dei due url (donwload e/o conferma) Ã¨ non disponibile");
 			//
 			//  --- download del CSV come InputStream --- 
 			//
@@ -188,7 +172,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			else {
 				logger.info(LOG_PREFIX + "notifica acquisizione dell'"+InputStream.class.getName()+" completata all'apposito url di conferma ...");
 				is = http.getInputStreamGET(urConfirmation);
-				if (is != null) is.close(); // lo chiudo subito, perché non mi serve
+				if (is != null) is.close(); // lo chiudo subito, perchÃ© non mi serve
 				if (http.getLastHttpResult() != 200) throw new IllegalStateException(LOG_PREFIX+"download non riuscito, errore HTTP "+http.getLastHttpResult());
 			}
 			downloadConfirmedAt = Calendar.getInstance();
@@ -231,7 +215,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				unzippedInputStream = SqlQueries.getFornitoreCsvData(fornitore.getCodice(), conn);
 			}
 			//
-			// --- se non in modalità parsing/verifica, cancellazione del Tipo Record "D"  ---
+			// --- se non in modalitÃ  parsing/verifica, cancellazione del Tipo Record "D"  ---
 			//     (Reset Campagne e Listino, "Se il grossista vuole effettuare un "reset" del listino, invia un tipo record "D" [...]") 
 			//
 			if (preparseOnly == false) {
@@ -264,14 +248,14 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 					}
 				}
 				//
-				// --- se in modalità parsing/verifia, verifica di ogni singolo campo ---
+				// --- se in modalitÃ  parsing/verifia, verifica di ogni singolo campo ---
 				//
 				if (preparseOnly) {
 					List<CsvException> methErrors = CsvRecordFieldsTester.testAllMethods(record);
 					errors.addAll(methErrors);
 				}
 				//
-				// --- altrimenti, se non in modalità parsing/verifica, registrazione in banca dati ---
+				// --- altrimenti, se non in modalitÃ  parsing/verifica, registrazione in banca dati ---
 				//
 				else {
 					Long oidFornitore = fornitore.getOid();
@@ -317,7 +301,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				logger.error(LOG_PREFIX+csvException.getMessage());
 			}
 			//
-			// --- Se non in modalità simulazione, commit o rollback ---
+			// --- Se non in modalitÃ  simulazione, commit o rollback ---
 			//
 			if (preparseOnly == false) {
 				if (errors.size() == 0) {
@@ -331,7 +315,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			return errors;
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME;
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -348,7 +332,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		// --- creazione istanza WebService ---
 		//
 		ws = new FarmaclickWS();
-		ws.setEndpointAddress(config.getServiceQueryUrl());
+		ws.setEndpointAddress(PropertiesLoader.getApplicationProperties().getProperty("service_login_url"));
 		ws.setLogRequestAsXml(true);
 		ws.setLogReponsesAsXml(true);
 		//
@@ -418,25 +402,28 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 	}
 
 	private void loginWebService() {
-		String login = config.getServiceLogin();
+		String login = PropertiesLoader.getApplicationProperties().getProperty("service_login");
 		if (login != null && login.trim().equals("")) login = null;
-		String pass = config.getServicePass();
+		String pass = PropertiesLoader.getApplicationProperties().getProperty("service_password");
+		String isPasswordEncrypted = PropertiesLoader.getApplicationProperties().getProperty("service_password_encrypted");
 		if (pass != null) {
 			if (pass.trim().equals("")) { 
 				pass = null;
 			}
 			else {
-				if (config.isServicePassEncr()) {
+				if (isPasswordEncrypted != null && Boolean.parseBoolean(isPasswordEncrypted)) {
 					logger.info("decrittazione password del WebService ...");
 					pass = Decryptor.decrypt(pass);
 				}
 			}
-		} 
+		}
+		String terminalName = PropertiesLoader.getApplicationProperties().getProperty("service_terminal_name");
 		//
 		// --- Fornitori: download e registrazione in banca dati  ---
 		//
-		ws.login(login, pass, "SERVER", "");
+		ws.login(login, pass, terminalName, "");
 	}
+
 
 
 	@Override
@@ -457,28 +444,42 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
+		List<ProcessedOrderBean> processedOrders = null;
 		if(productOrderRequests != null && !productOrderRequests.isEmpty()) {
 			loginWebService();
 			List<FornitoreBean> fornitoreBeanList = ws.getFornitoreBeanList();
 			for (FornitoreBean fornitoreBean : fornitoreBeanList) {
 				String codiceFornitore = fornitoreBean.getCodice();
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
-				List<ArticoloInputBean> articles = productOrderRequests
-						.stream()
-						.filter(por -> por != null)
-						.map(por -> new ArticoloInputBean(1, -1, -1, por.getProductCode(), true, por.getQuantity()))
-						.collect(Collectors.toList());
-				OrdineInputBean oib = new OrdineInputBean();
-				oib.setCodiceFornitore(codiceFornitore);
-				oib.setDescrizioneArticoli(true);
-				oib.setDescrizioneMotivazioneMancanza(false);
-				oib.setIndicazioneDepositoAllestimento(false);
-				oib.setIndicazioneDatiConsegna(false);
-				oib.setArticoli(articles);
-				OrdineOutputBean oob = ws.callOrdine(oib);
-				System.out.println(">>>>>" + oob.getEsitoServizio());
+				String serviceApiLevel = PropertiesLoader.getApplicationProperties().getProperty("service_api_level");
+				if(serviceApiLevel != null && serviceApiLevel.equalsIgnoreCase("2005.001")){
+					List<ArticoloInputBean> articles = productOrderRequests
+							.stream()
+							.filter(por -> por != null)
+							//.map(por -> new ArticoloInputBean(false, por.getProductCode(), "", false, por.getQuantity(), ""))
+							.map(por -> new ArticoloInputBean(1, -1, -1, por.getProductCode(), false, por.getQuantity()))
+							.collect(Collectors.toList());
+					OrdineInputBean oib = new OrdineInputBean();
+					oib.setCodiceFornitore(codiceFornitore);
+					oib.setDescrizioneArticoli(true);
+					oib.setDescrizioneMotivazioneMancanza(false);
+					oib.setIndicazioneDepositoAllestimento(false);
+					oib.setIndicazioneDatiConsegna(false);
+					oib.setArticoli(articles);
+					OrdineOutputBean oob = ws.callOrdine(oib);
+					if(oob != null && oob.getOrdineOutputBean2005001() != null &&
+					oob.getOrdineOutputBean2005001().getArrayArticoli() != null &&
+							oob.getOrdineOutputBean2005001().getArrayArticoli().length > 0){
+						processedOrders = Arrays.stream(oob.getOrdineOutputBean2005001().getArrayArticoli())
+								.map(article -> new ProcessedOrderBean(article.getCodiceProdotto(), article.getQuantitaRichiesta(),
+										article.getQuantitaMancante(),
+										article.getQuantitaRichiesta() == article.getQuantitaMancante(),
+										article.getCodiceMancanza(), article.getDescrizioneMancanza()))
+								.collect(Collectors.toList());
+					}
+				}
 			}
 		}
-		return null;
+		return processedOrders;
 	}
 }

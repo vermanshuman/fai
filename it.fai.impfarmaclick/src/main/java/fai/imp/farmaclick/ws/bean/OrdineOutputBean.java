@@ -45,7 +45,7 @@ public class OrdineOutputBean {
   private java.lang.String noteOrdine;            // api_2005_001, api_2010_001
   private java.lang.String numeroOrdineFornitore; // api_2005_001
   private int delayProsRichiesta;                 //               api_2010_001
-  private int esitoServizio;                      //               api_2010_001
+    private int esitoServizio;                      //               api_2010_001
 
   public OrdineOutputBean() {
    

@@ -44,7 +44,23 @@ public class ArticoloInputBean {
             this.prenotazione = prenotazione;
             this.quantitaRichiesta = quantitaRichiesta;
      }
-	
+
+	public ArticoloInputBean(
+			boolean auto,
+			java.lang.String codiceProdotto,
+			java.lang.String noteRiga,
+			boolean prenotazione,
+			int quantitaRichiesta,
+			java.lang.String rifRiga) {
+		this.auto = auto;
+		this.codiceProdotto = codiceProdotto;
+		this.noteRiga = noteRiga;
+		this.prenotazione = prenotazione;
+		this.quantitaRichiesta = quantitaRichiesta;
+		this.rifRiga = rifRiga;
+	}
+
+
 	public boolean isPrenotazione() {
 		return prenotazione;
 	}
@@ -73,7 +89,7 @@ public class ArticoloInputBean {
 	/**
 	 * ATTENZIONE! SOLO API 2005_001!!<br>
 	 * <br>
-	 * alcuni grossisti rigirano i loro mancati automaticamente a più deposito e quindi la erce arrivi in tempi diversi in farmacia: 
+	 * alcuni grossisti rigirano i loro mancati automaticamente a piÃ¹ deposito e quindi la erce arrivi in tempi diversi in farmacia: 
 	 * -1 SOLO da magazzino principale al quale si sta facendo l'ordine; 
 	 * 1 si accettanbo le deviazioni; 
 	 * 0 default del grossista "come nel caso dell'ordine comproject"
@@ -124,7 +140,7 @@ public class ArticoloInputBean {
 	/**
 	 * ATTENZIONE! SOLO API 2010_001!!<br>
 	 * <br>
-	 * Flag che indica la presenza del prodotto sull’automatico della farmacia.<br>
+	 * Flag che indica la presenza del prodotto sullâ€™automatico della farmacia.<br>
 	 * Si faccia riferimento alla sezione Gestione Prodotti su Automatico in Farmacia
 	 * 
 	 * @param auto
@@ -140,7 +156,7 @@ public class ArticoloInputBean {
 	 * <br>
 	 * Riferimento riga ordine. Il valore specificato su questo campo viene riportato 
 	 * sulle corrispondenti righe di output. Farmaclick non esegue nessun controllo sulla 
-	 * presenza/congruenza/univocità di tale campo, si limita solo a riportare tale il 
+	 * presenza/congruenza/univocitÃ  di tale campo, si limita solo a riportare tale il 
 	 * riferimento sulle righe di risposta.
 	 * @param rifRiga
 	 */

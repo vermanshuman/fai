@@ -149,7 +149,7 @@ public class FarmaclickWS extends AbstractFarmaclickWS {
   }
   
   /**
-   * L'elenco risulter‡ disponibile solo se la login - {@link #login(String, String, String, String)} - Ë 
+   * L'elenco risulter√† disponibile solo se la login - {@link #login(String, String, String, String)} - √® 
    * stata effettuata con successo
    * 
    * @return
@@ -502,7 +502,7 @@ public class FarmaclickWS extends AbstractFarmaclickWS {
       // --- gestione esito ---
       //
       OrdineOutputBean ordineOutputBean = UniversalAPIUtil.getOrdineOutputBean(risposta);
-      return ordineOutputBean != null && ordineOutputBean.getEsitoServizio() == 0 ? ordineOutputBean : null; 
+      return ordineOutputBean;
     }
     catch (Throwable jre) {
       String msg = ExceptionsTool.getExceptionDescription(LOG_PREFIX+"operazione non riuscita", jre);
