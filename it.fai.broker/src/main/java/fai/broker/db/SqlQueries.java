@@ -982,6 +982,9 @@ public class SqlQueries {
 			SqlUtilities.setString(stmt, ++col, approv.getCodiceMinSan(), true);
 			// CODICE_EAN
 			SqlUtilities.setString(stmt, ++col, approv.getCodiceEan(), true);
+			// OID_FORNITORE
+			SqlUtilities.setLong(stmt, ++col,
+					approv.getFornitore() == null ? null : approv.getFornitore().getOid());
 			// QUANTITA
 			stmt.setInt(++col, approv.getQuantita());
 			// OID_STATUS / STATUS_*

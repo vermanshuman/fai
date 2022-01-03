@@ -13,6 +13,8 @@ public class ProcessedOrderBean {
 	private String errorCode;
 	
 	private String errorDescription;
+
+	private String numeroOrdineFornitore;
 	
 	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Boolean orderStatus, String errorCode,
 			String errorDescription) {
@@ -31,6 +33,17 @@ public class ProcessedOrderBean {
 		this.orderFailed = orderStatus;
 		this.errorCode = errorCode;
 		this.errorDescription = errorDescription;
+	}
+
+	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
+							  String errorDescription, String numeroOrdineFornitore) {
+		this.productCode = productCode;
+		this.orderedQuantity = orderedQuantity;
+		this.missingQuantity = missingQuantity;
+		this.orderFailed = orderStatus;
+		this.errorCode = errorCode;
+		this.errorDescription = errorDescription;
+		this.numeroOrdineFornitore = numeroOrdineFornitore;
 	}
 	
 	public ProcessedOrderBean(String productCode, Integer orderedQuanity, Boolean orderStatus) {
@@ -85,5 +98,13 @@ public class ProcessedOrderBean {
 
 	public void setMissingQuantity(Integer missingQuantity) {
 		this.missingQuantity = missingQuantity;
+	}
+
+	public String getNumeroOrdineFornitore() {
+		return numeroOrdineFornitore;
+	}
+
+	public void setNumeroOrdineFornitore(String numeroOrdineFornitore) {
+		this.numeroOrdineFornitore = numeroOrdineFornitore;
 	}
 }

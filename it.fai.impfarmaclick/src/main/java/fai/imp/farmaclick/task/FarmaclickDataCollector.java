@@ -474,7 +474,8 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 								.map(article -> new ProcessedOrderBean(article.getCodiceProdotto(), article.getQuantitaRichiesta(),
 										article.getQuantitaMancante(),
 										article.getQuantitaRichiesta() == article.getQuantitaMancante(),
-										article.getCodiceMancanza(), article.getDescrizioneMancanza()))
+										article.getCodiceMancanza(), article.getDescrizioneMancanza(),
+										oob.getNumeroOrdineFornitore()))
 								.collect(Collectors.toList());
 					}
 				}

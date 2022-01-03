@@ -2,6 +2,7 @@ UPDATE FAI_APPROVVIGIONAMENTO_FARMACO
 SET  
    CODICE_MINSAN     = ?
   ,CODICE_EAN        = ?
+  ,OID_FORNITORE     = ?
   ,QUANTITA          = ?
   ,OID_STATUS        = ?
   ,STATUS_DESCR      = ?
