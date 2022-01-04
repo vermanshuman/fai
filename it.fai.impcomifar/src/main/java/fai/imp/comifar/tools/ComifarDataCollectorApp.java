@@ -1,19 +1,16 @@
 package fai.imp.comifar.tools;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import fai.common.ftp.Ftp;
-import fai.common.ftp.FtpFactory;
-import fai.common.models.FtpConfig;
 import fai.imp.base.bean.ProcessedOrderBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.db.SqlQueries;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.comifar.task.ComifarDataCollector;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ComifarDataCollectorApp {
 
@@ -68,36 +65,31 @@ public class ComifarDataCollectorApp {
 		// End Collecting data
 		
 		// Check availibility
-		ProductBean productBean = new ProductBean();
-		productBean.setProductCode("900266077");
-		productBean.setQuantity(1);
-		
-		List<ProductBean> products = dataCollector.doGetAvailiblityData(Stream.of(productBean).collect(Collectors.toList()));
-
-		products.stream()
-		.forEach(p -> {
-			System.out.println(p.getProductCode() + ">>>>>" + p.getQuantity() + "::: " + p.getAvailibility());
-		});
+//		ProductBean productBean = new ProductBean();
+//		productBean.setProductCode("900266077");
+//		productBean.setQuantity(1);
+//
+//		dataCollector.doGetAvailiblityData(Stream.of(productBean).collect(Collectors.toList()));
 		// End Check availibility
 		
 		// Start Order Products
-//		ProductOrderRequestBean productOrderRequestOne = new ProductOrderRequestBean();
-//		productOrderRequestOne.setProductCode("28725125");
-//		productOrderRequestOne.setQuantity(1);
-//	    
-//		ProductOrderRequestBean productOrderRequestTwo = new ProductOrderRequestBean();
-//		productOrderRequestTwo.setProductCode("28740013");
-//		productOrderRequestTwo.setQuantity(5);
-//	    List<ProcessedOrderBean> processedOrderBeans = dataCollector.doOrderProducts(Stream.of(productOrderRequestOne, productOrderRequestTwo).collect(Collectors.toList()));
-//	    
-//	    processedOrderBeans
-//	    .stream()
-//	    .forEach(p -> {
-//	    	System.out.println("Order status for product: " + p.getProductCode() + " is " + p.getOrderFailed());
-//	    	if(p.getOrderFailed()) {
-//	    		System.out.println("reason for order failure " + p.getErrorCode() + " : " + p.getErrorDescription());
-//	    	}
-//	    });
+		ProductBean productOrderRequestOne = new ProductBean();
+		productOrderRequestOne.setProductCode("28725125");
+		productOrderRequestOne.setQuantity(1);
+
+		ProductBean productOrderRequestTwo = new ProductBean();
+		productOrderRequestTwo.setProductCode("28740013");
+		productOrderRequestTwo.setQuantity(5);
+	    List<ProcessedOrderBean> processedOrderBeans = dataCollector.doOrderProducts(Stream.of(productOrderRequestOne, productOrderRequestTwo).collect(Collectors.toList()));
+
+	    processedOrderBeans
+	    .stream()
+	    .forEach(p -> {
+	    	System.out.println("Order status for product: " + p.getProductCode() + " is " + p.getOrderFailed());
+	    	if(p.getOrderFailed()) {
+	    		System.out.println("reason for order failure " + p.getErrorCode() + " : " + p.getErrorDescription());
+	    	}
+	    });
 		// End Order Products
 	}
 }

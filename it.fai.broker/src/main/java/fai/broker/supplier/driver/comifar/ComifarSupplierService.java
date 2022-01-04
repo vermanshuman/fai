@@ -3,6 +3,7 @@ package fai.broker.supplier.driver.comifar;
 import fai.broker.db.SqlQueries;
 import fai.broker.models.*;
 import fai.broker.supplier.AbstractSupplierService;
+import fai.imp.base.bean.ProcessedOrderBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
@@ -106,8 +107,61 @@ public class ComifarSupplierService extends AbstractSupplierService {
 
     @Override
     protected OrdineOut confirmExecute(List<ApprovvigionamentoFarmaco> approvvigionamento) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        final String METH_NAME = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
+        logger.info(LOG_PREFIX + "...");
+        List<ProcessedOrderBean> processedOrders = orderProducts(magazzino.getOrganizationCode(),
+                approvvigionamento
+                        .stream()
+                        .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
+                        .collect(Collectors.toList()));
+
+        OrdineOut ordineOut = new OrdineOut();
+        ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
+        ordineOut.setIdOrdine(processedOrders != null && !processedOrders.isEmpty()
+                ? processedOrders.get(0).getNumeroOrdineFornitore() : null);
+        ordineOut.setFornitore(approvvigionamento != null && approvvigionamento.size() > 0 ? approvvigionamento.get(0).getFornitore() : null);
+
+
+        for (ApprovvigionamentoFarmaco appr : approvvigionamento) {
+            fai.common.db.SqlQueries.logInfo("inoltro richiesta d'ordine a " + asShortDescr() + " ...",
+                    appr.toXml(), null, conn);
+            conn.commit();
+
+            final String codiceMinsan = appr.getCodiceMinSan();
+            Optional<ProcessedOrderBean> matchedProduct = processedOrders
+                    .stream()
+                    .filter(p -> p.getProductCode().equals(codiceMinsan))
+                    .findFirst();
+
+            if (matchedProduct.isPresent()) {
+                if (matchedProduct.get().getMissingQuantity() != null &&
+                        matchedProduct.get().getMissingQuantity() > 0) {
+                    ApprovvigionamentoFarmaco missingAppr = new ApprovvigionamentoFarmaco();
+                    missingAppr.setQuantita(matchedProduct.get().getMissingQuantity());
+                    missingAppr.setCodiceMinSan(appr.getCodiceMinSan());
+                    missingAppr.setStatus(StatusInfo.newToProcessInstance(null, null));
+                    SqlQueries.insertApprovvigionamentoFarmaco(missingAppr, conn);
+                }
+
+                if (matchedProduct.get().getOrderedQuantity() != null &&
+                        matchedProduct.get().getMissingQuantity() > 0) {
+                    appr.setQuantita(matchedProduct.get().getOrderedQuantity());
+                    appr.setStatus(StatusInfo.newProcessedInstance(null, null));
+                    SqlQueries.updateApprovvigionamentoFarmaco(appr, false, conn);
+                }
+            }
+            //
+            // --- tracciamento nel log della risposta ricevuta ---
+            //
+            fai.common.db.SqlQueries.logInfo(
+                    "risposta ricevuta per la richiesta di disponibilità inoltrata " + asShortDescr(), appr.toXml(),
+                    null, conn);
+            conn.commit();
+
+        }
+        return ordineOut;
     }
 
     private List<ProductBean> getAvailability(String organizationCode, List<ProductBean> products) throws Exception {
@@ -119,5 +173,16 @@ public class ComifarSupplierService extends AbstractSupplierService {
         AbstractDataCollector dataCollector =
                 new fai.imp.comifar.task.ComifarDataCollector(config, conn);
         return dataCollector.doGetAvailiblityData(products);
+    }
+
+    private List<ProcessedOrderBean> orderProducts(String organizationCode, List<ProductBean> products) throws Exception {
+        final String METH_NAME = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
+        logger.info(LOG_PREFIX + "...");
+        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("COMIFAR", "WHERE SERVICE_LOGIN=" + organizationCode, conn);
+        AbstractDataCollector dataCollector =
+                new fai.imp.comifar.task.ComifarDataCollector(config, conn);
+        return dataCollector.doOrderProducts(products);
     }
 }
