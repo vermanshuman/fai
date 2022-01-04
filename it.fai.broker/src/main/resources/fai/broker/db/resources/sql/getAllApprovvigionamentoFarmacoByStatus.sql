@@ -21,6 +21,7 @@ SELECT
   ,APPROV.ALIQUOTA_IVA_INCLUSA
   ,APPROV.OID_ORDINEOUT
   ,APPROV.CREATION_TS
+  ,APPROV.MAGAZZINO_ACRONYM
   ,APPROV2RIGA.OID			        APPROV2RIGA_OID     
   ,APPROV2RIGA.QUANTITA             APPROV2RIGA_QUANTITA
   ,RIGA.OID							RIGA_OID          
@@ -39,6 +40,6 @@ WHERE
    APPROV2RIGA.OID_ORDINEINRIGA  = RIGA.OID
 ORDER BY
    APPROV.OID
-  ,RIGA.OID -- ordinamento per OID: priorità alle Righe (e quindi Ordini) in attesa da più tempo e secondo l'ordine con cui sono ricevute nel "web_order.csv"
+  ,RIGA.OID -- ordinamento per OID: prioritï¿½ alle Righe (e quindi Ordini) in attesa da piï¿½ tempo e secondo l'ordine con cui sono ricevute nel "web_order.csv"
   
 

@@ -12,6 +12,7 @@ public class OrdineInCollection extends AbstractModel {
   public static int STATUS;
   public static int ORDINE;
   public static int UNIQUE_ID;
+  public static int MAGAZZINO_ACRONYM;
 
   public static final Attribute[] attributes = buildAttributes(OrdineInCollection.class, new Attribute[] { //@formatter:off
     new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -21,6 +22,7 @@ public class OrdineInCollection extends AbstractModel {
     new Attribute("status", null, StatusInfo.class, null, false, Attribute.DETAIL, false, Attribute.NO_OPTION),
     new Attribute("ordine", null, OrdineIn[].class, null, false, Attribute.DETAIL, false, Attribute.NO_OPTION),
     new Attribute("uniqueID", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("magazzinoAcronym", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
   }); //@formatter:on
 
 
@@ -133,6 +135,15 @@ public class OrdineInCollection extends AbstractModel {
 
   public String getUniqueID() {
     return getString(UNIQUE_ID);
+  }
+  
+  /** MAGAZZINO_ACRONYM **/
+  public boolean setMagazzinoAcronym(String magazzinoAcronym) {
+    return setString(MAGAZZINO_ACRONYM, magazzinoAcronym);
+  }
+
+  public String getMagazzinoAcronym() {
+	  return getString(MAGAZZINO_ACRONYM);
   }
 
  //@formatter:on

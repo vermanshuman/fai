@@ -20,7 +20,7 @@ public class OrdineInRigaDett extends AbstractModel {
   public static int PRODUCTIDVALUE2;
   public static int PRODUCTIDVALUE;
   public static int DETTAGLI_VARIAZIONE;
-  //public static int MAGAZZINO_ACRONYM;
+  public static int MAGAZZINO_ACRONYM;
   public static int ORDINE_IN;
 
   public static final Attribute[] attributes = buildAttributes(OrdineInRigaDett.class, new Attribute[] { //@formatter:off
@@ -39,7 +39,7 @@ public class OrdineInRigaDett extends AbstractModel {
     new Attribute("productidvalue2", null, Double.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("productidvalue", null, Double.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("dettagliVariazione", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-    //new Attribute("magazzinoAcronym", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("magazzinoAcronym", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("ordineIn", null, OrdineIn.class, null, false, Attribute.DETAIL, false, Attribute.NO_OPTION),
   }); //@formatter:on
 
@@ -203,19 +203,15 @@ public class OrdineInRigaDett extends AbstractModel {
   }
 
 
-  /** MAGAZZINO_ACRONYM 
+  /** MAGAZZINO_ACRONYM **/
   public boolean setMagazzinoAcronym(String magazzinoAcronym) {
     return setString(MAGAZZINO_ACRONYM, magazzinoAcronym);
   }
 
   public String getMagazzinoAcronym() {
-	  String tmp = getString(MAGAZZINO_ACRONYM);
-	  if (tmp == null || "".equalsIgnoreCase(tmp.trim())) {
-		  tmp = "Test";
-	  }
-    return tmp;
+	  return getString(MAGAZZINO_ACRONYM);
   }
-  **/
+  
 
 
   /** ORDINE_IN **/

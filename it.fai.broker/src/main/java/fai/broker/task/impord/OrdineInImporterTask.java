@@ -88,7 +88,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     InputStream is = null;
     try {
       //ftp = FtpFactory.newFtp(ftpConfig);
-      is = new FileInputStream("G:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);
+      is = new FileInputStream("D:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);
       BufferedReader reader = new BufferedReader(new InputStreamReader(is));
       String md5 = null;
       String line = null;
@@ -130,6 +130,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     //
     Ftp ftp = null;
     InputStream is = null;
+    String magazzinoAcronym = params.getProperty("magazzino_acronym", true);
     //
     // --- creazione del nuovo ORDINE_IN_COLLECTION ---
     //
@@ -147,6 +148,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     }
     oic.setInputResourceFullPath(fullpath);
     oic.setStatus(StatusInfo.newProcessingInstance(null, null)); // "processing", perché il parsing è in corso
+    oic.setMagazzinoAcronym(magazzinoAcronym);
     SqlQueries.insertOrdineInCollection(oic, conn);
     conn.commit();
     //
@@ -157,7 +159,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     int lineCount = 0;
     try {
       //ftp = FtpFactory.newFtp(ftpConfig);
-      is = new FileInputStream("G:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);;
+      is = new FileInputStream("D:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);;
       csvToModels = new CsvToModels();
       csvToModels.setInputStream(is);
       Timeout timeout = new Timeout(5000, false);
@@ -247,6 +249,8 @@ public class OrdineInImporterTask extends AbstractGenericTask {
       SqlQueries.insertOrdineIn(oic.getOid(), ordine, conn);
       OrdineInRigaDett [] riga = ordine.getAllRigaDett();
       for (int j = 0; j < riga.length; j++) {
+    	riga[j].setMagazzinoAcronym(magazzinoAcronym);
+    	logger.info("magazzinoAcronym ::"+magazzinoAcronym);
         SqlQueries.insertOrdineInRigaDettaglio(ordine.getOid(), riga[j], conn);
       }
     }

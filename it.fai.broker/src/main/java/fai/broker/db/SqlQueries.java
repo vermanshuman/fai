@@ -135,7 +135,8 @@ public class SqlQueries {
 			col = setStatusInfo(stmt, ++col, oic.getStatus());
 			// UNIQUE_ID
 			stmt.setString(++col, oic.getUniqueID());
-			//
+			// MAGAZZINO_ACRONYM
+			SqlUtilities.setString(stmt, ++col, oic.getMagazzinoAcronym());
 			stmt.executeUpdate();
 		} catch (Throwable th) {
 			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
@@ -477,6 +478,7 @@ public class SqlQueries {
 			params.setProperty("PRODUCTIDVALUE", SqlUtilities.getAsDoubleFieldValue(riga.getProductidvalue2()));
 			params.setProperty("DETTAGLI_VARIAZIONE", SqlUtilities.getAsStringFieldValue(riga.getDettagliVariazione()));
 			params.setProperty("OID_ORDINEIN", "" + ordineInOid);
+			params.setProperty("MAGAZZINO_ACRONYM", SqlUtilities.getAsStringFieldValue(riga.getMagazzinoAcronym()));
 			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertOrdineInRigaDettaglio.sql", params);
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
@@ -614,6 +616,76 @@ public class SqlQueries {
 			SqlUtilities.closeWithNoException(rs);
 		}
 		return list;
+
+	}
+	
+	public static Magazzino getSelectedMagazzino(String context, String magazzinoAcronym, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		//List<Magazzino> list = new LinkedList<Magazzino>();
+		Magazzino m = null;
+		Hashtable<Long, TipoFarmaco> tipiFarmaco = new Hashtable<Long, TipoFarmaco>();
+		try {
+			Properties params = new Properties();
+			params.setProperty("CONTEXT", SqlUtilities.getAsStringFieldValueWC(context));
+			params.setProperty("MAGAZZINOACRONYM", SqlUtilities.getAsStringFieldValueWC(magazzinoAcronym));
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getSelectedMagazzino.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			long oidBak = -1;
+			while (rs.next()) {
+				long oid = rs.getLong("MAGAZZINO_OID");
+				if (oid != oidBak) {
+					m = new Magazzino();
+					m.setOid(oid);
+					m.setAcronym(rs.getString("MAGAZZINO_ACRONYM"));
+					m.setDescr(rs.getString("MAGAZZINO_DESCR"));
+					m.setComune(rs.getString("MAGAZZINO_COMUNE"));
+					m.setProvincia(rs.getString("MAGAZZINO_PROVINCIA"));
+					m.setRegione(rs.getString("MAGAZZINO_REGIONE"));
+					m.setCap(rs.getString("MAGAZZINO_CAP"));
+					m.setIndirizzo(rs.getString("MAGAZZINO_INDIRIZZO"));
+					m.setSupplierServiceClassName(rs.getString("SUPPLIERSERVICE_CLASS_NAME"));
+					m.setOrganizationCode(rs.getString("MAGAZZINO_ORGANIZATION_CODICE"));
+					//list.add(m);
+				}
+				//
+				long oidTipoFarmaco = rs.getLong("TIPO_FARMACO_OID");
+				if (rs.wasNull() == false) {
+					TipoFarmaco tf = tipiFarmaco.get(oidTipoFarmaco);
+					if (tf == null) {
+						tf = new TipoFarmaco();
+						tf.setOid(oidTipoFarmaco);
+						tf.setAcronym(rs.getString("TIPO_FARMACO_ACRONYM"));
+						tf.setDescr(rs.getString("TIPO_FARMACO_DESCR"));
+						tipiFarmaco.put(oidTipoFarmaco, tf);
+					}
+					m.addTipoFarmaco(tf);
+				}
+				//
+				oidBak = oid;
+			}
+			//
+			//attachProperties(list, conn);
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
+					+ "» nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+							? "; sql:" + System.getProperty("line.separator") + sql
+									+ System.getProperty("line.separator")
+							: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return m;
 
 	}
 
@@ -780,6 +852,7 @@ public class SqlQueries {
 					currApprov.setPrezzoTotale(SqlUtilities.getDouble(rs, "PREZZO_TOTALE"));
 					currApprov.setAliquotaIva(SqlUtilities.getDouble(rs, "ALIQUOTA_IVA"));
 					currApprov.setAliquotaIvaInclusa(SqlUtilities.asBoolean(rs.getString("ALIQUOTA_IVA_INCLUSA")));
+					currApprov.setMagazzinoAcronym(rs.getString("MAGAZZINO_ACRONYM"));
 					Long oidOrdineOut = SqlUtilities.getLong(rs, "OID_ORDINEOUT");
 					if (oidOrdineOut != null) {
 						currApprov.setOrdineOut(new OrdineOut());
@@ -893,6 +966,7 @@ public class SqlQueries {
 				riga.setCodiceMinSan(rs.getString("CODICE_MINSAN"));
 				riga.setCodiceEan(rs.getString("CODICE_EAN"));
 				riga.setQuantita(rs.getInt("QUANTITA"));
+				riga.setMagazzinoAcronym(rs.getString("MAGAZZINO_ACRONYM"));
 				list.add(riga);
 			}
 		} catch (Throwable th) {
@@ -940,6 +1014,7 @@ public class SqlQueries {
 			SqlUtilities.setString(stmt, ++col, approv.getCodiceMinSan(), true);
 			// CODICE_EAN
 			SqlUtilities.setString(stmt, ++col, approv.getCodiceEan(), true);
+			SqlUtilities.setString(stmt, ++col, approv.getMagazzinoAcronym(), true);
 			// QUANTITA
 			stmt.setInt(++col, approv.getQuantita());
 			// OID_STATUS / STATUS_*
@@ -1371,7 +1446,10 @@ public class SqlQueries {
             for (Long oid : selectedFornitori) {
                 oidList += oid + ",";
             }
-            oidList = oidList.substring(0, oidList.length() - 1);
+            if(oidList.length() > 1)
+            	oidList = oidList.substring(0, oidList.length() - 1);
+            else
+            	oidList += 0;
             oidList += ")";
             Properties params = new Properties();
             params.setProperty("OID_LIST", oidList);
