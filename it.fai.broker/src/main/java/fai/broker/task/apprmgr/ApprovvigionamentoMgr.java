@@ -66,6 +66,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     // --- caricamento dell'Anagrafica di tutti i Fornitori ---
     //
     List<Fornitore> allFornitori = SqlQueries.getAllFornitore(conn);
+    logger.info("allFornitori size ------------------- :: "+allFornitori.size());
     List<Fornitore> fornitori = new ArrayList<Fornitore>();
     for(Fornitore f : allFornitori) {
     	if(selectedFornitori.contains(f.getOid())) {
@@ -83,15 +84,15 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     //
     // --- caricamento dell'Anagrafica di tutti i Magazzini ---
     //
-    List<Magazzino> magazzini = SqlQueries.getAllMagazzino(MAGAZZINO_CONTEXT, conn);
-    env.setMagazzini(magazzini);
+    //List<Magazzino> magazzini = SqlQueries.getAllMagazzino(MAGAZZINO_CONTEXT, conn);
+    //env.setMagazzini(magazzini);
     //
     // --- caricamento dei SupplierService per i Magazzini ---
     //
-    for (Magazzino magazzino : magazzini) {
+   /* for (Magazzino magazzino : magazzini) {
       SupplierService ss = SupplierServiceFactory.getSupplierService(magazzino, conn);
       env.addMagazzinoSupplierService(magazzino.getAcronym(), ss);
-    }
+    }*/
 
     
   }
@@ -142,11 +143,11 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     //
     // --- determination of availability for FAI_APPROVIGIONAMENTO_FARMACO in Warehouses and at Suppliers ---
     //
-    //ApprovvigionamentoMagazzini magazzini = new ApprovvigionamentoMagazzini();
-    //magazzini.setup(env, conn);
-    //error = magazzini.process(approvvigionamentoToProcess);
-    //if (error != null) return error;
-    //approvvigionamentoToProcess = magazzini.getApprovvigionamentoToProcess();
+    ApprovvigionamentoMagazzini magazzini = new ApprovvigionamentoMagazzini();
+    magazzini.setup(env, conn);
+    error = magazzini.process(approvvigionamentoToProcess);
+    if (error != null) return error;
+    approvvigionamentoToProcess = magazzini.getApprovvigionamentoToProcess();
     
     ApprovvigionamentoFornitori fornitori = new ApprovvigionamentoFornitori();
     fornitori.setup(env, conn);

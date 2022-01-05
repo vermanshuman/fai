@@ -51,7 +51,7 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
     new Attribute("aliquotaIva", null, Double.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("aliquotaIvaInclusa", null, Boolean.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("status", null, StatusInfo.class, null, false, Attribute.DETAIL, true, Attribute.NO_OPTION),
-    //new Attribute("magazzinoAcronym", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("magazzinoAcronym", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("approvRigaDett", null, ApprovToRiga[].class, null, false, Attribute.DETAIL, true, Attribute.NO_OPTION),
   }); //@formatter:on
 
@@ -245,7 +245,7 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
   }
 
 
-  /** MAGAZZINO_ACRONYM 
+  /** MAGAZZINO_ACRONYM **/
   public boolean setMagazzinoAcronym(String magazzinoAcronym) {
     return setString(MAGAZZINO_ACRONYM, magazzinoAcronym);
   }
@@ -253,7 +253,7 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
   public String getMagazzinoAcronym() {
     return getString(MAGAZZINO_ACRONYM);
   }
-  **/
+  
 
 
   /** APPROV_RIGA_DETT **/

@@ -9,10 +9,12 @@ INSERT INTO FAI_ORDINE_IN_COLLECTION
     ,STATUS_TECH_DESCR
     ,STATUS_UPDATED_TS
     ,UNIQUE_ID
+    ,MAGAZZINO_ACRONYM
 )
 VALUES
 (
      ?
+    ,?
     ,?
     ,?
     ,?

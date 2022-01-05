@@ -51,10 +51,12 @@ public class DisponibilitaMagazzinoService extends AbstractSupplierService {
             SqlQueries.storeRequestDisponibilitaTemp(fabb, conn);
             conn.commit();
             //
+            logger.info("magazzino.getOrganizationCode() :: "+magazzino.getOrganizationCode());
             DisponibilitaReqTemp[] req = fabb.getAllReq();
-            for (int i = 0; i < req.length; i++) {
+           for (int i = 0; i < req.length; i++) {
                 int quantitaDisponibile = getAvailabilityOraService(magazzino.getOrganizationCode(),
                         req[i].getCodiceMinSan());
+                logger.info("CodiceMinSan :: "+req[i].getCodiceMinSan() + " :: quantitaDisponibile :: "+quantitaDisponibile);
                 DisponibilitaResTemp res = new DisponibilitaResTemp();
                 res.setQuantitaDisponibile(quantitaDisponibile);
                 req[i].addResp(res);

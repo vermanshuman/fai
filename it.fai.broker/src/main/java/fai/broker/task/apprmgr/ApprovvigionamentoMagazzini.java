@@ -12,6 +12,7 @@ import fai.broker.models.Magazzino;
 import fai.broker.models.TipoFarmaco;
 import fai.broker.supplier.SupplierService;
 import fai.broker.supplier.SupplierService.ManagedRequest;
+import fai.broker.supplier.SupplierServiceFactory;
 
 class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori {
   
@@ -49,21 +50,30 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
   @Override
   protected String processExecute() throws Exception {
     //
-    List<Magazzino> magazzini = env.getMagazzini();
+    /*List<Magazzino> magazzini = env.getMagazzini();
     for (Magazzino magazzino : magazzini) {
       String error = process(magazzino);
       if (error != null) return error;
-    }
+    }*/
+	String error = process();
+    if (error != null) return error;
+    
     //
     return null;
   }
 
-  protected String process(Magazzino magazzino) throws Exception {
+  Magazzino magazzino = null;
+  
+  protected String process() throws Exception {
     //
     // --- selezione dei soli ApprovvigionamentoFarmaco supportati dal Magazzino ---
     //
     List<ApprovvigionamentoFarmaco> supportedApprovToProcess = new ArrayList<ApprovvigionamentoFarmaco>();
+    logger.info("approvvigionamentoToProcess size :: "+approvvigionamentoToProcess.size());
     for (ApprovvigionamentoFarmaco approv : approvvigionamentoToProcess) {
+      if(approv.getMagazzinoAcronym() != null) {
+    	  magazzino = SqlQueries.getSelectedMagazzino(null, approv.getMagazzinoAcronym(), conn);
+      }
       if (CRITERIO_SELEZIONE_FARMACO == SelezionaFarmaco.PercheSupportatoDalMagazzino) {
         //env.getAnagrafica().setProdotto(approv.getCodiceMinSan(), approv.getCodiceEan(), true);
         if (env.getAnagrafica().isParafarmaco() == true && magazzino.isTipoFarmacoSuppported(TipoFarmaco.VALUE_PARAFARMACO)) {
@@ -82,10 +92,13 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
         return "riscontrato problema algoritmico (\"bug\"): criterio non gestito: "+CRITERIO_SELEZIONE_FARMACO;
       }
     }
+    
+    SupplierService service = SupplierServiceFactory.getSupplierService(magazzino, conn);
+    env.addMagazzinoSupplierService(magazzino.getAcronym(), service);
     //
     // --- recupero del servizio di accesso al Magazzino ---
     //
-    SupplierService service = env.getMagazzinoSupplierService(magazzino.getAcronym());
+   // SupplierService service = env.getMagazzinoSupplierService(magazzino.getAcronym());
     //
     // --- interrogazione Magazzino ---
     //

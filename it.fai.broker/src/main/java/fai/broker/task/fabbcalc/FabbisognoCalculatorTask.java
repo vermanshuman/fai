@@ -103,7 +103,7 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
         currApprov = new ApprovvigionamentoFarmaco();
         currApprov.setCodiceMinSan(riga.getCodiceMinSan());
         currApprov.setCodiceEan(riga.getCodiceEan());
-        //currApprov.setMagazzinoAcronym(riga.getMagazzinoAcronym());
+        currApprov.setMagazzinoAcronym(riga.getMagazzinoAcronym());
         currApprov.setQuantita(0);
         currApprov.setStatus(new StatusInfo());
         currApprov.getStatus().setStatus(ItemStatus.VALUE_TO_PROCESS);
