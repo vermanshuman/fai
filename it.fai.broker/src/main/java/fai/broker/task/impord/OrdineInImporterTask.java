@@ -138,7 +138,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     oic.setOid(null);
     oic.setUniqueID(csvInFileNameUID);
     oic.setBatchId(Long.parseLong((new SimpleDateFormat("yyMMddHHmmss")).format(Calendar.getInstance().getTime())));
-    oic.setInputResource(csvInFileName);
+    oic.setInputResource(csvInFileName.substring(0, csvInFileName.lastIndexOf(".csv")) + "_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".csv");
     String fullpath = null;
     if ("LOCAL".equals(params.getProperty("protocol", true))) {
       fullpath = Filesystem.getFullPath(params.getProperty("dir", true), csvInFileName); 
