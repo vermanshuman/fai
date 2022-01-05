@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 
 	private Http http = null;
 	private FarmaclickWS ws = null;
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("MMddHHmm");
 
 	public FarmaclickDataCollector(FaiImportConfig config, Connection conn) {
 		super(config, conn);
@@ -452,25 +454,49 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				String codiceFornitore = fornitoreBean.getCodice();
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
 				String serviceApiLevel = PropertiesLoader.getApplicationProperties().getProperty("service_api_level");
-				if(serviceApiLevel != null && serviceApiLevel.equalsIgnoreCase("2005.001")){
-					List<ArticoloInputBean> articles = productOrderRequests
-							.stream()
-							.filter(por -> por != null)
-							//.map(por -> new ArticoloInputBean(false, por.getProductCode(), "", false, por.getQuantity(), ""))
-							.map(por -> new ArticoloInputBean(1, -1, -1, por.getProductCode(), false, por.getQuantity()))
-							.collect(Collectors.toList());
+				// && serviceApiLevel.equalsIgnoreCase("2005.001")
+				List<ArticoloInputBean> articles = null;
+				if(serviceApiLevel != null){
+					if(serviceApiLevel.equalsIgnoreCase("2005.001")){
+						articles = productOrderRequests
+								.stream()
+								.filter(por -> por != null)
+								//.map(por -> new ArticoloInputBean(false, por.getProductCode(), "", false, por.getQuantity(), ""))
+								.map(por -> new ArticoloInputBean(1, -1, -1, por.getProductCode(), false, por.getQuantity()))
+								.collect(Collectors.toList());
+					}else if(serviceApiLevel.equalsIgnoreCase("2010.001")){
+						articles = productOrderRequests
+								.stream()
+								.filter(por -> por != null)
+								.map(por -> new ArticoloInputBean(false, por.getProductCode(), "", false, por.getQuantity(), ""))
+								.collect(Collectors.toList());
+					}
+				}
+				if(articles != null && !articles.isEmpty()){
+
 					OrdineInputBean oib = new OrdineInputBean();
 					oib.setCodiceFornitore(codiceFornitore);
 					oib.setDescrizioneArticoli(true);
 					oib.setDescrizioneMotivazioneMancanza(false);
 					oib.setIndicazioneDepositoAllestimento(false);
 					oib.setIndicazioneDatiConsegna(false);
+					oib.setRiferimentoOrdineFarmacia(dateFormat.format(new java.util.Date()));
 					oib.setArticoli(articles);
 					OrdineOutputBean oob = ws.callOrdine(oib);
 					if(oob != null && oob.getOrdineOutputBean2005001() != null &&
-					oob.getOrdineOutputBean2005001().getArrayArticoli() != null &&
+							oob.getOrdineOutputBean2005001().getArrayArticoli() != null &&
 							oob.getOrdineOutputBean2005001().getArrayArticoli().length > 0){
 						processedOrders = Arrays.stream(oob.getOrdineOutputBean2005001().getArrayArticoli())
+								.map(article -> new ProcessedOrderBean(article.getCodiceProdotto(), article.getQuantitaRichiesta(),
+										article.getQuantitaMancante(),
+										article.getQuantitaRichiesta() == article.getQuantitaMancante(),
+										article.getCodiceMancanza(), article.getDescrizioneMancanza(),
+										oob.getNumeroOrdineFornitore()))
+								.collect(Collectors.toList());
+					}else if(oob != null && oob.getOrdineOutputBean2010001() != null &&
+							oob.getOrdineOutputBean2010001().getArrayArticoli() != null &&
+							oob.getOrdineOutputBean2010001().getArrayArticoli().length > 0){
+						processedOrders = Arrays.stream(oob.getOrdineOutputBean2010001().getArrayArticoli())
 								.map(article -> new ProcessedOrderBean(article.getCodiceProdotto(), article.getQuantitaRichiesta(),
 										article.getQuantitaMancante(),
 										article.getQuantitaRichiesta() == article.getQuantitaMancante(),
