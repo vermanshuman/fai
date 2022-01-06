@@ -1,4 +1,4 @@
-package fai.broker.supplier.driver.fake;
+package fai.broker.supplier.driver.magazzino;
 
 import java.util.ArrayList;
 import java.util.List;
