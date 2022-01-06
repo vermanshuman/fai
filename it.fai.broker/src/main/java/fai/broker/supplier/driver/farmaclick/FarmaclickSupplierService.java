@@ -21,8 +21,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
 
     @Override
     public RequestMode getRequestMode() throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        return Math.random() < 0.5 ? RequestMode.MoreProductOneRequest : RequestMode.OneProductOneRequest;
     }
 
     @Override
@@ -66,8 +65,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
 
             DisponibilitaReqTemp[] req = fabb.getAllReq();
 
-            List<ProductBean> products = getAvailability(magazzino.getOrganizationCode(),
-                    Arrays.stream(req)
+            List<ProductBean> products = getProductAvailability(Arrays.stream(req)
                             .map(r -> new ProductBean(r.getCodiceMinSan(), r.getQuantitaRichiesta()))
                             .collect(Collectors.toList()));
 
@@ -114,8 +112,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
 
-        List<ProcessedOrderBean> processedOrders = orderProducts(magazzino.getOrganizationCode(),
-                approvvigionamento
+        List<ProcessedOrderBean> processedOrders = orderProducts(approvvigionamento
                         .stream()
                         .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
                         .collect(Collectors.toList()));
@@ -168,23 +165,23 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
         return ordineOut;
     }
 
-    private List<ProductBean> getAvailability(String organizationCode, List<ProductBean> products) throws Exception {
+    private List<ProductBean> getProductAvailability(List<ProductBean> products) throws Exception {
         final String METH_NAME = new Object() {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
-        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("FARMACLICK", "WHERE SERVICE_LOGIN=" + organizationCode, conn);
+        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("FARMACLICK",  conn);
         AbstractDataCollector dataCollector =
                 new fai.imp.farmaclick.task.FarmaclickDataCollector(config, conn);
         return dataCollector.doGetAvailiblityData(products);
     }
 
-    private List<ProcessedOrderBean> orderProducts(String organizationCode, List<ProductBean> products) throws Exception {
+    private List<ProcessedOrderBean> orderProducts(List<ProductBean> products) throws Exception {
         final String METH_NAME = new Object() {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
-        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("FARMACLICK", "WHERE SERVICE_LOGIN=" + organizationCode, conn);
+        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("FARMACLICK", conn);
         AbstractDataCollector dataCollector =
                 new fai.imp.farmaclick.task.FarmaclickDataCollector(config, conn);
         return dataCollector.doOrderProducts(products);

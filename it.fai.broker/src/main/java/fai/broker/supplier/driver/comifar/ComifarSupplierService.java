@@ -20,8 +20,7 @@ public class ComifarSupplierService extends AbstractSupplierService {
 
     @Override
     public RequestMode getRequestMode() throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        return Math.random() < 0.5 ? RequestMode.MoreProductOneRequest : RequestMode.OneProductOneRequest;
     }
 
     @Override
@@ -65,8 +64,7 @@ public class ComifarSupplierService extends AbstractSupplierService {
 
             DisponibilitaReqTemp[] req = fabb.getAllReq();
 
-            List<ProductBean> products = getAvailability(magazzino.getOrganizationCode(),
-                    Arrays.stream(req)
+            List<ProductBean> products = getProductAvailability(Arrays.stream(req)
                             .map(r -> new ProductBean(r.getCodiceMinSan(), r.getQuantitaRichiesta()))
                             .collect(Collectors.toList()));
 
@@ -164,12 +162,12 @@ public class ComifarSupplierService extends AbstractSupplierService {
         return ordineOut;
     }
 
-    private List<ProductBean> getAvailability(String organizationCode, List<ProductBean> products) throws Exception {
+    private List<ProductBean> getProductAvailability(List<ProductBean> products) throws Exception {
         final String METH_NAME = new Object() {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
-        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("COMIFAR", "WHERE SERVICE_LOGIN=" + organizationCode, conn);
+        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("COMIFAR", null, conn);
         AbstractDataCollector dataCollector =
                 new fai.imp.comifar.task.ComifarDataCollector(config, conn);
         return dataCollector.doGetAvailiblityData(products);
@@ -185,4 +183,5 @@ public class ComifarSupplierService extends AbstractSupplierService {
                 new fai.imp.comifar.task.ComifarDataCollector(config, conn);
         return dataCollector.doOrderProducts(products);
     }
+
 }
