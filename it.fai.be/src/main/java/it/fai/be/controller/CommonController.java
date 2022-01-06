@@ -1,4 +1,4 @@
-package it.fai.be.ctrl;
+package it.fai.be.controller;
 
 import fai.broker.db.SqlQueries;
 import fai.broker.models.Magazzino;

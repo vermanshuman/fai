@@ -1,4 +1,4 @@
-package it.fai.be.ctrl;
+package it.fai.be.controller;
 
 import it.fai.be.utils.DbUtils;
 import org.springframework.beans.factory.annotation.Value;

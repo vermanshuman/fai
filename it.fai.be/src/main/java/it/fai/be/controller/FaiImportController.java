@@ -1,4 +1,4 @@
-package it.fai.be.ctrl;
+package it.fai.be.controller;
 
 import it.fai.be.dto.ResponseDto;
 import org.apache.logging.log4j.LogManager;

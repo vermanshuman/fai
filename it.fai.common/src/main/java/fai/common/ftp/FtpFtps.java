@@ -137,8 +137,10 @@ class FtpFtps implements Ftp {
     }
     //
     String fullpath = getFullPath(cfg.getFtpDir(), sourceFilename);
+    ftpClient.enterLocalPassiveMode();
     logger.info("apertura "+InputStream.class.getName()+" verso "+fullpath+" ...");
-    InputStream is = ftpClient. retrieveFileStream(fullpath);
+    ftpClient.changeWorkingDirectory(cfg.getFtpDir());
+    InputStream is = ftpClient.retrieveFileStream(sourceFilename);
     if (is == null) {
       error = InputStream.class.getName()+" verso "+fullpath+" non ottenuto";
       logger.error(error);

@@ -337,6 +337,21 @@
 							<packaging>jar</packaging>
 						</configuration>
 					</execution>
+
+					<execution>
+						<id>install11</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>../jars/standard/commons-httpclient-3.1.0.redhat-7.jar</file>
+							<groupId>commons-httpclient</groupId>
+							<artifactId>commons-httpclient</artifactId>
+							<version>3.1.0.redhat-7</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

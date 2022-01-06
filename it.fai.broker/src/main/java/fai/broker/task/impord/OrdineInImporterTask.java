@@ -1,14 +1,14 @@
 package fai.broker.task.impord;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
 import fai.broker.task.AbstractGenericTask;
+import fai.common.ftp.FtpFactory;
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
@@ -46,6 +46,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
   protected FtpConfig ftpConfig = null;
   protected String csvInFileName = null; 
   protected String csvInFileNameUID = null;
+  protected String csvDirectory = null;
   
   
   @Override
@@ -57,14 +58,17 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     ftpConfig = new FtpConfig();
     String protocol = params.getProperty("protocol", true);
     boolean protocolIsLocal = "LOCAL".equals(protocol);
+    csvDirectory = params.getProperty("dir", true);
+
     ftpConfig.setFtpProtocol(protocol);
     ftpConfig.setFtpHost(params.getProperty("host", protocolIsLocal ? false : true));
     ftpConfig.setFtpPort(params.getInteger("port", false));
-    ftpConfig.setFtpDir(params.getProperty("dir", true));
+    ftpConfig.setFtpDir(csvDirectory);
     ftpConfig.setFtpLogin(params.getProperty("login", false));
     ftpConfig.setFtpPassword(params.getProperty("password", false));
     ftpConfig.setFtpPasswordEncr(params.getBoolean("passwordEncr", false));
     csvInFileName = params.getProperty("csvInFileName", true); // suppongo, al momento (2021.06.21), che il nome del file sia sempre lo stesso
+
   }
   
   /**
@@ -87,8 +91,14 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     Ftp ftp = null;
     InputStream is = null;
     try {
+      if ("LOCAL".equals(params.getProperty("protocol", true))) {
+        is = new FileInputStream(csvDirectory + FileSystems.getDefault().getSeparator() + csvInFileName); //ftp.getInputStream(csvInFileName);
+      }else {
+        ftp = FtpFactory.newFtp(ftpConfig);
+        is = ftp.getInputStream(csvInFileName);
+      }
       //ftp = FtpFactory.newFtp(ftpConfig);
-      is = new FileInputStream("D:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);
+
       BufferedReader reader = new BufferedReader(new InputStreamReader(is));
       String md5 = null;
       String line = null;
@@ -158,8 +168,15 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     CsvToModels csvToModels = null;
     int lineCount = 0;
     try {
+
+      if ("LOCAL".equals(params.getProperty("protocol", true))) {
+        is = new FileInputStream(csvDirectory + FileSystems.getDefault().getSeparator() + csvInFileName); //ftp.getInputStream(csvInFileName);
+      }else {
+        ftp = FtpFactory.newFtp(ftpConfig);
+        is = ftp.getInputStream(csvInFileName);
+      }
       //ftp = FtpFactory.newFtp(ftpConfig);
-      is = new FileInputStream("D:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);;
+      //is = new FileInputStream("D:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);;
       csvToModels = new CsvToModels();
       csvToModels.setInputStream(is);
       Timeout timeout = new Timeout(5000, false);
