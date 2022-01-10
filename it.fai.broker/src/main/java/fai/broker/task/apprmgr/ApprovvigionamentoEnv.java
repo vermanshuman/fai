@@ -16,7 +16,7 @@ import fai.broker.util.AnagraficaFarmaciMinSanEanCache;
 
 /**
  * Raccoglie tutte le istanze degli oggetti utili nel contesto
- * è utilizzato
+ * Ã¨ utilizzato
  * 
  * @author Gianni Radice
  *

@@ -12,15 +12,15 @@ package fai.imp.farmaclick.ws.bean;
  * il quale, a sua volta, contiene {@code arrayConsegna}
  * (tipo {@code ConsegnaOutputBean}).
  * In pratica, con sintassi XPath, {@code ArticoloOutputBean} 
- * dell'API 2010.001 Ë cosÏ strutturato:<br/> 
+ * dell'API 2010.001 √® cos√¨ strutturato:<br/> 
  * <pre>
  *    /ArticoloOutputBean/arrayArticoli[]/arrayConsegna[] // 2010.001
  * </pre>
- * Per gli stessi due attributi, {@code arrayArticoli} (che, perÚ,
+ * Per gli stessi due attributi, {@code arrayArticoli} (che, per√≤,
  * diventa di tipo {@code ArticoloValorizzatoOutputBean}}) e 
  * {@code arrayConsegna} ({@code ConsegnaOutputBean}), 
  * {@code ArticoloOutputBean}, invece, {@code ArticoloOutputBean} 
- * dell'API 2005.001 risulta cosÏ strutturato:<br/> 
+ * dell'API 2005.001 risulta cos√¨ strutturato:<br/> 
  * <pre>
  *    /ArticoloOutputBean/arrayArticoli[] // 2005.001
  *    /ArticoloOutputBean/arrayConsegna[] // 2005.001
@@ -29,7 +29,7 @@ package fai.imp.farmaclick.ws.bean;
  * <ul>
  * <li>adottare come attributi di questo bean, l'unione dei soli attributi scalari (facilmente gestibili in automatico dalla reflection)</li>
  * <li>prevedere due metodi {@code get} per l'accesso diretto al bean restituito dall'API 2005.001 e al bean restituito dall'API 2010.001
- * <li>aggiungere in futuro quanto si render‡ necessario (es., {@code public Calendar getDataConsegna(...critieri...)})</li>
+ * <li>aggiungere in futuro quanto si render√† necessario (es., {@code public Calendar getDataConsegna(...critieri...)})</li>
  * </ul>
  * 
  * @author Gianni Radice

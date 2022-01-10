@@ -109,8 +109,7 @@ public class ComifarSupplierService extends AbstractSupplierService {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
-        List<ProcessedOrderBean> processedOrders = orderProducts(magazzino.getOrganizationCode(),
-                approvvigionamento
+        List<ProcessedOrderBean> processedOrders = orderProducts(approvvigionamento
                         .stream()
                         .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
                         .collect(Collectors.toList()));
@@ -144,9 +143,10 @@ public class ComifarSupplierService extends AbstractSupplierService {
                 }
 
                 if (matchedProduct.get().getOrderedQuantity() != null &&
-                        matchedProduct.get().getMissingQuantity() > 0) {
+                        matchedProduct.get().getOrderedQuantity() > 0) {
                     appr.setQuantita(matchedProduct.get().getOrderedQuantity());
                     appr.setStatus(StatusInfo.newProcessedInstance(null, null));
+                    appr.setOrdineOut(ordineOut);
                     SqlQueries.updateApprovvigionamentoFarmaco(appr, false, conn);
                 }
             }
@@ -173,12 +173,12 @@ public class ComifarSupplierService extends AbstractSupplierService {
         return dataCollector.doGetAvailiblityData(products);
     }
 
-    private List<ProcessedOrderBean> orderProducts(String organizationCode, List<ProductBean> products) throws Exception {
+    private List<ProcessedOrderBean> orderProducts(List<ProductBean> products) throws Exception {
         final String METH_NAME = new Object() {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
-        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("COMIFAR", "WHERE SERVICE_LOGIN=" + organizationCode, conn);
+        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("COMIFAR",  conn);
         AbstractDataCollector dataCollector =
                 new fai.imp.comifar.task.ComifarDataCollector(config, conn);
         return dataCollector.doOrderProducts(products);

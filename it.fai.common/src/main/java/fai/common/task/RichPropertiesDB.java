@@ -50,7 +50,7 @@ public class RichPropertiesDB extends RichProperties {
       SqlQueries.setGenericTaskConfigProperty(genericTaskAcronym, key, value, conn);
     }
     catch (Throwable th) {
-      String error = ExceptionsTool.getExceptionDescription("eccezione inattesa tentando di assegnare la propriet‡ "+value+" alla chiave "+key+" per il FAI_GENERIC_TASK "+genericTaskAcronym, th);
+      String error = ExceptionsTool.getExceptionDescription("eccezione inattesa tentando di assegnare la propriet√† "+value+" alla chiave "+key+" per il FAI_GENERIC_TASK "+genericTaskAcronym, th);
       logger.error(error, th);
       throw new IllegalStateException(error, th);
     }

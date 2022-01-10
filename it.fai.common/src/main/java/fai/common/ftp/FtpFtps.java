@@ -56,6 +56,7 @@ class FtpFtps implements Ftp {
       ftpClient.setConnectTimeout(30000);
       ftpClient.setDataTimeout(30000);
       ftpClient.setDefaultPort(cfg.getFtpPort());
+      ftpClient.setControlEncoding("UTF-8");
       //
       String server = cfg.getFtpHost();
       logger.info("connessione a "+server+" ...");
@@ -91,7 +92,7 @@ class FtpFtps implements Ftp {
     }
     catch (Throwable th) {
       disconnect();
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME;
       if (error == null) error = msg; 
       logger.error(msg, th);
       throw new Exception(msg, th);
@@ -180,7 +181,7 @@ class FtpFtps implements Ftp {
       }
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME;
       if (error == null) error = msg;
       logger.error(msg, th);
       throw new Exception(msg, th);
@@ -213,7 +214,7 @@ class FtpFtps implements Ftp {
       ftpClient.disconnect();
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» disconnessione non riuscita nel metodo " + METH_NAME;
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» disconnessione non riuscita nel metodo " + METH_NAME;
       if (error == null) error = msg; 
       logger.error(msg, th);
       throw new Exception(msg, th);

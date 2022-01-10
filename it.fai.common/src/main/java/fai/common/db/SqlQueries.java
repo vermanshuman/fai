@@ -40,7 +40,7 @@ public class SqlQueries {
       retval = rs.getLong(1);
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -77,7 +77,7 @@ public class SqlQueries {
       }
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -102,7 +102,7 @@ public class SqlQueries {
       stmt.executeUpdate(sql);
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -127,7 +127,7 @@ public class SqlQueries {
       stmt.executeUpdate(sql);
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -157,7 +157,7 @@ public class SqlQueries {
       stmt.executeUpdate();
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -217,7 +217,7 @@ public class SqlQueries {
       }
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -244,7 +244,7 @@ public class SqlQueries {
       stmt.executeUpdate();
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -272,7 +272,7 @@ public class SqlQueries {
       stmt.executeUpdate(sql);
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -298,7 +298,7 @@ public class SqlQueries {
       stmt.executeUpdate(sql);
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -328,7 +328,7 @@ public class SqlQueries {
       return count;
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }
@@ -383,7 +383,7 @@ public class SqlQueries {
       return message;
     }
     catch (Throwable th) {
-      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
       logger.error(msg, th);
       throw new Exception(msg, th);
     }

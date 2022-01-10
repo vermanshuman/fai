@@ -1,26 +1,15 @@
 package fai.broker.supplier;
 
+import fai.broker.db.SqlQueries;
+import fai.broker.models.*;
+import fai.common.util.ExceptionsTool;
+import org.apache.log4j.Logger;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
-import fai.broker.db.SqlQueries;
-import fai.broker.models.ApprovvigionamentoFarmaco;
-import fai.broker.models.DisponibilitaReqTemp;
-import fai.broker.models.DisponibilitaTemp;
-import fai.broker.models.Fornitore;
-import fai.broker.models.ItemStatus;
-import fai.broker.models.Magazzino;
-import fai.broker.models.OrdineOut;
-import fai.broker.models.StatusInfo;
-import fai.broker.supplier.SupplierService.ManagedRequest;
-import fai.common.util.ExceptionsTool;
 
 public abstract class AbstractSupplierService implements SupplierService {
   

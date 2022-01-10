@@ -19,27 +19,27 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
   static Logger logger = Logger.getLogger(ApprovvigionamentoMagazzini.class);
   
   /**
-   * Criterio per determinare se un Magazzino Ë in grado o no di fornire un certo Farmaco.<br/>
-   * Questo criterio Ë cambiato rispetto a quanto inzialmente previsto.<br/>
-   * Piuttosto che eliminare il codice gi‡ scritto, si Ë preferito preservarlo, consentendo
+   * Criterio per determinare se un Magazzino √® in grado o no di fornire un certo Farmaco.<br/>
+   * Questo criterio √® cambiato rispetto a quanto inzialmente previsto.<br/>
+   * Piuttosto che eliminare il codice gi√† scritto, si √® preferito preservarlo, consentendo
    * di decidere il funzionamento al momento della compilazione per mezzo di apposita 
    * variabile statica.<br/>
    * 
    */
   private static enum SelezionaFarmaco {
     /**
-     * Criterio inizialmente previsto: il Magazzino viene scelto perchÈ supporta quel tipo di Farmaco
+     * Criterio inizialmente previsto: il Magazzino viene scelto perch√© supporta quel tipo di Farmaco
      */
     PercheSupportatoDalMagazzino, 
     /**
-     * Nuovo criterio: il Magazzino viene scelto perchÈ esplicitamente indicato in fase di Ordine ("web_order.csv")
+     * Nuovo criterio: il Magazzino viene scelto perch√© esplicitamente indicato in fase di Ordine ("web_order.csv")
      */
     PercheMagazzinoIndicatoNellOrdine 
     };
   
   /**
    * Consente di scegliere, al momento della compilazione, il criterio da applicacre per decidere se un 
-   * dato Magazzino Ë in grado oppure no di fornire un determinato Farmaco<br/>
+   * dato Magazzino √® in grado oppure no di fornire un determinato Farmaco<br/>
    */
   private static SelezionaFarmaco CRITERIO_SELEZIONE_FARMACO = SelezionaFarmaco.PercheSupportatoDalMagazzino;
   
@@ -105,7 +105,7 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
     List<ManagedRequest> managedRequests = service.getAvailability(supportedApprovToProcess);
     if (service.getError() != null) return service.getError();
     //
-    // --- la richiesta della disponibilit‡ DEVE aver impostato alcuni campi... ---
+    // --- la richiesta della disponibilit√† DEVE aver impostato alcuni campi... ---
     //     ==> verifica
     //
     String error = areApprovvigionamentoFarmacoFieldsSetAsExpected(supportedApprovToProcess, ApprovvigionamentoFarmaco.MAGAZZINO, magazzino.getOid(), magazzino.getAcronym(), new int [] { ApprovvigionamentoFarmaco.DISPONIBILITA_RICHIESTA_REQ,  ApprovvigionamentoFarmaco.DISPONIBILITA_RICHIESTA_RES }, new int [] { ApprovvigionamentoFarmaco.DISPONIBILITA_CONFERMATA_REQ,  ApprovvigionamentoFarmaco.DISPONIBILITA_CONFERMATA_RES  });
@@ -116,7 +116,7 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
     ManagedRequestsUpdater mru = new ManagedRequestsUpdater(conn);
     boolean isMagazzino = true;
     boolean bestMatchCanBeMoreThanRequested = isMagazzino; 
-    mru.process("disponibilit‡ Magazzino", managedRequests, bestMatchCanBeMoreThanRequested, isMagazzino);
+    mru.process("disponibilit√† Magazzino", managedRequests, bestMatchCanBeMoreThanRequested, isMagazzino);
     //
     // --- ricaricamento dei FAI_APPROVVIGIONAMENTO_FARMACO "TO_PROCESS" ---
     //

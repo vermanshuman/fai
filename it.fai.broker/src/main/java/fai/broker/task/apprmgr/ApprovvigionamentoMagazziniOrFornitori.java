@@ -58,7 +58,7 @@ abstract class ApprovvigionamentoMagazziniOrFornitori {
     for (ApprovvigionamentoFarmaco approvAvailReqSent : approvList) {
       int count = SqlQueries.countApprovvigionamentoFarmaco(approvAvailReqSent.getOid(), ApprovvigionamentoFarmaco.MAGAZZINO , oidMagazzinoOrFornitore, amNotNullField, amNullField, conn);
       if (count != 1) {
-        String error = "a valle della richiesta di disponibilit‡ al "+(isMagazzino ? "Magazzino" : "Fornitore")+" "+acrCodeMagazzinoOrFornitore+" (OID "+oidMagazzinoOrFornitore+"), lo stato del record di Fabbisogno/Approvvigionamento di Farmaci (FAI_APPROVVIGIONAMENTO_FARMACO) identificato dall'OID "+approvAvailReqSent.getOid();
+        String error = "a valle della richiesta di disponibilit√† al "+(isMagazzino ? "Magazzino" : "Fornitore")+" "+acrCodeMagazzinoOrFornitore+" (OID "+oidMagazzinoOrFornitore+"), lo stato del record di Fabbisogno/Approvvigionamento di Farmaci (FAI_APPROVVIGIONAMENTO_FARMACO) identificato dall'OID "+approvAvailReqSent.getOid();
         logger.error(error);
         SqlCliClient.getSingleton(conn).execute("SELECT * FROM FAI_APPROVVIGIONAMENTO_FARMACO WHERE OID = "+approvAvailReqSent.getOid(), org.apache.log4j.Level.ERROR);
         return error+"; ulteriori informazioni disponibili nei log di sistema";

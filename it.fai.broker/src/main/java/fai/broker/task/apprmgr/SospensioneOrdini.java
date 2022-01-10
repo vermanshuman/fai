@@ -36,12 +36,12 @@ class SospensioneOrdini {
     //
     // --- caricamento e controllo dei record da trattare ---
     //
-    // verifica coerenza e integrit‡ dell'input
+    // verifica coerenza e integrit√† dell'input
     if (oidStProcessing.equals(reference.getStatus().getStatus().getOid()) == false) throw new IllegalArgumentException("inammissibile, atteso "+ApprovvigionamentoFarmaco.class.getName()+" in stato OID "+oidStProcessing+", ricevuta istanza in stato "+reference.getStatus().getStatus().getOid());
     if (reference.getFornitore() == null && fkToFornitore == true)  throw new IllegalStateException("inammissibile, l'istanza ricevuta in input non referenzia un "+Fornitore.class.getName());
     if (reference.getMagazzino() == null && fkToFornitore == false) throw new IllegalStateException("inammissibile, l'istanza ricevuta in input non referenzia un "+Magazzino.class.getName());
     //
-    // caricamento dell'insieme di FAI_APPROVVIGIONAMENTO_FARMACO t.c. l'insieme stesso contenga l'istanza "PROCESSING" passata pi˘ l'eventuale "TO PROCESS" con stesso MinSan/EAN   
+    // caricamento dell'insieme di FAI_APPROVVIGIONAMENTO_FARMACO t.c. l'insieme stesso contenga l'istanza "PROCESSING" passata pi√π l'eventuale "TO PROCESS" con stesso MinSan/EAN   
     List<ApprovvigionamentoFarmaco> approvList = SqlQueries.getAllApprovvigionamentoFarmacoByStatusAndCodice(reference.getCodiceMinSan(), reference.getCodiceEan(), new Long [] { oidStToProcess, oidStProcessing }, conn);
     if (approvList.size() != 1 && approvList.size() != 2) throw new IllegalStateException("inammissibile, la SELECT ha restituito "+approvList.size()+" record FAI_APPROVVIGIONAMENTO_FARMACO; attesi: 1 o 2");
     //
@@ -71,23 +71,23 @@ class SospensioneOrdini {
     ApprovvigionamentoFarmaco apprToProcess = af[0];
     ApprovvigionamentoFarmaco apprProcessing = af[1];
     //
-    // --- individuazione della quota-parte della quantit‡ ---
+    // --- individuazione della quota-parte della quantit√† ---
     //
     if (apprProcessing != null && apprToProcess == null) {
       //
       // -- caso semplice, basta cambiare lo stato da "PROCESSING" a "TO PROCESS" --
       //
-      apprProcessing.setStatus(SqlQueries.setApprovvigionamentoFarmacoStatus(apprProcessing.getOid(), ItemStatus.VALUE_TO_PROCESS.getOid(), "impostato come da processare ("+ItemStatus.VALUE_TO_PROCESS.getAcronym()+") perchÈ referenziante un FAI_ORDINE_IN sospeso", null, conn));
+      apprProcessing.setStatus(SqlQueries.setApprovvigionamentoFarmacoStatus(apprProcessing.getOid(), ItemStatus.VALUE_TO_PROCESS.getOid(), "impostato come da processare ("+ItemStatus.VALUE_TO_PROCESS.getAcronym()+") perch√© referenziante un FAI_ORDINE_IN sospeso", null, conn));
       reference.setStatus(apprProcessing.getStatus()); // allineamenteo anche del clone fornito come riferimento
     }
     else if (apprProcessing != null && apprToProcess != null) {
       //
-      // -- caso complesso, al "PROCESSING" va tolta la quota parte che non puÚ soddisfare --
+      // -- caso complesso, al "PROCESSING" va tolta la quota parte che non pu√≤ soddisfare --
       //
       // calcolo della QUOTA PARTE della QUANTITA dell'APPROV "PROCESSING" referenziante ORDINI_IN "SUSPENDEND"
       ItemStatus statusSuspended = ItemStatus.VALUE_SUSPENDED;
       int qtOrineInSuspended = apprProcessing.getQuantitaByOrdineInStatus(statusSuspended);
-      if (apprProcessing.getQuantita().intValue() < qtOrineInSuspended)  throw new IllegalStateException("inammissibile, la quantit‡ dell'istanza "+ApprovvigionamentoFarmaco.class.getName()+", identificata dall'OID "+apprProcessing.getOid()+", Ë inferiore alla somma delle quantit‡ di tutti gli "+OrdineIn.class.getName()+" in stato "+statusSuspended.getAcronym());
+      if (apprProcessing.getQuantita().intValue() < qtOrineInSuspended)  throw new IllegalStateException("inammissibile, la quantit√† dell'istanza "+ApprovvigionamentoFarmaco.class.getName()+", identificata dall'OID "+apprProcessing.getOid()+", √® inferiore alla somma delle quantit√† di tutti gli "+OrdineIn.class.getName()+" in stato "+statusSuspended.getAcronym());
       //
       // decurtazione dalla QUANTITA dell'APPROV della QUOTA PARTE 
       apprProcessing.setQuantita(apprProcessing.getQuantita() - qtOrineInSuspended);
@@ -101,12 +101,12 @@ class SospensioneOrdini {
       // l'APPROV "PROCESSING" referenzia ancora degli A2R verso ORDINI_IN "PROCESSED"?
       if (/* basta controllare la QUANTITA */ apprProcessing.getQuantita() == 0) {
         // NO
-        // --> il record puÚ essere rimosso
+        // --> il record pu√≤ essere rimosso
         SqlQueries.deleteApprovvigionamentoFarmacoByOid(apprProcessing.getOid(), conn);
       }
       else {
         // SI
-        // --> Ë sufficiente aggiornare la QUANTITA che Ë stata decurtata della QUOTA PARTE
+        // --> √® sufficiente aggiornare la QUANTITA che √® stata decurtata della QUOTA PARTE
         SqlQueries.updateApprovToRiga(apprProcessing.getOid(), apprProcessing.getQuantita(), conn);
       }
       //
@@ -137,17 +137,17 @@ class SospensioneOrdini {
       //
       // -- caso semplice, basta cambiare lo stato da "PROCESSING" a "TO PROCESS" --
       //
-      apprProcessing.setStatus(SqlQueries.setApprovvigionamentoFarmacoStatus(apprProcessing.getOid(), ItemStatus.VALUE_TO_PROCESS.getOid(), "impostato come da processare ("+ItemStatus.VALUE_TO_PROCESS.getAcronym()+") perchÈ referenziante un FAI_ORDINE_IN sospeso", null, conn));
+      apprProcessing.setStatus(SqlQueries.setApprovvigionamentoFarmacoStatus(apprProcessing.getOid(), ItemStatus.VALUE_TO_PROCESS.getOid(), "impostato come da processare ("+ItemStatus.VALUE_TO_PROCESS.getAcronym()+") perch√© referenziante un FAI_ORDINE_IN sospeso", null, conn));
       reference.setStatus(apprProcessing.getStatus()); // allineamenteo anche del clone fornito come riferimento
     }
     else if (apprProcessing != null && apprToProcess != null) {
       //
-      // -- caso complesso: i due vanno fusi in uno solo e aggiornata la quantit‡ -- 
+      // -- caso complesso: i due vanno fusi in uno solo e aggiornata la quantit√† -- 
       //
       // rimuovo quello che aveva ottenuto risposte dal Fornitore 
       SqlQueries.deleteApprovvigionamentoFarmacoByOid(apprProcessing.getOid(), conn);
       //
-      // aggiorno quello che era gi‡ "PROCESSING"
+      // aggiorno quello che era gi√† "PROCESSING"
       apprToProcess.setQuantita(apprToProcess.getQuantita()+apprProcessing.getQuantita());
       SqlQueries.updateApprovvigionamentoFarmaco(apprToProcess, true, conn);
       
@@ -160,19 +160,19 @@ class SospensioneOrdini {
 
   /**
    * potrei mettere l'SqlQueries direttamente nel while nel quale uso questo
-   * metodo, ma ho necessit‡ di loggare ...
+   * metodo, ma ho necessit√† di loggare ...
    * 
    * @return
    * @throws Exception
    */
   private int setOrdineInSuspendedIfApprovToProcess() throws Exception {
-    logger.info("sospensione ("+ItemStatus.VALUE_SUSPENDED.getAcronym()+") degli Ordini in ingresso (FAI_ORDINE_IN) per i quali non Ë stato possibile soddisfare il fabbisogno (FAI_APPROVVIGIONAMENTO_FARMACO "+ItemStatus.VALUE_TO_PROCESS.getAcronym()+") ...");
+    logger.info("sospensione ("+ItemStatus.VALUE_SUSPENDED.getAcronym()+") degli Ordini in ingresso (FAI_ORDINE_IN) per i quali non √® stato possibile soddisfare il fabbisogno (FAI_APPROVVIGIONAMENTO_FARMACO "+ItemStatus.VALUE_TO_PROCESS.getAcronym()+") ...");
     int updatedRecordsCount = SqlQueries.setOrdineInSuspendedIfApprovToProcess(conn);
     if (updatedRecordsCount == 0) {
       logger.info("nessun Ordini in ingresso (FAI_ORDINE_IN) sospeso ("+ItemStatus.VALUE_SUSPENDED.getAcronym()+"), nessun fabbisogno risulta privo di copertura");
     }
     else {
-      logger.info(updatedRecordsCount +" Ordini in ingresso (FAI_ORDINE_IN) sospesi ("+ItemStatus.VALUE_SUSPENDED.getAcronym()+") per impossibilit‡ di soddisfarne il fabbisogno per almeno un farmaco (FAI_APPROVVIGIONAMENTO_FARMACO "+ItemStatus.VALUE_TO_PROCESS.getAcronym()+")");
+      logger.info(updatedRecordsCount +" Ordini in ingresso (FAI_ORDINE_IN) sospesi ("+ItemStatus.VALUE_SUSPENDED.getAcronym()+") per impossibilit√† di soddisfarne il fabbisogno per almeno un farmaco (FAI_APPROVVIGIONAMENTO_FARMACO "+ItemStatus.VALUE_TO_PROCESS.getAcronym()+")");
     }
     return updatedRecordsCount;
   }
@@ -202,7 +202,7 @@ class SospensioneOrdini {
       //      altri ORDINI (nel frattempo) posti a "SUSPENDED". 
       //      Inoltre,
       //      tutti gli APPROV "PROCESSING" dell'Ordine vanno posti nuovamente a "TO PROCESS"
-      //      perchÈ non Ë detto che il FORNITORE con una disponibilit‡ di 10 Aspirine,
+      //      perch√© non √® detto che il FORNITORE con una disponibilit√† di 10 Aspirine,
       //      delle quali 6 all'ORDINE appena "SUSPENDED" e 4 ad un altro ORDINE, sia disposto
       //      a fornire solo queste ultime 4.
       //      L'APPROV va eventualmente "fuso" con APPROV esistenti con stesso MINSAN/EAN e 
@@ -210,7 +210,7 @@ class SospensioneOrdini {
       //
       //      Graficamente, esplicitando le relazioni tra le tabelle/record, fissato  
       //      un particolare MINSAN/EAN (che, quindi, si omette dal "disegno"), e supponendo 
-      //      che le quantit‡ siano garantite da FORNITORI, dato lo scenario:
+      //      che le quantit√† siano garantite da FORNITORI, dato lo scenario:
       //      
       //                
       //                                    +--- A2R QTA 4 --- RIGA:b --- ORDINE:B "PROCESSED"
@@ -223,10 +223,10 @@ class SospensioneOrdini {
       //      
       //      
       //      
-      //      APPROV:1 non puÚ pi˘ essere tentuo nello stato "PROCESSING", perchÈ referenzia
-      //      una riga di ORDINE:A che Ë "SUSPENDED" e non Ë detto che il FORNITORE sia dispoosto
-      //      a fornire 4 invece di 6 unit‡, pertanto torna "TO PROCESS" ed anche ORDINE:B,
-      //      non pi˘ soddisfatto, diventa "SUSPENDED":
+      //      APPROV:1 non pu√≤ pi√π essere tentuo nello stato "PROCESSING", perch√© referenzia
+      //      una riga di ORDINE:A che √® "SUSPENDED" e non √® detto che il FORNITORE sia dispoosto
+      //      a fornire 4 invece di 6 unit√†, pertanto torna "TO PROCESS" ed anche ORDINE:B,
+      //      non pi√π soddisfatto, diventa "SUSPENDED":
       //      
       //                
       //                                    +--- A2R QTA 4 --- RIGA:b --- ORDINE:B "SUSPENDED"
@@ -238,7 +238,7 @@ class SospensioneOrdini {
       //      APPROV:2 "TO PROCESS" QTA=3 -------A2R QTA 3 --- RIGA:c --- ORDINE:C "SUSPENDED"
       //      
       //                
-      //      Inoltre, poichÈ APPROV:1 e APPROV:2 fanno riferimento allo stesso MINSAN/EAN, i due                
+      //      Inoltre, poich√© APPROV:1 e APPROV:2 fanno riferimento allo stesso MINSAN/EAN, i due                
       //      record andranno "fusi":         
       //                 
       //                 
@@ -253,13 +253,13 @@ class SospensioneOrdini {
       //                
       //      Inutile dire che ORDINE:B passato da "PROCESSED" a "SUSPENDED" magari includeva
       //      anche altre RIGHE, servite da APPROV di FORNITORI: il processo di SOSPENSIONE
-      //      va quindi re-iterato finchÈ il passaggio di un ORDINE da "PROCESSED" a 
+      //      va quindi re-iterato finch√© il passaggio di un ORDINE da "PROCESSED" a 
       //      "SUSPENDED" non impatta su APPROV - di FORNITORI - in stato "PROCESSING" 
       // 
       //
-      logger.info("sospensione ("+ItemStatus.VALUE_SUSPENDED.getAcronym()+") degli Ordini in ingresso (FAI_ORDINE_IN) il cui fabbisogno risulta soddisfatto da un approvvigionamento (FAI_APPROVVIGIONAMENTO_FARMACO), richiesto ad un Fornitore (FAI_FORNITORE), in comune con Ordini gi‡ sospesi ...");
+      logger.info("sospensione ("+ItemStatus.VALUE_SUSPENDED.getAcronym()+") degli Ordini in ingresso (FAI_ORDINE_IN) il cui fabbisogno risulta soddisfatto da un approvvigionamento (FAI_APPROVVIGIONAMENTO_FARMACO), richiesto ad un Fornitore (FAI_FORNITORE), in comune con Ordini gi√† sospesi ...");
       //
-      // carico per "ApprovvigionamentoFarmaco" perchÈ - al momento - Ë l'unico modello che riesce
+      // carico per "ApprovvigionamentoFarmaco" perch√© - al momento - √® l'unico modello che riesce
       // a "connettere" i due estremi della "catena" di oggetti
       List<ApprovvigionamentoFarmaco> approvList = SqlQueries.getAllOrdineInDataLinkedToSuspendedOnes(true, false, conn);
       //
@@ -268,14 +268,14 @@ class SospensioneOrdini {
         //
         // loop sugli ApprovvigionamentoFarmaco ...
         for (int i = 0; i < approv.getApprovRigaDettCount(); i++) {
-          if (approv.getStatus().getStatus().getAcronym().equals(ItemStatus.VALUE_PROCESSING.getAcronym()) == false) throw new IllegalStateException("inammissibile, il FAI_APPROVVIGIONAMENTO_FARMACO di OID "+approv.getOid()+" recuperato dalla SELECT Ë in stato "+approv.getStatus().getStatus().getAcronym()+"; atteso: "+ItemStatus.VALUE_PROCESSING.getAcronym());
+          if (approv.getStatus().getStatus().getAcronym().equals(ItemStatus.VALUE_PROCESSING.getAcronym()) == false) throw new IllegalStateException("inammissibile, il FAI_APPROVVIGIONAMENTO_FARMACO di OID "+approv.getOid()+" recuperato dalla SELECT √® in stato "+approv.getStatus().getStatus().getAcronym()+"; atteso: "+ItemStatus.VALUE_PROCESSING.getAcronym());
           //
           // ... e sospensione degli OrdineIn da sospendere
           OrdineIn ordineDaSospendere = approv.getApprovRigaDettAt(i).getRigaDett().getOrdineIn();
-          if (ordiniSospesi.contains(ordineDaSospendere.getOid()) == false) { // <-- lo stesso OrdineIn potrebbe essere referenziato da pi˘ Approv --> sospensione solo la prima volta che viene incontrato
-            if (ordineDaSospendere.getStatus().getStatus().getAcronym().equals(ItemStatus.VALUE_PROCESSED.getAcronym()) == false) throw new IllegalStateException("inammissibile, il FAI_ORDINE_IN di OID "+ordineDaSospendere.getOid()+" recuperato dalla SELECT Ë in stato "+ordineDaSospendere.getStatus().getStatus().getAcronym()+"; atteso: "+ItemStatus.VALUE_PROCESSED.getAcronym());
+          if (ordiniSospesi.contains(ordineDaSospendere.getOid()) == false) { // <-- lo stesso OrdineIn potrebbe essere referenziato da pi√π Approv --> sospensione solo la prima volta che viene incontrato
+            if (ordineDaSospendere.getStatus().getStatus().getAcronym().equals(ItemStatus.VALUE_PROCESSED.getAcronym()) == false) throw new IllegalStateException("inammissibile, il FAI_ORDINE_IN di OID "+ordineDaSospendere.getOid()+" recuperato dalla SELECT √® in stato "+ordineDaSospendere.getStatus().getStatus().getAcronym()+"; atteso: "+ItemStatus.VALUE_PROCESSED.getAcronym());
             //
-            SqlQueries.setOrdineInCollectionStatus(ordineDaSospendere.getOid(), ItemStatus.VALUE_SUSPENDED.getOid(), "sospeso perchÈ referenziato FAI_APPROVVIGIONAMENTO_FARMACO in comune con altro FAI_ORDINE_IN gi‡ sospeso" , null, conn);
+            SqlQueries.setOrdineInCollectionStatus(ordineDaSospendere.getOid(), ItemStatus.VALUE_SUSPENDED.getOid(), "sospeso perch√© referenziato FAI_APPROVVIGIONAMENTO_FARMACO in comune con altro FAI_ORDINE_IN gi√† sospeso" , null, conn);
             ordiniSospesi.add(ordineDaSospendere.getOid());
           }
         }
@@ -284,7 +284,7 @@ class SospensioneOrdini {
         // agli eventuali "TO PROCESS" con stesso MINSAN/EAN
         mergeAndSuspendApprovFornitore(approv);
       }
-      logger.info(ordiniSospesi.size()+" Ordini in ingresso (FAI_ORDINE_IN) sospesi ("+ItemStatus.VALUE_SUSPENDED.getAcronym()+") il cui fabbisogno risultava soddisfatto da un approvvigionamento (FAI_APPROVVIGIONAMENTO_FARMACO), richiesto ad un Fornitore (FAI_FORNITORE), in comune con Ordini gi‡ sospesi");
+      logger.info(ordiniSospesi.size()+" Ordini in ingresso (FAI_ORDINE_IN) sospesi ("+ItemStatus.VALUE_SUSPENDED.getAcronym()+") il cui fabbisogno risultava soddisfatto da un approvvigionamento (FAI_APPROVVIGIONAMENTO_FARMACO), richiesto ad un Fornitore (FAI_FORNITORE), in comune con Ordini gi√† sospesi");
     }
     //
     //  --- GESTIONE di tutti gli ORDINI soddisfatti per mezzo APPROV "PROCESSING" --- 
@@ -293,7 +293,7 @@ class SospensioneOrdini {
     //      
     //      A differenza dei FORNITORI, si ammette che un qualsiasi MAGAZZINO capace 
     //      di rifornire una QUANTITA X di un certo prodotto, sia anche capace di fornire
-    //      una qualsiasi quantit‡ minore di X.
+    //      una qualsiasi quantit√† minore di X.
     //
     //      Con notazione grafica, partendo dallo stessissimo scenario visto per i FORNITORI,
     //      ma attribuendo gli APPROV ai MAGAZZINI:
@@ -309,8 +309,8 @@ class SospensioneOrdini {
     //      
     //                
     //      si avrebbe, semplicemente, che l'APPROV:1 andrebbe considerato "PROCESSING"
-    //      per le sole 4 unit‡ che Ë possibile soddisfare, assegnando le altre 2 
-    //      all'APPROV:2 "TO PROCESS" (se APPROV:2 non esistesse, per esempio perchÈ non esiste
+    //      per le sole 4 unit√† che √® possibile soddisfare, assegnando le altre 2 
+    //      all'APPROV:2 "TO PROCESS" (se APPROV:2 non esistesse, per esempio perch√© non esiste
     //      l'ORDINE:C, allora un APPROV:2 andrebbe creato):
     //                
     //                
@@ -323,7 +323,7 @@ class SospensioneOrdini {
     //
     logger.info("assegnazione dello stato "+ItemStatus.VALUE_TO_PROCESS.getAcronym()+" per quota parte di ogni fabbisogno soddisfatto per mezzo di un approvvigionamento (FAI_APPROVVIGIONAMENTO_FARMACO) richiesto ad un Magazzino (FAI_MAGAZZINO) ma in comune con Ordini sospesi ...");
     //
-    // carico per "ApprovvigionamentoFarmaco" perchÈ - al momento - Ë l'unico modello che riesce
+    // carico per "ApprovvigionamentoFarmaco" perch√© - al momento - √® l'unico modello che riesce
     // a "connettere" i due estremi della "catena" di oggetti
     List<ApprovvigionamentoFarmaco> approvList = SqlQueries.getAllOrdineInDataLinkedToSuspendedOnes(false, true, conn);
     //
@@ -331,7 +331,7 @@ class SospensioneOrdini {
       //
       // loop sugli ApprovvigionamentoFarmaco ...
       for (int i = 0; i < approv.getApprovRigaDettCount(); i++) {
-        if (approv.getStatus().getStatus().getAcronym().equals(ItemStatus.VALUE_PROCESSING.getAcronym()) == false) throw new IllegalStateException("inammissibile, il FAI_APPROVVIGIONAMENTO_FARMACO di OID "+approv.getOid()+" recuperato dalla SELECT Ë in stato "+approv.getStatus().getStatus().getAcronym()+"; atteso: "+ItemStatus.VALUE_PROCESSING.getAcronym());
+        if (approv.getStatus().getStatus().getAcronym().equals(ItemStatus.VALUE_PROCESSING.getAcronym()) == false) throw new IllegalStateException("inammissibile, il FAI_APPROVVIGIONAMENTO_FARMACO di OID "+approv.getOid()+" recuperato dalla SELECT √® in stato "+approv.getStatus().getStatus().getAcronym()+"; atteso: "+ItemStatus.VALUE_PROCESSING.getAcronym());
         //
         splitAndMergeApprovMagazzino(approv);
       }

@@ -94,8 +94,8 @@ public class ApprovFarmaco2DispTempConverter {
   
   
   public List<DisponibilitaTemp> setFabbisognoRequest(List<ApprovvigionamentoFarmaco> fabbisognoRequest, RequestMode requestMode) throws Exception {
-    if (magazzino == null && fornitore == null) throw new IllegalStateException("istanza "+this.getClass().getName()+" non correttamente inizializzata: Ë necessario specificare o il Magazzino o il Fornitore");
-    if (magazzino != null && fornitore != null) throw new IllegalStateException("istanza "+this.getClass().getName()+" non correttamente inizializzata: Ë necessario specificare o il Magazzino o il Fornitore; sono stati specificati entrambi");
+    if (magazzino == null && fornitore == null) throw new IllegalStateException("istanza "+this.getClass().getName()+" non correttamente inizializzata: √® necessario specificare o il Magazzino o il Fornitore");
+    if (magazzino != null && fornitore != null) throw new IllegalStateException("istanza "+this.getClass().getName()+" non correttamente inizializzata: √® necessario specificare o il Magazzino o il Fornitore; sono stati specificati entrambi");
     reset();
     this.fabbisognoRequest = fabbisognoRequest;
     //
@@ -115,7 +115,7 @@ public class ApprovFarmaco2DispTempConverter {
       //
       String productAsKey = asKey(appr);
       if (fabbisognoByMinSanEan.get(productAsKey) != null) {
-    	  throw new IllegalStateException("inammissibile coppia MinSan/Ean "+productAsKey+" per il fabbisogno (FAI_APPROVVIGIONAMENTO_FARMACO) identificato dall'OID "+appr.getOid()+" Ë gi‡ presente almeno un'altra volta in questa richiesta");
+    	  throw new IllegalStateException("inammissibile coppia MinSan/Ean "+productAsKey+" per il fabbisogno (FAI_APPROVVIGIONAMENTO_FARMACO) identificato dall'OID "+appr.getOid()+" √® gi√† presente almeno un'altra volta in questa richiesta");
       }
       fabbisognoByMinSanEan.put(productAsKey, appr);
       //
@@ -138,18 +138,18 @@ public class ApprovFarmaco2DispTempConverter {
     for (DisponibilitaTemp dt : this.disponibilitaTempList) {
       DisponibilitaReqTemp [] req = dt.getAllReq();
       for (int i = 0; i < req.length; i++) {
-        if (req[i].getRespCount() == 0) throw new IllegalStateException("nessun elemento "+DisponibilitaResTemp.class.getName()+" per la "+DisponibilitaResTemp.class.getName()+" MinSan/Ean "+req[i].getCodiceMinSan()+"/"+req[i].getCodiceEan()+", quantit‡ richiesta "+req[i].getQuantitaRichiesta());
+        if (req[i].getRespCount() == 0) throw new IllegalStateException("nessun elemento "+DisponibilitaResTemp.class.getName()+" per la "+DisponibilitaResTemp.class.getName()+" MinSan/Ean "+req[i].getCodiceMinSan()+"/"+req[i].getCodiceEan()+", quantit√† richiesta "+req[i].getQuantitaRichiesta());
         //
         String productAsKey = asKey(req[i]);
         ApprovvigionamentoFarmaco fabbisogno = fabbisognoByMinSanEan.get(productAsKey);
-        if (fabbisogno == null) throw new IllegalStateException("inammissibile, nessun fabbisogno ("+ApprovvigionamentoFarmaco.class.getName()+") per la coppia MinSan/Ean "+productAsKey+" benchÈ sia disponibile una riposta per "+req[i].getRespCount()+" differenti opzioni di quantit‡ disponibili");
+        if (fabbisogno == null) throw new IllegalStateException("inammissibile, nessun fabbisogno ("+ApprovvigionamentoFarmaco.class.getName()+") per la coppia MinSan/Ean "+productAsKey+" bench√© sia disponibile una riposta per "+req[i].getRespCount()+" differenti opzioni di quantit√† disponibili");
         //
         List<ApprovvigionamentoFarmaco> disponibilitaList = new ArrayList<ApprovvigionamentoFarmaco>();
         DisponibilitaResTemp [] res = req[i].getAllResp();
         for (int j = 0; j < res.length; j++) {
           ApprovvigionamentoFarmaco disponibilita = new ApprovvigionamentoFarmaco();
           disponibilita.copyFrom(fabbisogno);
-          disponibilita.setOid(null /* perchÈ Ë una "risposta", l'OID non ce l'ha perchÈ non ancora registrata in banca dati */ );
+          disponibilita.setOid(null /* perch√© √® una "risposta", l'OID non ce l'ha perch√© non ancora registrata in banca dati */ );
           disponibilita.setQuantita(res[j].getQuantitaDisponibile());
           disponibilitaList.add(disponibilita);
           // fabbisognoResponse.add(disponibilita);

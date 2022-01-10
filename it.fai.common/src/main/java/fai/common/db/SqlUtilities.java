@@ -256,10 +256,10 @@ public abstract class SqlUtilities {
 
     String whereClauseItem = null;
 
-    // la prima data è sempre valorizzata
+    // la prima data Ã¨ sempre valorizzata
     String dt1 = sdf.format(qbec.getCalendar1().getTime());
     if (AbstractModel.QueryByExampleCalendar.BETWEEN.equals(qbec.getOperator())) {
-      // la seconda data è valorizzata solo per between
+      // la seconda data Ã¨ valorizzata solo per between
       String dt2 = sdf.format(qbec.getCalendar2().getTime());
       whereClauseItem = " and " + colonnaDataTabella + " between TO_DATE('" + dt1 + "', 'ddMMyyyy') and TO_DATE('" + dt2 + "', 'ddMMyyyy') ";
     }
@@ -751,7 +751,7 @@ public abstract class SqlUtilities {
 
   /**
    * se <code>value</code>==<code>nullValue</code>, allora al corrispondente
-   * campo nel db sar� assegnato NULL.
+   * campo nel db sarà assegnato NULL.
    * @param index int
    * @param value int
    * @param nullValue int
@@ -787,7 +787,7 @@ public abstract class SqlUtilities {
 
   /**
    * se <code>value</code>==<code>nullValue</code>, allora al corrispondente
-   * campo nel db sar� assegnato NULL.
+   * campo nel db sarà assegnato NULL.
    * @param index long
    * @param value long
    * @param nullValue long
@@ -804,7 +804,7 @@ public abstract class SqlUtilities {
   
   /**
    * se <code>value</code>==<code>nullValue</code>, allora al corrispondente
-   * campo nel db sar� assegnato NULL.
+   * campo nel db sarà assegnato NULL.
    * @param index int
    * @param value double
    * @param nullValue double
