@@ -1,1 +1,67 @@
 // Here you can add other styles
+.primary-btn-with-icon {
+  background-color: white;
+  border: 1px solid #20a8d8;
+
+  i {
+    display: inline-block;
+    width: 2.0625rem;
+    margin: -0.375rem -0.75rem;
+    line-height: 2.1rem;
+    text-align: center;
+    background-color: #20a8d8;
+    color: white;
+    font-size: 18px;
+  }
+
+  span {
+    color: #20a8d8;
+    margin-left: 20px;
+    font-weight: 500;
+  }
+}
+
+
+.success-btn-with-icon {
+  background-color: white;
+  border: 1px solid #4dbd74;
+
+  i {
+    display: inline-block;
+    width: 2.0625rem;
+    margin: -0.375rem -0.75rem;
+    line-height: 2.1rem;
+    text-align: center;
+    background-color: #4dbd74;
+    color: white;
+    font-size: 18px;
+  }
+
+  span {
+    color: #4dbd74;
+    margin-left: 20px;
+    font-weight: 500;
+  }
+}
+
+.danger-btn-with-icon {
+  background-color: white;
+  border: 1px solid #f86c6b;
+
+  i {
+    display: inline-block;
+    width: 2.0625rem;
+    margin: -0.375rem -0.75rem;
+    line-height: 2.1rem;
+    text-align: center;
+    background-color: #f86c6b;
+    color: white;
+    font-size: 18px;
+  }
+
+  span {
+    color: #f86c6b;
+    margin-left: 20px;
+    font-weight: 500;
+  }
+}

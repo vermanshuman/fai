@@ -1,41 +1,274 @@
 <div class="animated fadeIn">
   <div class="">
-    <div class="d-flex align-items-end pb-3">
-      <div class="">
-        <label class="form-label mb-0" for="daInputDate">{{'from' | translate | uppercase}}</label>
-        <input class="form-control" type="text" placeholder="da" aria-label="default input example" type="date" id="daInputDate">
-      </div>
-      <div class="ml-2">
-        <label class="form-label mb-0" for="aInputDate">{{'a' | translate | uppercase}}</label>
-        <input class="form-control" type="text" placeholder="a" aria-label="default input example" type="date" id="aInputDate">
-      </div>
-      <div class="ml-2">
-        <button class="btn btn-primary" type="button">{{'search' | translate}}</button>
-      </div>
-      <div class="ml-3">
-        <label class="form-label mb-0" for="fileOrdiniInputSearch">{{'ordersFile' | translate}}</label>
-        <input class="form-control" type="text" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
-      </div>
-      <div class="ml-2">
-        <label class="form-label mb-0" for="idVenditaInputSearch">{{'idSale' | translate}}</label>
-        <input class="form-control" type="text" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
-      </div>
+    <!-- d-flex align-items-end  -->
+    <div class="pb-3">
+     <div class="row">
+       <div class="col-md-8">
+        <div class="row">
+          <div class="col-md-2 pb-2">
+            <div class="">
+              <label class="form-label mb-0" for="daInputDate">{{'From' | translate | uppercase}}</label>
+              <input class="form-control" type="text" placeholder="da" aria-label="default input example" type="date" id="daInputDate">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="">
+              <label class="form-label mb-0" for="aInputDate">{{'To' | translate | uppercase}}</label>
+              <input class="form-control" type="text" placeholder="a" aria-label="default input example" type="date" id="aInputDate">
+            </div>
+          </div>
+          <div class="col-md-1 pb-2">
+            <div class="">
+              <label></label>
+              <div>
+                <button class="btn btn-primary" type="button">{{'Search' | translate}}</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 pb-2">
+            <div class="">
+              <label class="form-label mb-0" for="fileOrdiniInputSearch">{{'OrdersFile' | translate}}</label>
+              <input class="form-control" type="text" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
+            </div>
+          </div>
+          <div class="col-md-2 pb-2">
+            <div class="">
+              <label class="form-label mb-0" for="idVenditaInputSearch">{{'IdSale' | translate}}</label>
+              <input class="form-control" type="text" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
+            </div>
+          </div>
+        </div>
+       </div>
+       <div class="col-md-4">
+
+       </div>
+     </div>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12 mb-4">
       <!-- Nav tabs -->
       <tabset>
-        <tab [heading]="'ordersFile' | translate">
-          1. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <tab [heading]="'OrdersFile' | translate" class="fade-in">
+          <div class="tab-body-content">
+            <div class="card mb-0">
+              <!-- tab-body-max-width -->
+              <div class="card-body p-5">
+                <div class="row">
+                    <div class="col-md-12">
+                      <div class="row">
+                        <div class="col-md-11">
+                          <div class="text-right ml-2">
+                            <button type="button" class="btn primary-btn-with-icon"
+                                    (click)="initFtpConfigForm(); fileOrdiniConfigureModal.show();">
+                              <i class="fa fa-gear"></i>
+                              <span>Configura</span>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="mt-5">
+                        <div class="row">
+                          <div class="col-md-1"></div>
+                          <div class="col-md-7">
+                            <div class="form-group">
+                              <div class="input-group">
+                                <input hidden type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+                                application/vnd.ms-excel" #uploader (change)="browseFile($event)"/>
+                                <input type="text" name="input2-group2" class="form-control" placeholder="Upload file"
+                                      autocomplete="upload file" [(ngModel)]="selectedFileName">
+                                <span class="input-group-append">
+                                  <button type="button" class="btn btn-secondary" (click)="uploader.click()">Browse</button>
+                                </span>
+                              </div>
+                              <p *ngIf="fileUploadErrMsg" class="text-red">{{fileUploadErrMsg}}</p>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="row">
+                              <div class="col-md-9">
+                                <div class="form-group">
+                                  <select class="form-control" id="ccmonth" placeholder="">
+                                    <option value="">MAGAZZINO</option>
+                                    <option value="UPS">UPS di Formello</option>
+                                    <option value="LORETO">Magazzino Loreto</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="col-md-3">
+                                <button class="btn btn-primary" type="button" (click)="uploadFile()">Upload</button>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-1"></div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </tab>
-        <tab [heading]="'orders' | translate">
+        <tab [heading]="'Orders' | translate" class="fade-in">
           2. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </tab>
-        <tab [heading]="'products' | translate">
+        <tab [heading]="'Products' | translate" class="fade-in">
           3. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </tab>
       </tabset>
     </div><!--/.col-->
   </div><!--/.row-->
 </div>
+
+<!--configure modal (file ordini tab)-->
+<div bsModal #fileOrdiniConfigureModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">FTP Config</h4>
+        <button type="button" class="close" (click)="fileOrdiniConfigureModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card mb-0 bg-lighter-gray">
+              <div class="card-body">
+                <form [formGroup]="ftpConfigForm" class="form-horizontal" *ngIf="ftpConfigForm">
+                                    <div class="form-group row">
+                    <label class="col-md-2 col-form-label">Ftp url:</label>
+                    <div class="col-md-10">
+                      <input type="text" name="ftp_url" class="form-control" formControlName="ftp_url" required>
+                      <div class="error-text" *ngIf="ftpConfigForm?.get('ftp_url')?.errors?.required &&
+                      ftpConfigForm?.get('ftp_url')?.dirty">Ftp url is required</div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group row">
+                        <label class="col-md-4 col-form-label" for="email-input">User</label>
+                        <div class="col-md-8">
+                          <input type="text" name="email-input" class="form-control" autocomplete="email"
+                                 formControlName="username">
+                          <div class="error-text" *ngIf="ftpConfigForm?.get('username')?.errors?.required &&
+                      ftpConfigForm?.get('username')?.dirty">Username is required</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group row">
+                        <label class="col-md-4 col-form-label" for="password-input">Password</label>
+                        <div class="col-md-8">
+                          <input type="password" name="password-input" class="form-control"
+                                 autocomplete="current-password" formControlName="password">
+                          <div class="error-text" *ngIf="ftpConfigForm?.get('password')?.errors?.required &&
+                      ftpConfigForm?.get('password')?.dirty">Password is required</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="clearfix"></div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group row">
+                        <label class="col-md-4 col-form-label" for="file-name">File name:</label>
+                        <div class="col-md-8">
+                          <input type="text" name="text-input" class="form-control" formControlName="file_name">
+                          <div class="error-text" *ngIf="ftpConfigForm?.get('file_name')?.errors?.required &&
+                      ftpConfigForm?.get('file_name')?.dirty">File name is required</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group row">
+                        <label class="col-md-4 col-form-label" for="file-name">Magazinno:</label>
+                        <div class="col-md-8">
+                          <select class="form-control" id="ccmonth" placeholder="">
+                            <option value="">MAGAZZINO</option>
+                            <option value="UPS">UPS di Formello</option>
+                            <option value="LORETO">Magazzino Loreto</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-2 col-form-label">Days</label>
+                    <div class="col-md-10 col-form-label">
+                      <div class="form-check form-check-inline mr-1">
+                        <input class="form-check-input" type="checkbox" value="Sun" formControlName="sunday">
+                        <label class="form-check-label" for="inline-checkbox1">Sun</label>
+                      </div>
+                      <div class="form-check form-check-inline mr-1">
+                        <input class="form-check-input" type="checkbox" value="M" formControlName="monday">
+                        <label class="form-check-label" for="inline-checkbox2">M</label>
+                      </div>
+                      <div class="form-check form-check-inline mr-1">
+                        <input class="form-check-input" type="checkbox" value="Tu" formControlName="tuesday">
+                        <label class="form-check-label" for="inline-checkbox3">Tu</label>
+                      </div>
+                      <div class="form-check form-check-inline mr-1">
+                        <input class="form-check-input" type="checkbox" value="W" checked formControlName="wednesday">
+                        <label class="form-check-label" for="inline-checkbox4">W</label>
+                      </div>
+                      <div class="form-check form-check-inline mr-1">
+                        <input class="form-check-input" type="checkbox" value="Th" formControlName="thursday">
+                        <label class="form-check-label" for="inline-checkbox5">Th</label>
+                      </div>
+                      <div class="form-check form-check-inline mr-1">
+                        <input class="form-check-input" type="checkbox" value="F" checked formControlName="friday">
+                        <label class="form-check-label" for="inline-checkbox6">F</label>
+                      </div>
+                      <div class="form-check form-check-inline mr-1">
+                        <input class="form-check-input" type="checkbox" value="Sat" formControlName="saturday">
+                        <label class="form-check-label" for="inline-checkbox7">Sat</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-2 col-form-label" for="hours-input">Hours</label>
+                    <div class="col-md-10">
+                      <div class="d-flex mb-3" *ngFor="let control of ftpConfigForm.get('hours')['controls']; index as i"
+                           formArrayName="hours">
+<!--                        <div class="ngx-timepicker-field-example br-4px" [ngClass]="{'br-red ': !ftpConfigForm?.get('hours')?.value[i]}">-->
+<!--                          <ngx-timepicker-field  [defaultTime]="'11:11 am'" [formControlName]="i"></ngx-timepicker-field>-->
+<!--                        </div>-->
+                        <div class="">
+                            <input class="form-control" matInput type="time" [formControlName]="i" label="hh:mm"
+                                   [ngClass]="{'br-red ': !ftpConfigForm?.get('hours')?.value[i]}">
+                        </div>
+                        <div class="ml-3">
+                          <button (click)="addTime()" class="btn btn-outline-primary btn-sm" *ngIf="(ftpConfigForm.get('hours')['controls']).length - 1 == i">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                          </button>
+                          <button (click)="removeTime(i)" class="btn btn-outline-danger btn-sm"  *ngIf="(ftpConfigForm.get('hours')['controls']).length - 1 != i"  >
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div><!--/.row-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn danger-btn-with-icon" (click)="fileOrdiniConfigureModal.hide()">
+          <i class="fa fa-times-circle" aria-hidden="true"></i>
+          <span>{{'Close' | translate}}</span>
+        </button>
+        <button type="button" class="btn success-btn-with-icon" (click)="onSave()">
+          <i class="fa fa-check-circle" aria-hidden="true"></i>
+          <span>{{'Save' | translate}}</span>
+        </button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

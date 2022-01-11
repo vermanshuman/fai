@@ -38,3 +38,37 @@
 .tab-content > .active {
     transition: opacity ease-out 0.2s 0.1s;
 }
+
+.bg-lighter-gray {
+     background: #f9f9f9;
+ }
+
+.ng-dirty.ng-invalid {
+    border-color: red!important;
+    box-shadow: none!important;
+}
+
+.error-text {
+    color: red;
+    font-weight: 500;
+}
+
+.br-red {
+    border: 1px solid red;
+}
+
+.br-4px {
+    border-radius: 4px;
+}
+
+.nav-tabs .nav-item {
+  margin: 2px 3px 2px 0px;
+}
+
+.text-red{
+    color: red;
+}
+
+.primary-btn-with-icon i {
+    line-height: 2.3rem!important;
+}

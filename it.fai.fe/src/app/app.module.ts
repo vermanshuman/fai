@@ -27,6 +27,8 @@ const APP_CONTAINERS = [
   DefaultLayoutComponent
 ];
 
+import {CoreModule} from '../app/core/core.module';
+
 import {
   AppAsideModule,
   AppBreadcrumbModule,
@@ -45,6 +47,10 @@ import { ChartsModule } from 'ng2-charts';
 import { HomeComponent } from './modules/home/home.component';
 import {TranslateModule} from "@ngx-translate/core";
 import {HttpClientModule} from "@angular/common/http";
+import {ModalModule} from "ngx-bootstrap/modal";
+import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {MatInputModule} from "@angular/material/input";
 
 @NgModule({
     imports: [
@@ -55,6 +61,7 @@ import {HttpClientModule} from "@angular/common/http";
         AppBreadcrumbModule.forRoot(),
         AppFooterModule,
         AppHeaderModule,
+        CoreModule,
         AppSidebarModule,
         PerfectScrollbarModule,
         BsDropdownModule.forRoot(),
@@ -63,7 +70,12 @@ import {HttpClientModule} from "@angular/common/http";
         IconModule,
         IconSetModule.forRoot(),
         TranslateModule,
-        HttpClientModule
+        HttpClientModule,
+        ModalModule.forRoot(),
+        NgxMaterialTimepickerModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatInputModule
     ],
   declarations: [
     AppComponent,
