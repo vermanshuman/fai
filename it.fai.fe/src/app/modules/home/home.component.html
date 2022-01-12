@@ -5,15 +5,15 @@
      <div class="row">
        <div class="col-md-8">
         <div class="row">
-          <div class="col-md-2 pb-2">
+          <div class="col-md-3 pb-2 pr-0">
             <div class="">
-              <label class="form-label mb-0" for="daInputDate">{{'From' | translate | uppercase}}</label>
+              <label class="form-label mb-0" for="daInputDate">{{'home.from' | translate | uppercase}}</label>
               <input class="form-control" type="text" placeholder="da" aria-label="default input example" type="date" id="daInputDate">
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3 pr-0">
             <div class="">
-              <label class="form-label mb-0" for="aInputDate">{{'To' | translate | uppercase}}</label>
+              <label class="form-label mb-0" for="aInputDate">{{'home.to' | translate | uppercase}}</label>
               <input class="form-control" type="text" placeholder="a" aria-label="default input example" type="date" id="aInputDate">
             </div>
           </div>
@@ -21,19 +21,19 @@
             <div class="">
               <label></label>
               <div>
-                <button class="btn btn-primary" type="button">{{'Search' | translate}}</button>
+                <button class="btn btn-primary" type="button">{{'home.search' | translate}}</button>
               </div>
             </div>
           </div>
-          <div class="col-md-2 pb-2">
+          <div class="col-md-2 pb-2 pr-0">
             <div class="">
-              <label class="form-label mb-0" for="fileOrdiniInputSearch">{{'OrdersFile' | translate}}</label>
+              <label class="form-label mb-0" for="fileOrdiniInputSearch">{{'home.ordersFile' | translate}}</label>
               <input class="form-control" type="text" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
             </div>
           </div>
           <div class="col-md-2 pb-2">
             <div class="">
-              <label class="form-label mb-0" for="idVenditaInputSearch">{{'IdSale' | translate}}</label>
+              <label class="form-label mb-0" for="idVenditaInputSearch">{{'home.idSale' | translate}}</label>
               <input class="form-control" type="text" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
             </div>
           </div>
@@ -49,7 +49,7 @@
     <div class="col-md-12 mb-4">
       <!-- Nav tabs -->
       <tabset>
-        <tab [heading]="'OrdersFile' | translate" class="fade-in">
+        <tab [heading]="'home.ordersFile' | translate" class="fade-in">
           <div class="tab-body-content">
             <div class="card mb-0">
               <!-- tab-body-max-width -->
@@ -91,7 +91,7 @@
                             <div class="row">
                               <div class="col-md-9">
                                 <div class="form-group">
-                                  <select class="form-control" id="ccmonth" placeholder="">
+                                  <select class="form-control" placeholder="">
                                     <option value="">MAGAZZINO</option>
                                     <option value="UPS">UPS di Formello</option>
                                     <option value="LORETO">Magazzino Loreto</option>
@@ -112,10 +112,10 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'Orders' | translate" class="fade-in">
+        <tab [heading]="'home.orders' | translate" class="fade-in">
           2. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </tab>
-        <tab [heading]="'Products' | translate" class="fade-in">
+        <tab [heading]="'home.products' | translate" class="fade-in">
           3. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </tab>
       </tabset>
@@ -128,7 +128,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">FTP Config</h4>
+        <h4 class="modal-title">{{'home.ftpconfig' | translate}}</h4>
         <button type="button" class="close" (click)="fileOrdiniConfigureModal.hide()" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -140,7 +140,7 @@
               <div class="card-body">
                 <form [formGroup]="ftpConfigForm" class="form-horizontal" *ngIf="ftpConfigForm">
                                     <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Ftp url:</label>
+                    <label class="col-md-2 col-form-label">{{'home.ftpurl' | translate}}:</label>
                     <div class="col-md-10">
                       <input type="text" name="ftp_url" class="form-control" formControlName="ftp_url" required>
                       <div class="error-text" *ngIf="ftpConfigForm?.get('ftp_url')?.errors?.required &&
@@ -150,7 +150,7 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group row">
-                        <label class="col-md-4 col-form-label" for="email-input">User</label>
+                        <label class="col-md-4 col-form-label" for="email-input">{{'home.user' | translate}}</label>
                         <div class="col-md-8">
                           <input type="text" name="email-input" class="form-control" autocomplete="email"
                                  formControlName="username">
@@ -161,7 +161,7 @@
                     </div>
                     <div class="col-md-6">
                       <div class="form-group row">
-                        <label class="col-md-4 col-form-label" for="password-input">Password</label>
+                        <label class="col-md-4 col-form-label" for="password-input">{{'home.password' | translate}}</label>
                         <div class="col-md-8">
                           <input type="password" name="password-input" class="form-control"
                                  autocomplete="current-password" formControlName="password">
@@ -187,11 +187,13 @@
                       <div class="form-group row">
                         <label class="col-md-4 col-form-label" for="file-name">Magazinno:</label>
                         <div class="col-md-8">
-                          <select class="form-control" id="ccmonth" placeholder="">
+                          <select class="form-control" id="ccmonth" placeholder="" formControlName="magazinno">
                             <option value="">MAGAZZINO</option>
                             <option value="UPS">UPS di Formello</option>
                             <option value="LORETO">Magazzino Loreto</option>
                           </select>
+                          <div class="error-text" *ngIf="ftpConfigForm?.get('magazinno')?.errors?.required &&
+                      ftpConfigForm?.get('magazinno')?.dirty">Magazinno is required</div>
                         </div>
                       </div>
                     </div>
@@ -262,11 +264,11 @@
       <div class="modal-footer">
         <button type="button" class="btn danger-btn-with-icon" (click)="fileOrdiniConfigureModal.hide()">
           <i class="fa fa-times-circle" aria-hidden="true"></i>
-          <span>{{'Close' | translate}}</span>
+          <span>{{'home.close' | translate}}</span>
         </button>
-        <button type="button" class="btn success-btn-with-icon" (click)="onSave()">
+        <button type="button" class="btn success-btn-with-icon" (click)="onFTPFormSave()">
           <i class="fa fa-check-circle" aria-hidden="true"></i>
-          <span>{{'Save' | translate}}</span>
+          <span>{{'home.save' | translate}}</span>
         </button>
       </div>
     </div><!-- /.modal-content -->

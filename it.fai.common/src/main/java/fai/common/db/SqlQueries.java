@@ -279,8 +279,31 @@ public class SqlQueries {
     finally {
       SqlUtilities.closeWithNoException(stmt);
     }
-  }  
+  }
 
+  public static void setGenericTaskConfig(String acronym, String scheduledtimes, Connection conn) throws Exception {
+    final String METH_NAME = new Object() {}.getClass().getEnclosingMethod().getName();
+    final String LOG_PREFIX = METH_NAME + ": ";
+    logger.info(LOG_PREFIX + "...");
+    String sql = null;
+    PreparedStatement stmt = null;
+    try {
+      sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "setGenericTaskConfig.sql");
+      stmt = conn.prepareStatement(sql);
+      int col = 0;
+      stmt.setString(++col, scheduledtimes);
+      stmt.setString(++col, acronym);
+      stmt.executeUpdate();
+    }
+    catch (Throwable th) {
+      String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+      logger.error(msg, th);
+      throw new Exception(msg, th);
+    }
+    finally {
+      SqlUtilities.closeWithNoException(stmt);
+    }
+  }
 
   public static void executeUpdate(String sql, Connection conn) throws Exception {
     executeUpdate(sql, new Properties(), conn);

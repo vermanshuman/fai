@@ -8,6 +8,10 @@
     "search": "Cerca",
     "idSale": "id Vendita",
     "close":  "Chiudi",
-    "save": "Salva"
+    "save": "Salva",
+    "ftpconfig": "Configurazione FTP",
+    "ftpurl": "Ftp Host",
+    "user": "Utente",
+    "password": "Password"
   }
 }

@@ -2,6 +2,31 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@app/*": [
+        "app/*"
+      ],
+      "@app/core/*": [
+        "app/core/*"
+      ],
+      "@app/core/http/*": [
+        "app/core/http/*"
+      ],
+      "@app/modules/*": [
+        "app/modules/*"
+      ],
+      "@app/shared/*": [
+        "app/shared/*"
+      ],
+      "@assets/*": [
+        "assets/*"
+      ],
+      "@env/*": [
+        "environments/*"
+      ],
+      "tslib" : ["path/to/node_modules/tslib/tslib.d.ts"]
+    },
     "importHelpers": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,

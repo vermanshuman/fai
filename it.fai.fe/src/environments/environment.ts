@@ -4,13 +4,7 @@
 
 export const environment = {
   production: false,
-  api_url: 'http://13.250.80.232:9103/clinic/api',
-  main_page_url: 'http://localhost:4200',
-  organization_tenant_name: 'TEST',
-  tenant_name_data: 'data-',
-  tenant_name_registry: 'registry-',
-  tenant_name_commonDB: 'commonDB',
-  TIME_TO_TIMEOUT: 100,
+  api_url: 'http://localhost:7770/fai/api',
 };
 
 /*

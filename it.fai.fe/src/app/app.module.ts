@@ -61,7 +61,7 @@ import {MatInputModule} from "@angular/material/input";
         AppBreadcrumbModule.forRoot(),
         AppFooterModule,
         AppHeaderModule,
-        CoreModule,
+        // CoreModule,
         AppSidebarModule,
         PerfectScrollbarModule,
         BsDropdownModule.forRoot(),

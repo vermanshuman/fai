@@ -2,35 +2,25 @@ import {NgModule, Optional, SkipSelf} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {EnsureModuleLoadedOnceGuard} from './ensureModuleLoadedOnceGuard';
 import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
-import {TokenInterceptor} from './interceptors/token.interceptor';
-import {SnackbarInterceptor} from './interceptors/snackbar.interceptor';
 import {HttpErrorInterceptor} from './interceptors/http-error.interceptor';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {MatPaginatorIntl} from '@angular/material/paginator';
 import {CustomMatPaginatorIntl} from '../custom-paginator-intl';
-// import { } from '@app/core/http';
 import {MultiTranslateHttpLoader} from './services/multi-translate-loader';
+import {GenericTaskService} from './http';
 
-// richiesto pre le traduzioni
 export function createTranslateLoader(http: HttpClient): MultiTranslateHttpLoader {
   return new MultiTranslateHttpLoader(http, [
-    // {prefix: './assets/i18n/app/', suffix: '.json'},
   ]);
 }
 
 export const httpServices = [
- 
+    GenericTaskService
 ];
 
 export const httpInterceptorProviders = [
-  // token interceptor
-  {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true},
-  // snakbar interceptor
-  {provide: HTTP_INTERCEPTORS, useClass: SnackbarInterceptor, multi: true},
   // error interceptor
   {provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true},
-  // cache interceptor
-  // {provide: HTTP_INTERCEPTORS, useClass: CachingInterceptor, multi: true}
 ];
 
 @NgModule({

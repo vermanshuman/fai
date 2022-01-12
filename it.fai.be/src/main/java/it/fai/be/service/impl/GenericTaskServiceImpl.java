@@ -2,7 +2,10 @@ package it.fai.be.service.impl;
 
 import fai.common.db.SqlQueries;
 import fai.common.models.GenericTaskConfig;
+import it.fai.be.constant.ValueConstant;
 import it.fai.be.dto.CSVScheduleDTO;
+import it.fai.be.dto.GenericTaskDTO;
+import it.fai.be.dto.GenericTaskPropertyDTO;
 import it.fai.be.service.GenericTaskService;
 import it.fai.be.utils.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -32,6 +35,42 @@ public class GenericTaskServiceImpl implements GenericTaskService {
             log.error("Exception in getByAcronym" , e);
         }
         return csvScheduleDTO;
+    }
+
+    @Override
+    public GenericTaskDTO create(GenericTaskDTO genericTaskDTO) {
+        log.debug("Creating Generic Task Config");
+        return null;
+    }
+
+    @Override
+    public GenericTaskDTO update(GenericTaskDTO genericTaskDTO, Connection conn) {
+        try {
+            SqlQueries.setGenericTaskConfig(ValueConstant.IMPORT_ACRONYM, genericTaskDTO.getScheduleTimes(), conn);
+        } catch (Exception e) {
+            log.error("Exception in update" , e);
+        }
+        return genericTaskDTO;
+    }
+
+    @Override
+    public GenericTaskDTO findTaskByAcronym(String acronym, Connection conn) {
+        GenericTaskDTO genericTaskDTO = null;
+        try {
+            GenericTaskConfig genericTaskConfig = SqlQueries.getGenericTaskConfig(acronym, conn);
+            if(genericTaskConfig != null){
+                genericTaskDTO = new GenericTaskDTO();;
+                genericTaskDTO.setOid(genericTaskConfig.getOid());
+                genericTaskDTO.setAcronym(genericTaskConfig.getAcronym());
+                genericTaskDTO.setScheduleTimes(genericTaskConfig.getScheduledTimes());
+                genericTaskDTO.setScheduledDays(genericTaskConfig.getScheduledSmtwtfs());
+                genericTaskDTO.setRichProperties(genericTaskConfig.getRichProperties());
+            }
+        } catch (Exception e) {
+            log.error("Exception in findTaskByAcronym" , e);
+        }
+
+        return genericTaskDTO;
     }
 
     private String getNextScheduleTime(List<String> items){
