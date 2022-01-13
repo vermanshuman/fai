@@ -1,5 +1,6 @@
 package it.fai.be.service;
 
+import it.fai.be.dto.CSVFileDTO;
 import it.fai.be.dto.CSVScheduleDTO;
 import it.fai.be.dto.GenericTaskDTO;
 
@@ -14,4 +15,6 @@ public interface GenericTaskService {
     GenericTaskDTO update(GenericTaskDTO genericTaskDTO, Connection conn);
 
     GenericTaskDTO findTaskByAcronym(String acronym, Connection conn);
+
+    CSVFileDTO updateCSVFile(CSVFileDTO csvFileDTO, Connection conn);
 }

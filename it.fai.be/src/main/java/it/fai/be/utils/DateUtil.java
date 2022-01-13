@@ -1,5 +1,6 @@
 package it.fai.be.utils;
 
+import it.fai.be.constant.ValueConstant;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.DateFormat;
@@ -51,6 +52,16 @@ public class DateUtil {
     public static boolean between(Date compareDate, Date startDate, Date endDate) {
         return (compareDate.after(startDate) || compareDate.getTime() == startDate.getTime())
                 && (compareDate.before(endDate) || compareDate.getTime() == endDate.getTime());
+    }
+
+
+    /**
+     * It returns the current timestamp as a string.
+     */
+    public static String currentDateForFilename() {
+        String pattern = "dd MM yyyy HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        return simpleDateFormat.format(new Date()).replaceAll("\\s", ValueConstant.DASH).replace(":", ValueConstant.DASH);
     }
 
     public static Date getNow() {

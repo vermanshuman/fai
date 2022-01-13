@@ -12,6 +12,7 @@
     "ftpconfig": "Configurazione FTP",
     "ftpurl": "Ftp Host",
     "user": "Utente",
-    "password": "Password"
+    "password": "Password",
+    "uploadFile": "Caricare un file"
   }
 }

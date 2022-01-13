@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {ObservableApiService} from '../observable-api.service';
-import {CsvSchedule, GenericTask} from '../../models';
+import {CsvFile, CsvSchedule, GenericTask} from '../../models';
 import {ApiService} from '../api.service';
 
 
@@ -25,5 +25,8 @@ export class GenericTaskService extends ObservableApiService<CsvSchedule> {
 
     updateGenericTask = (data: GenericTask):
         Observable<GenericTask> => this.apiService.put(`/config`, data)
+
+    uploadCSV = (data: CsvFile):
+        Observable<CsvFile> => this.apiService.put(`/config/uploadGenericTaskCSV`, data)
 }
 

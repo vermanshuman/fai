@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {GenericTaskService} from '../../core/http';
-import {GenericTask, GenericTaskProperty} from '../../core/models';
+import {CsvFile, GenericTask, GenericTaskProperty} from '../../core/models';
 
 @Component({
   selector: 'app-home',
@@ -9,13 +9,13 @@ import {GenericTask, GenericTaskProperty} from '../../core/models';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  timeList = new FormArray([new FormControl('11:11')]);
   ftpConfigForm: FormGroup;
   selectedFileName = '';
   base64SelectedFile = '';
   fileUploadErrMsg = '';
   genericTask: GenericTask;
   hoursList = [];
+  selectedMagazinno = '';
   constructor(private formBuilder: FormBuilder,
               private genericTaskService: GenericTaskService) { }
 
@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit {
     });
 
     this.genericTaskService.findTaskByAcronym('IMP_ORDINE_IN').subscribe(data => {
+      console.log('IMP_ORDINE_IN data: ', data);
       this.genericTask = data;
     });
   }
@@ -74,12 +75,14 @@ export class HomeComponent implements OnInit {
   }
 
   addTime(): void {
-    (this.ftpConfigForm?.get('hours') as FormArray)?.push(new FormControl('11:11'));
     this.hoursList = this.ftpConfigForm?.get('hours').value;
+    (this.ftpConfigForm?.get('hours') as FormArray)?.push(new FormControl('11:11'));
   }
 
   removeTime(index: any) {
     (this.ftpConfigForm?.get('hours') as FormArray).removeAt(index);
+    this.hoursList = this.ftpConfigForm?.get('hours').value;
+    this.hoursList.splice(index, 1);
   }
 
   onFTPFormSave(): void {
@@ -93,9 +96,8 @@ export class HomeComponent implements OnInit {
       let genericTask: GenericTask | undefined;
       let genericTaskProperty: GenericTaskProperty | undefined;
       genericTask = {... this.genericTask};
-      if (this.ftpConfigForm.get('hours')?.value) {
-        genericTask.scheduleTimes = this.ftpConfigForm.get('hours').value.join(',');
-      }
+
+      genericTask.scheduleTimes = this.hoursList.join(',');
       if (genericTask.richProperties) {
         genericTaskProperty = {... genericTask.richProperties};
       }
@@ -110,6 +112,7 @@ export class HomeComponent implements OnInit {
       if (genericTask.oid) {
         console.log('Updating Generic Task ', genericTask);
         this.genericTaskService.updateGenericTask(genericTask).subscribe(data => {
+          console.log('Returned data after update: ', data);
           this.genericTask = data;
         });
       }
@@ -145,6 +148,18 @@ export class HomeComponent implements OnInit {
     if (!this.selectedFileName) {
       alert('Please select file');
     } else {
+      let csvFile: CsvFile | undefined;
+      if (this.base64SelectedFile) {
+        csvFile = {
+          csvFileContent: this.base64SelectedFile,
+          csvFileName: this.selectedFileName,
+          magazzinoAcronym: this.selectedMagazinno
+        };
+        console.log('Uploading csv : ', csvFile);
+        this.genericTaskService.uploadCSV(csvFile).subscribe(data => {
+          console.log('Updated csv');
+        });
+      }
       console.log('base64SelectedFile', this.base64SelectedFile);
     }
   }

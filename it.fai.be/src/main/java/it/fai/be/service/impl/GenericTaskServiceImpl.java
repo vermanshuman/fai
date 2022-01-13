@@ -2,13 +2,16 @@ package it.fai.be.service.impl;
 
 import fai.common.db.SqlQueries;
 import fai.common.models.GenericTaskConfig;
+import fai.common.util.RichProperties;
 import it.fai.be.constant.ValueConstant;
+import it.fai.be.dto.CSVFileDTO;
 import it.fai.be.dto.CSVScheduleDTO;
 import it.fai.be.dto.GenericTaskDTO;
-import it.fai.be.dto.GenericTaskPropertyDTO;
 import it.fai.be.service.GenericTaskService;
 import it.fai.be.utils.DateUtil;
+import it.fai.be.utils.FilesUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +50,25 @@ public class GenericTaskServiceImpl implements GenericTaskService {
     public GenericTaskDTO update(GenericTaskDTO genericTaskDTO, Connection conn) {
         try {
             SqlQueries.setGenericTaskConfig(ValueConstant.IMPORT_ACRONYM, genericTaskDTO.getScheduleTimes(), conn);
+
+            if(genericTaskDTO.getRichProperties() != null){
+                SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
+                        ValueConstant.LOGIN_LEY, genericTaskDTO.getRichProperties().getProperty("login"), conn);
+                SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
+                        ValueConstant.HOST_KEY, genericTaskDTO.getRichProperties().getProperty("host"), conn);
+                SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
+                        ValueConstant.CSV_FILE_NAME, genericTaskDTO.getRichProperties().getProperty("csvInFileName"), conn);
+                SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
+                        ValueConstant.PASSWORD_KEY, genericTaskDTO.getRichProperties().getProperty("password"), conn);
+                SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
+                        ValueConstant.MAGAZZINO_ACRONYM, genericTaskDTO.getRichProperties().getProperty("magazzino_acronym"), conn);
+            }
+            GenericTaskConfig genericTaskConfig = SqlQueries.getGenericTaskConfig(ValueConstant.IMPORT_ACRONYM, conn);
+            RichProperties rp = genericTaskConfig.getRichProperties();
+            if(rp != null){
+
+            }
+
         } catch (Exception e) {
             log.error("Exception in update" , e);
         }
@@ -71,6 +93,36 @@ public class GenericTaskServiceImpl implements GenericTaskService {
         }
 
         return genericTaskDTO;
+    }
+
+    @Override
+    public CSVFileDTO updateCSVFile(CSVFileDTO csvFileDTO, Connection conn) {
+        log.debug("Updating CSV File");
+        try {
+            GenericTaskConfig genericTaskConfig = SqlQueries.getGenericTaskConfig(ValueConstant.IMPORT_ACRONYM, conn);
+            if(genericTaskConfig != null && genericTaskConfig.getRichProperties() != null) {
+                String filePath = genericTaskConfig.getRichProperties().getProperty("dir");
+                if(StringUtils.isNotBlank(filePath)){
+                    String base64Content = csvFileDTO.getCsvFileContent();
+                    base64Content = base64Content.replaceAll("data:application.*base64,", "");
+                    base64Content = base64Content.replaceAll("data:image.*base64,", "");
+                    String filename = csvFileDTO.getCsvFileName().replace(" ", ValueConstant.DASH);
+                    String fileNameWithOutExt = FilenameUtils.removeExtension(filename);
+                    String extension = FilenameUtils.getExtension(filename);
+                    filename = fileNameWithOutExt + ValueConstant.DASH +  DateUtil.currentDateForFilename()  + "." + extension;
+                    FilesUtils.writeBase64File(filePath + ValueConstant.BSLASH + filename, base64Content);
+                    SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
+                            ValueConstant.CSV_FILE_NAME, filename, conn);
+                    if(StringUtils.isNotBlank(csvFileDTO.getMagazzinoAcronym())){
+                        SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
+                                ValueConstant.MAGAZZINO_ACRONYM, csvFileDTO.getMagazzinoAcronym(), conn);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Exception in updateCSVFile" , e);
+        }
+        return csvFileDTO;
     }
 
     private String getNextScheduleTime(List<String> items){
