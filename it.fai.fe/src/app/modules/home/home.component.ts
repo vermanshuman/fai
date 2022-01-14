@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {GenericTaskService} from '../../core/http';
 import {CsvFile, GenericTask, GenericTaskProperty} from '../../core/models';
+import {NotificationService} from '../../services/notification.service';
 
 @Component({
   selector: 'app-home',
@@ -10,23 +11,36 @@ import {CsvFile, GenericTask, GenericTaskProperty} from '../../core/models';
 })
 export class HomeComponent implements OnInit {
   ftpConfigForm: FormGroup;
-  selectedFileName = '';
+  fileUploadForm: FormGroup;
   base64SelectedFile = '';
   fileUploadErrMsg = '';
   genericTask: GenericTask;
   hoursList = [];
-  selectedMagazinno = '';
+  @ViewChild('ftpConfigureModal', {static: false}) ftpConfigureModal: any;
+  getCSVScheduleDetail: any = null;
+
   constructor(private formBuilder: FormBuilder,
-              private genericTaskService: GenericTaskService) { }
+              private genericTaskService: GenericTaskService,
+              private notifyService: NotificationService) { }
 
   ngOnInit(): void {
+    this.initFileUploadForm();
     this.initFtpConfigForm();
     this.genericTaskService.getCSVSchedule('IMP_ORDINE_IN').subscribe(data => {
+      console.log('getCSVSchedule', data);
+      this.getCSVScheduleDetail = data;
     });
 
     this.genericTaskService.findTaskByAcronym('IMP_ORDINE_IN').subscribe(data => {
       console.log('IMP_ORDINE_IN data: ', data);
       this.genericTask = data;
+    });
+  }
+
+  initFileUploadForm(): void {
+    this.fileUploadForm = this.formBuilder.group({
+      fileName: ['', Validators.required],
+      magazzino: ['', Validators.required]
     });
   }
 
@@ -91,6 +105,9 @@ export class HomeComponent implements OnInit {
     this.ftpConfigForm.get('password').markAsDirty({ onlySelf: true });
     this.ftpConfigForm.get('file_name').markAsDirty({ onlySelf: true });
     this.ftpConfigForm.get('magazinno').markAsDirty({ onlySelf: true });
+    const weekdayString = this.prepareWeekdays(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday',
+      'saturday']);
+
     console.log(this.ftpConfigForm);
     if (this.ftpConfigForm?.valid) {
       let genericTask: GenericTask | undefined;
@@ -98,6 +115,7 @@ export class HomeComponent implements OnInit {
       genericTask = {... this.genericTask};
 
       genericTask.scheduleTimes = this.hoursList.join(',');
+      genericTask.scheduledDays = weekdayString;
       if (genericTask.richProperties) {
         genericTaskProperty = {... genericTask.richProperties};
       }
@@ -113,10 +131,22 @@ export class HomeComponent implements OnInit {
         console.log('Updating Generic Task ', genericTask);
         this.genericTaskService.updateGenericTask(genericTask).subscribe(data => {
           console.log('Returned data after update: ', data);
+          this.notifyService.showSuccess('Data updated successfully');
           this.genericTask = data;
+          this.ftpConfigureModal?.hide();
+        }, (error: any) => {
+          this.notifyService.showError('Something went wrong, data not saved');
         });
       }
     }
+  }
+
+  private prepareWeekdays(days: string[]): string {
+    const weekDays = [];
+    days.forEach((day: string) => {
+      weekDays.push(this.ftpConfigForm.get(day).value ? 'X' : '-');
+    });
+    return weekDays.join('');
   }
 
   browseFile($event): void {
@@ -126,8 +156,9 @@ export class HomeComponent implements OnInit {
   convertFileToBase64(evt) {
     this.fileUploadErrMsg = '';
     const f = evt.target.files[0];
-    if (f.type === 'text/csv' || f.type === 'application/vnd.ms-excel') {
-      this.selectedFileName = f.name;
+    if (f.type === 'text/csv' || f.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      || f.type === 'application/vnd.ms-excel') {
+      this.fileUploadForm.patchValue({fileName: f.name});
       const reader = new FileReader();
 
       reader.onload = ((theFile) => {
@@ -145,20 +176,27 @@ export class HomeComponent implements OnInit {
   }
 
   uploadFile(): void {
-    if (!this.selectedFileName) {
-      alert('Please select file');
-    } else {
+    this.fileUploadForm.get('fileName').markAsDirty({ onlySelf: true });
+    this.fileUploadForm.get('magazzino').markAsDirty({ onlySelf: true });
+    if (this.fileUploadForm.valid) {
       let csvFile: CsvFile | undefined;
       if (this.base64SelectedFile) {
         csvFile = {
           csvFileContent: this.base64SelectedFile,
-          csvFileName: this.selectedFileName,
-          magazzinoAcronym: this.selectedMagazinno
+          csvFileName: this.fileUploadForm.get('fileName').value,
+          magazzinoAcronym: this.fileUploadForm.get('magazzino').value
         };
         console.log('Uploading csv : ', csvFile);
         this.genericTaskService.uploadCSV(csvFile).subscribe(data => {
           console.log('Updated csv');
+          this.notifyService.showSuccess('Data saved successfully');
+        }, (error: any) => {
+          console.log('error', error);
+          this.notifyService.showError('PSomething went wrong, data not saved');
         });
+      } else {
+        this.notifyService.showError('Please select valid file');
+        this.fileUploadForm.get('fileName').setErrors({ onlySelf: true });
       }
       console.log('base64SelectedFile', this.base64SelectedFile);
     }

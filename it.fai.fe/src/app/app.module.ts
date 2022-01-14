@@ -51,6 +51,8 @@ import {ModalModule} from "ngx-bootstrap/modal";
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
+import { ToastrModule } from 'ngx-toastr';
+
 
 @NgModule({
     imports: [
@@ -75,7 +77,13 @@ import {MatInputModule} from "@angular/material/input";
         NgxMaterialTimepickerModule,
         FormsModule,
         ReactiveFormsModule,
-        MatInputModule
+        MatInputModule,
+        ToastrModule.forRoot({
+            timeOut: 3000,
+            positionClass: 'toast-top-right',
+            preventDuplicates: true,
+            closeButton: true
+        })
     ],
   declarations: [
     AppComponent,

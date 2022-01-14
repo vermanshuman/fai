@@ -281,7 +281,7 @@ public class SqlQueries {
     }
   }
 
-  public static void setGenericTaskConfig(String acronym, String scheduledtimes, Connection conn) throws Exception {
+  public static void setGenericTaskConfig(String acronym, String scheduledDays, String scheduledtimes, Connection conn) throws Exception {
     final String METH_NAME = new Object() {}.getClass().getEnclosingMethod().getName();
     final String LOG_PREFIX = METH_NAME + ": ";
     logger.info(LOG_PREFIX + "...");
@@ -291,6 +291,7 @@ public class SqlQueries {
       sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "setGenericTaskConfig.sql");
       stmt = conn.prepareStatement(sql);
       int col = 0;
+      stmt.setString(++col, scheduledDays);
       stmt.setString(++col, scheduledtimes);
       stmt.setString(++col, acronym);
       stmt.executeUpdate();

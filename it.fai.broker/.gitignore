@@ -3,7 +3,8 @@
 .settings
 .classpath
 target
-
+.log
+.gz
 
 #Intellij Idea
 .idea/

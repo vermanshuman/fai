@@ -57,6 +57,7 @@
     "ngx-cookie-service": "^11.0.2",
     "ngx-material-timepicker": "^5.5.3",
     "ngx-perfect-scrollbar": "^10.1.0",
+    "ngx-toastr": "^8.10.2",
     "rxjs": "^6.6.6",
     "simple-line-icons": "^2.5.5",
     "ts-helpers": "^1.1.2",

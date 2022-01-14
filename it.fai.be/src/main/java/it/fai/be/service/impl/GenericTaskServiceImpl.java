@@ -49,7 +49,7 @@ public class GenericTaskServiceImpl implements GenericTaskService {
     @Override
     public GenericTaskDTO update(GenericTaskDTO genericTaskDTO, Connection conn) {
         try {
-            SqlQueries.setGenericTaskConfig(ValueConstant.IMPORT_ACRONYM, genericTaskDTO.getScheduleTimes(), conn);
+            SqlQueries.setGenericTaskConfig(ValueConstant.IMPORT_ACRONYM, genericTaskDTO.getScheduledDays(), genericTaskDTO.getScheduleTimes(), conn);
 
             if(genericTaskDTO.getRichProperties() != null){
                 SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
