@@ -15,6 +15,7 @@ import fai.broker.models.Fornitore;
 import fai.broker.models.FornitoreCalendar;
 import fai.broker.models.ItemStatus;
 import fai.broker.models.Magazzino;
+import fai.broker.models.OrdineOut;
 import fai.broker.supplier.SupplierService;
 import fai.broker.supplier.SupplierServiceFactory;
 import fai.broker.util.AnagraficaFarmaciMinSanEanCache;
@@ -161,6 +162,17 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     sospensioneOrdini.setup(env, conn);
     error = sospensioneOrdini.doJob();
     if (error != null) return error;
+    
+    SqlQueries.deleteApprovvigionamentoWithQuantitaZero(conn);
+
+    for (Fornitore fornitore : env.getFornitori()) {
+    	Long fornitoreId = fornitore.getOid();
+    	List<ApprovvigionamentoFarmaco> approvvigionamentoToOrder = SqlQueries.getAllApprovvigionamentoFarmacoByFornitore(ItemStatus.VALUE_PROCESSING, fornitoreId, conn);
+        logger.info("approvvigionamentoToOrder size :: "+approvvigionamentoToOrder.size());
+    	SupplierService service = env.getFornitoreSupplierService(fornitore.getCodice());
+    	OrdineOut ordineOut = service.confirm(approvvigionamentoToOrder);
+    	logger.info(ordineOut.getIdOrdine());
+    }
     //
     return null;
   }

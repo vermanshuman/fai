@@ -2065,4 +2065,27 @@ public class SqlQueries {
 		usi.setStatusUpdatedTs(SqlUtilities.getCalendar(rs, columnPrefix + "STATUS_UPDATED_TS"));
 		return usi;
 	}
+	
+	public static List<ApprovvigionamentoFarmaco> getAllApprovvigionamentoFarmacoByFornitore(ItemStatus status, Long fornitoreId, Connection conn)
+			throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		Properties params = new Properties();
+		params.setProperty("OID_STATUS", String.valueOf(status.getOid()));
+		params.setProperty("FORNITORE_ID", String.valueOf(fornitoreId));
+		String sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllApprovvigionamentoFarmacoByStatusAndFornitore.sql", params);
+		return getAllApprovvigionamentoCommon(sql, conn);
+	}
+	
+	public static void deleteApprovvigionamentoWithQuantitaZero(Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = "DELETE FROM FAI_APPROVVIGIONAMENTO_FARMACO WHERE QUANTITA = 0 "
+				+" AND OID_MAGAZZINO IS NOT NULL";
+		fai.common.db.SqlQueries.executeUpdate(sql, conn);
+	}
 }
