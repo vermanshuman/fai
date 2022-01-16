@@ -95,36 +95,6 @@ public class GenericTaskServiceImpl implements GenericTaskService {
         return genericTaskDTO;
     }
 
-    @Override
-    public CSVFileDTO updateCSVFile(CSVFileDTO csvFileDTO, Connection conn) {
-        log.debug("Updating CSV File");
-        try {
-            GenericTaskConfig genericTaskConfig = SqlQueries.getGenericTaskConfig(ValueConstant.IMPORT_ACRONYM, conn);
-            if(genericTaskConfig != null && genericTaskConfig.getRichProperties() != null) {
-                String filePath = genericTaskConfig.getRichProperties().getProperty("dir");
-                if(StringUtils.isNotBlank(filePath)){
-                    String base64Content = csvFileDTO.getCsvFileContent();
-                    base64Content = base64Content.replaceAll("data:application.*base64,", "");
-                    base64Content = base64Content.replaceAll("data:image.*base64,", "");
-                    String filename = csvFileDTO.getCsvFileName().replace(" ", ValueConstant.DASH);
-                    String fileNameWithOutExt = FilenameUtils.removeExtension(filename);
-                    String extension = FilenameUtils.getExtension(filename);
-                    filename = fileNameWithOutExt + ValueConstant.DASH +  DateUtil.currentDateForFilename()  + "." + extension;
-                    FilesUtils.writeBase64File(filePath + ValueConstant.BSLASH + filename, base64Content);
-                    SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
-                            ValueConstant.CSV_FILE_NAME, filename, conn);
-                    if(StringUtils.isNotBlank(csvFileDTO.getMagazzinoAcronym())){
-                        SqlQueries.setGenericTaskConfigProperty(ValueConstant.IMPORT_ACRONYM,
-                                ValueConstant.MAGAZZINO_ACRONYM, csvFileDTO.getMagazzinoAcronym(), conn);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("Exception in updateCSVFile" , e);
-        }
-        return csvFileDTO;
-    }
-
     private String getNextScheduleTime(List<String> items){
         String nextScheduleTime = null;
         Optional<Date> schedule = items.stream()

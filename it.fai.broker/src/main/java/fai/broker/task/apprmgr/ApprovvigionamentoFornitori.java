@@ -86,7 +86,8 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
     int listiniDispTempCountBak = Integer.MIN_VALUE;
     while((listiniDispTempCount = SqlQueries.countListiniDisponibilitaTemp(conn)) > 0 && this.approvvigionamentoToProcess.size() > 0) {
       if (listiniDispTempCount == listiniDispTempCountBak) {
-        throw new IllegalStateException("inammissibile, l'insieme dei Listini/Fornitori (FAI_LISTINI_DISPONIBILITA_TEMP) da consultare risulta invariato nonostante le richieste di disponibilità già inoltrate");
+        break;
+        // throw new IllegalStateException("inammissibile, l'insieme dei Listini/Fornitori (FAI_LISTINI_DISPONIBILITA_TEMP) da consultare risulta invariato nonostante le richieste di disponibilità già inoltrate");
       }
       listiniDispTempCountBak = listiniDispTempCount;
       //

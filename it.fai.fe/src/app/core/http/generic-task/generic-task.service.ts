@@ -11,7 +11,7 @@ import {ApiService} from '../api.service';
 export class GenericTaskService extends ObservableApiService<CsvSchedule> {
 
     constructor(apiService: ApiService) {
-        super('/drugAna', apiService);
+        super('/config', apiService);
     }
 
     getCSVSchedule = (acronym: string):
@@ -25,8 +25,5 @@ export class GenericTaskService extends ObservableApiService<CsvSchedule> {
 
     updateGenericTask = (data: GenericTask):
         Observable<GenericTask> => this.apiService.put(`/config`, data)
-
-    uploadCSV = (data: CsvFile):
-        Observable<CsvFile> => this.apiService.put(`/config/uploadGenericTaskCSV`, data)
 }
 

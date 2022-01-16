@@ -13,24 +13,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import fai.broker.models.*;
+import fai.imp.base.models.FaiImportConfig;
 import org.apache.log4j.Logger;
 
-import fai.broker.models.ApprovToRiga;
-import fai.broker.models.ApprovvigionamentoFarmaco;
-import fai.broker.models.DisponibilitaReqTemp;
-import fai.broker.models.DisponibilitaResTemp;
-import fai.broker.models.DisponibilitaTemp;
-import fai.broker.models.Fornitore;
-import fai.broker.models.FornitoreCalendar;
-import fai.broker.models.ItemStatus;
-import fai.broker.models.Magazzino;
-import fai.broker.models.OrdineIn;
-import fai.broker.models.OrdineInCollection;
-import fai.broker.models.OrdineInRigaDett;
-import fai.broker.models.OrdineOut;
-import fai.broker.models.Property;
-import fai.broker.models.StatusInfo;
-import fai.broker.models.TipoFarmaco;
 import fai.broker.util.AnagraficaFarmaciMinSanEanCache;
 import fai.common.db.SqlUtilities;
 import fai.common.models.GenericTaskConfig;
@@ -1879,4 +1865,107 @@ public class SqlQueries {
         return list;
 
     }
+
+	public static List<UploadTaskProperty> findUploadTaskProperty(String key,Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		String sql;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<UploadTaskProperty> list = new ArrayList<>();
+		try {
+			String wc = "";
+			if (key != null) {
+				wc = "WHERE 1=1";
+				if (key != null) wc += " AND KEY = "+SqlUtilities.getAsStringFieldValue(key);
+			}
+			Properties params = new Properties();
+			params.setProperty("whereCondition", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "findUploadTaskConfig.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				UploadTaskProperty uploadTaskProperty = new UploadTaskProperty();
+				uploadTaskProperty.setOid(rs.getLong("OID"));
+				uploadTaskProperty.setKey(rs.getString("KEY"));
+				uploadTaskProperty.setValue(rs.getString("VALUE"));
+				list.add(uploadTaskProperty);
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+
+		return list;
+	}
+
+
+	public static void insertUploadTaskConfig(UploadTaskConfig uploadTaskConfig, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		PreparedStatement stmt = null;
+		try {
+			long oid = fai.common.db.SqlQueries.getOidNextVal(conn);
+			uploadTaskConfig.setOid(oid);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertUploadTask.sql");
+			stmt = conn.prepareStatement(sql);
+			int col = 0;
+			// OID
+			stmt.setLong(++col, uploadTaskConfig.getOid());
+			// DESCR
+			SqlUtilities.setString(stmt, ++col, uploadTaskConfig.getDescr());
+			// CSV_FILE_NAME
+			SqlUtilities.setString(stmt, ++col, uploadTaskConfig.getCsvFileName());
+			// MAGAZZINO_ACRONYM
+			SqlUtilities.setString(stmt, ++col, uploadTaskConfig.getMagazzinoAcronym());
+			// OID_STATUS / STATUS_*
+			col = setUploadCSVStatusInfo(stmt, ++col, uploadTaskConfig.getStatus());
+			// CREATION_TS
+			SqlUtilities.setCalendar(stmt, ++col, uploadTaskConfig.getCreationTs());
+			// RUN_START_TS
+			SqlUtilities.setCalendar(stmt, ++col, uploadTaskConfig.getRunStartTs());
+			// RUN_END_TS
+			SqlUtilities.setCalendar(stmt, ++col, uploadTaskConfig.getRunEndTs());
+			// RUN_DONE
+			SqlUtilities.setString(stmt, ++col, uploadTaskConfig.getRunDone() != null
+					&& uploadTaskConfig.getRunDone() ? "S" : "N");
+			//RUN_DESCR
+			SqlUtilities.setString(stmt, ++col, uploadTaskConfig.getRunDescr());
+			stmt.executeUpdate();
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
+					+ "» nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
+	}
+
+	protected static int setUploadCSVStatusInfo(PreparedStatement stmt, int startingCol, UploadStatusInfo uploadStatus) throws Exception {
+		int col = startingCol - 1;
+		// OID_STATUS
+		stmt.setLong(++col, uploadStatus.getStatus().getOid());
+		// STATUS_DESCR
+		SqlUtilities.setString(stmt, ++col, uploadStatus.getStatusDescr());
+		// STATUS_TECH_DESCR
+		SqlUtilities.setString(stmt, ++col, uploadStatus.getStatusTechDescr());
+		// STATUS_UPDATED_TS
+		SqlUtilities.setCalendar(stmt, ++col, uploadStatus.getStatusUpdatedTs());
+		//
+		return col;
+	}
 }

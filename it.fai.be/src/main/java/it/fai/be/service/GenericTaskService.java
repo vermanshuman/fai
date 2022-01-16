@@ -15,6 +15,4 @@ public interface GenericTaskService {
     GenericTaskDTO update(GenericTaskDTO genericTaskDTO, Connection conn);
 
     GenericTaskDTO findTaskByAcronym(String acronym, Connection conn);
-
-    CSVFileDTO updateCSVFile(CSVFileDTO csvFileDTO, Connection conn);
 }

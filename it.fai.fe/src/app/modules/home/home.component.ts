@@ -3,6 +3,7 @@ import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angul
 import {GenericTaskService} from '../../core/http';
 import {CsvFile, GenericTask, GenericTaskProperty} from '../../core/models';
 import {NotificationService} from '../../services/notification.service';
+import {UploadTaskService} from '../../core/http/upload-task/upload-task.service';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +22,7 @@ export class HomeComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private genericTaskService: GenericTaskService,
+              private uploadTaskService: UploadTaskService,
               private notifyService: NotificationService) { }
 
   ngOnInit(): void {
@@ -34,6 +36,9 @@ export class HomeComponent implements OnInit {
     this.genericTaskService.findTaskByAcronym('IMP_ORDINE_IN').subscribe(data => {
       console.log('IMP_ORDINE_IN data: ', data);
       this.genericTask = data;
+    });
+    this.uploadTaskService.findAll(null, null).subscribe(data => {
+      console.log('Tasks ', data);
     });
   }
 
@@ -187,7 +192,7 @@ export class HomeComponent implements OnInit {
           magazzinoAcronym: this.fileUploadForm.get('magazzino').value
         };
         console.log('Uploading csv : ', csvFile);
-        this.genericTaskService.uploadCSV(csvFile).subscribe(data => {
+        this.uploadTaskService.uploadCSV(csvFile).subscribe(data => {
           console.log('Updated csv');
           this.notifyService.showSuccess('Data saved successfully');
         }, (error: any) => {

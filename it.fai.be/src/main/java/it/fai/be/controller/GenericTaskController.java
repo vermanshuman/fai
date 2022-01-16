@@ -90,21 +90,4 @@ public class GenericTaskController extends AbstractController{
             DbUtils.closeSilent(conn);
         }
     }
-
-    @PutMapping(MappingConstants.UPLOAD_GENERIC_TASK_CSV)
-    @ApiOperation(value = "Update CSV File", response = CSVFileDTO.class)
-    public ResponseEntity<CSVFileDTO> updateCSVFile(@ApiParam(name = "csvFileDTO") @RequestBody CSVFileDTO csvFileDTO) {
-        Connection conn = null;
-        try {
-            conn = getConnection();
-            return new ResponseEntity<>(service.updateCSVFile(csvFileDTO, conn), HttpStatus.OK);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            CSVFileDTO response = new CSVFileDTO();
-            response.setMessage(e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        } finally {
-            DbUtils.closeSilent(conn);
-        }
-    }
 }

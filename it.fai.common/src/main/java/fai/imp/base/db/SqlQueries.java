@@ -176,7 +176,7 @@ public class SqlQueries {
     final String METH_NAME = new Object() {    }.getClass().getEnclosingMethod().getName();
     logger.debug("method: " + METH_NAME);
     //
-    String sql = null;
+    String sql;
     Statement stmt = null;
     try {
       Properties params = new Properties();
@@ -196,10 +196,4 @@ public class SqlQueries {
       SqlUtilities.closeWithNoException(stmt);
     }
   }
-
-  
-
-
-
-  
 }

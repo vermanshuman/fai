@@ -59,7 +59,7 @@ public class DateUtil {
      * It returns the current timestamp as a string.
      */
     public static String currentDateForFilename() {
-        String pattern = "dd MM yyyy HH:mm:ss";
+        String pattern = "dd MM yyyy HH:mm";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.format(new Date()).replaceAll("\\s", ValueConstant.DASH).replace(":", ValueConstant.DASH);
     }

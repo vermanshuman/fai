@@ -9,4 +9,6 @@ public class MappingConstants {
     public static final String FIND_BY_ACRONYM = "/byAcronym";
     public static final String UPLOAD_GENERIC_TASK_CSV = "/uploadGenericTaskCSV";
 
+    public static final String UPLOAD_MAPPING = "/api/upload";
+
 }

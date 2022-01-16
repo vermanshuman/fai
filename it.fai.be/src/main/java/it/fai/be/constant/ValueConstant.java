@@ -12,4 +12,8 @@ public interface ValueConstant {
     String LOGIN_LEY = "login";
     String BSLASH = "/";
     String DASH = "_";
+
+
+    // DB Constants
+    String CSV_UPLOAD_ROOT_DIR = "csvUploadRootDir";
 }
