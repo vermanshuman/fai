@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiParam;
 import it.fai.be.controller.mapping.MappingConstants;
 import it.fai.be.dto.CSVFileDTO;
 import it.fai.be.dto.UploadTaskDTO;
+import it.fai.be.dto.UploadTasksDTO;
 import it.fai.be.service.UploadTaskService;
 import it.fai.be.utils.DbUtils;
 import lombok.extern.log4j.Log4j2;
@@ -51,8 +52,38 @@ public class UploadTaskController extends AbstractController {
      */
     @GetMapping
     @ApiOperation(value = "Find all manual tasks", response = UploadTaskDTO.class, responseContainer = "List")
-    public ResponseEntity<List<UploadTaskDTO>> findAll(@ApiParam(name = "dd-MM-yyyy startDate") String startDate,
-                                                       @ApiParam(name = "dd-MM-yyyy endDate") String endDate) {
-        return new ResponseEntity<>(service.findAll(startDate, endDate), HttpStatus.OK);
+    public ResponseEntity<UploadTasksDTO> findAll(@ApiParam(name = "dd-MM-yyyy startDate") String startDate,
+                                                  @ApiParam(name = "dd-MM-yyyy endDate") String endDate) {
+        Connection conn = null;
+        UploadTasksDTO uploadTasksDTO = new UploadTasksDTO();
+        try {
+            conn = getConnection();
+            List<UploadTaskDTO> uploadTasks = service.findAll(startDate, endDate, conn);
+            uploadTasksDTO.setUploadTasks(uploadTasks);
+            return new ResponseEntity<>(uploadTasksDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            uploadTasksDTO.setMessage(e.getMessage());
+            return new ResponseEntity<>(uploadTasksDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            DbUtils.closeSilent(conn);
+        }
+
+    }
+    @GetMapping(MappingConstants.EXECUTE_IMPORT_TASK)
+    @ApiOperation(value = "import Ordini CSV", response = UploadTaskDTO.class)
+    public ResponseEntity<UploadTaskDTO> executeImportTask(@PathVariable Long taskOID) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            return new ResponseEntity<>(service.executeImportTask(taskOID, conn), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();
+            uploadTaskDTO.setMessage(e.getMessage());
+            return new ResponseEntity<>(uploadTaskDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            DbUtils.closeSilent(conn);
+        }
     }
 }

@@ -10,5 +10,7 @@ public interface UploadTaskService {
 
     CSVFileDTO uploadCSV(CSVFileDTO csvFileDTO, Connection conn) throws Exception;
 
-    List<UploadTaskDTO> findAll(String startDate, String endDate);
+    List<UploadTaskDTO> findAll(String startDate, String endDate, Connection conn) throws Exception;
+
+    UploadTaskDTO executeImportTask(Long taskOID, Connection conn) throws Exception;
 }

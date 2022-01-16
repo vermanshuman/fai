@@ -115,6 +115,20 @@
                           </div>
                           <div class="col-md-1"></div>
                         </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <app-generic-table
+                              [tableData]="uploadedFiles$"
+                              [tableColumns]="fileUploadTableColumns"
+                              [rowActionIcons]="{custom: 'Eseguire', position: 'center'}"
+                              [noSearchPanel]="true"
+                              [isPageable]="true"
+                              [paginationSizes]="[10, 15, 20]"
+                              [defaultPageSize]="10"
+                              (ngComplete)="onExecute($event)">
+                            </app-generic-table>
+                          </div>
+                        </div>
                       </form>
                     </div>
                 </div>

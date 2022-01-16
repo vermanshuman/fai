@@ -1,6 +1,5 @@
 package it.fai.be.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +7,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class UploadTaskDTO extends ResponseDto{
+public class ExecuteTaskDTO {
 
     private Long oid;
     private Date creationDate;
@@ -19,5 +18,4 @@ public class UploadTaskDTO extends ResponseDto{
     private String orderLinesProcessed;
     private String orderLinesMissed;
     private String executionStatus;
-    private String magazzinoAcronym;
 }

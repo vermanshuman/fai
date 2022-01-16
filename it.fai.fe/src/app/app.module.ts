@@ -52,6 +52,7 @@ import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import { ToastrModule } from 'ngx-toastr';
+import { SharedModule } from './shared/shared.module';
 
 
 @NgModule({
@@ -83,7 +84,8 @@ import { ToastrModule } from 'ngx-toastr';
             positionClass: 'toast-top-right',
             preventDuplicates: true,
             closeButton: true
-        })
+        }),
+        SharedModule
     ],
   declarations: [
     AppComponent,

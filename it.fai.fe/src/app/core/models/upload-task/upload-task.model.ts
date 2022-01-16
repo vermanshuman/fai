@@ -7,4 +7,6 @@ export interface UploadTask {
     orderLinesFulfilled: string;
     orderLinesProcessed: string;
     orderLinesMissed: string;
+    executionStatus: string;
+    magazzinoAcronym: string;
 }

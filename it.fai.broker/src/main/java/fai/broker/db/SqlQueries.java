@@ -1955,6 +1955,91 @@ public class SqlQueries {
 		}
 	}
 
+	public static List<UploadTaskConfig> getAllUploadTask(Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<UploadTaskConfig> list = new LinkedList<>();
+		try {
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllUploadTask.sql");
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+
+			while (rs.next()) {
+				UploadTaskConfig uploadTaskConfig = new UploadTaskConfig();
+				uploadTaskConfig.setOid(rs.getLong("TASK_OID"));
+				uploadTaskConfig.setDescr(rs.getString("TASK_DESCRIPTION"));
+				uploadTaskConfig.setCsvFileName(rs.getString("TASK_CSV_FILE_NAME"));
+				uploadTaskConfig.setMagazzinoAcronym(rs.getString("TASK_MAGAZZINO_ACRONYM"));
+				uploadTaskConfig.setStatus(asUploadStatusInfo(rs, ""));
+				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "TASK_CREATION_TS"));
+				list.add(uploadTaskConfig);
+			}
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
+					+ "» nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+
+	}
+
+	public static UploadTaskConfig findUploadTask(Long taskOID,Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		String sql;
+		Statement stmt = null;
+		ResultSet rs = null;
+		UploadTaskConfig uploadTaskConfig = null;
+		try {
+			String wc = "";
+			if (taskOID != null) {
+				wc = "WHERE OID=" + taskOID;
+			}
+			Properties params = new Properties();
+			params.setProperty("whereCondition", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "findUploadTask.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			if(rs.next()) {
+				uploadTaskConfig = new UploadTaskConfig();
+				uploadTaskConfig.setOid(rs.getLong("OID"));
+				uploadTaskConfig.setDescr(rs.getString("DESCR"));
+				uploadTaskConfig.setCsvFileName(rs.getString("CSV_FILE_NAME"));
+				uploadTaskConfig.setMagazzinoAcronym(rs.getString("MAGAZZINO_ACRONYM"));
+				uploadTaskConfig.setStatus(asUploadStatusInfo(rs, ""));
+				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "CREATION_TS"));
+				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "RUN_START_TS"));
+				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "RUN_END_TS"));
+				uploadTaskConfig.setRunDone(SqlUtilities.asBoolean(rs.getString("RUN_DONE")));
+				uploadTaskConfig.setRunDescr(rs.getString("RUN_DESCR"));
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+
+		return uploadTaskConfig;
+	}
+
 	protected static int setUploadCSVStatusInfo(PreparedStatement stmt, int startingCol, UploadStatusInfo uploadStatus) throws Exception {
 		int col = startingCol - 1;
 		// OID_STATUS
@@ -1967,5 +2052,17 @@ public class SqlQueries {
 		SqlUtilities.setCalendar(stmt, ++col, uploadStatus.getStatusUpdatedTs());
 		//
 		return col;
+	}
+
+	protected static UploadStatusInfo asUploadStatusInfo(ResultSet rs, String columnPrefix) throws Exception {
+		if (columnPrefix == null)
+			columnPrefix = "";
+		columnPrefix = columnPrefix.trim();
+		UploadStatusInfo usi = UploadStatusInfo.newInstance(UploadCSVStatus.getByOid(rs.getLong(columnPrefix + "OID_STATUS")), null,
+				null);
+		usi.setStatusDescr(rs.getString(columnPrefix + "STATUS_DESCR"));
+		usi.setStatusTechDescr(rs.getString(columnPrefix + "STATUS_TECH_DESCR"));
+		usi.setStatusUpdatedTs(SqlUtilities.getCalendar(rs, columnPrefix + "STATUS_UPDATED_TS"));
+		return usi;
 	}
 }

@@ -1,5 +1,6 @@
 package it.fai.be.service.impl;
 
+import fai.broker.models.UploadCSVStatus;
 import fai.broker.models.UploadStatusInfo;
 import fai.broker.models.UploadTaskConfig;
 import fai.broker.models.UploadTaskProperty;
@@ -7,19 +8,27 @@ import fai.common.db.SqlQueries;
 import it.fai.be.constant.ValueConstant;
 import it.fai.be.dto.CSVFileDTO;
 import it.fai.be.dto.UploadTaskDTO;
+import it.fai.be.dto.UploadTasksDTO;
 import it.fai.be.service.UploadTaskService;
 import it.fai.be.utils.DateUtil;
 import it.fai.be.utils.FilesUtils;
+import it.swdes.servlet.zip4j.model.UnzipParameters;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -62,9 +71,38 @@ public class UploadTaskServiceImpl implements UploadTaskService {
     }
 
     @Override
-    public List<UploadTaskDTO> findAll(String startDate, String endDate) {
+    public List<UploadTaskDTO> findAll(String startDate, String endDate, Connection conn) throws Exception {
+        log.debug("Find All Upload Tasks");
+        List<UploadTaskConfig> uploadTasks = fai.broker.db.SqlQueries.getAllUploadTask(conn);
+        return uploadTasks
+                .stream()
+                .map(uploadTask -> setUploadTask(uploadTask))
+                .collect(Collectors.toList());
+    }
 
-        return null;
+    @Override
+    public UploadTaskDTO executeImportTask(Long taskOID, Connection conn) throws Exception {
+        log.debug("Execute Task" , taskOID);
+        UploadTaskDTO uploadTaskDTO = null;
+        UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
+        System.out.println(">>>>>>>>>>>>> " + uploadTask);
+        if(uploadTask != null){
+            uploadTaskDTO = setUploadTask(uploadTask);
+            uploadTaskDTO.setExecutionStatus(UploadStatusInfo.newProcessingInstance(null, null).getStatus().getDescr());
+        }
+        return uploadTaskDTO;
+    }
+
+
+    private UploadTaskDTO setUploadTask(UploadTaskConfig uploadTaskConfig) {
+        UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();
+        uploadTaskDTO.setOid(uploadTaskConfig.getOid());
+        if(uploadTaskConfig.getCreationTs() != null)
+            uploadTaskDTO.setCreationDate(uploadTaskConfig.getCreationTs().getTime());
+        uploadTaskDTO.setCsvFileName(uploadTaskConfig.getCsvFileName());
+        uploadTaskDTO.setExecutionStatus(uploadTaskConfig.getStatus().getStatusDescr());
+        uploadTaskDTO.setMagazzinoAcronym(uploadTaskConfig.getMagazzinoAcronym());
+        return uploadTaskDTO;
     }
 
 }
