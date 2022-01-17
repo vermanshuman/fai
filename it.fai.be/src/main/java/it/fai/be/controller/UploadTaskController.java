@@ -70,6 +70,7 @@ public class UploadTaskController extends AbstractController {
         }
 
     }
+
     @GetMapping(MappingConstants.EXECUTE_IMPORT_TASK)
     @ApiOperation(value = "import Ordini CSV", response = UploadTaskDTO.class)
     public ResponseEntity<UploadTaskDTO> executeImportTask(@PathVariable Long taskOID) {
@@ -77,6 +78,40 @@ public class UploadTaskController extends AbstractController {
         try {
             conn = getConnection();
             return new ResponseEntity<>(service.executeImportTask(taskOID, conn), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();
+            uploadTaskDTO.setMessage(e.getMessage());
+            return new ResponseEntity<>(uploadTaskDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            DbUtils.closeSilent(conn);
+        }
+    }
+
+    @GetMapping(MappingConstants.EXECUTE_CALCULATOR_TASK)
+    @ApiOperation(value = "fabbisogno calculator", response = UploadTaskDTO.class)
+    public ResponseEntity<UploadTaskDTO> calculatorTask(@PathVariable Long taskOID) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            return new ResponseEntity<>(service.calculatorTask(taskOID, conn), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();
+            uploadTaskDTO.setMessage(e.getMessage());
+            return new ResponseEntity<>(uploadTaskDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            DbUtils.closeSilent(conn);
+        }
+    }
+
+    @GetMapping(MappingConstants.PROCUREMENT_MANAGER_TASK)
+    @ApiOperation(value = "procurement manager", response = UploadTaskDTO.class)
+    public ResponseEntity<UploadTaskDTO> procurementManagerTask(@PathVariable Long taskOID) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            return new ResponseEntity<>(service.procurementManagerTask(taskOID, conn), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();

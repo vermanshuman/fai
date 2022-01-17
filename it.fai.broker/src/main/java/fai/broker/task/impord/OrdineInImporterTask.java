@@ -152,15 +152,18 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     oic.setOid(null);
     oic.setUniqueID(csvInFileNameUID);
     oic.setBatchId(Long.parseLong((new SimpleDateFormat("yyMMddHHmmss")).format(Calendar.getInstance().getTime())));
-    oic.setInputResource(csvInFileName.substring(0, csvInFileName.lastIndexOf(".csv")) + "_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".csv");
     String fullpath = null;
-    if(uploadTaskConfig != null) {
+    if(uploadTaskConfig != null){
+      oic.setInputResource(uploadTaskConfig.getCsvFileName());
       fullpath = Filesystem.getFullPath(csvDirectory, csvInFileName);
-    }else if ("LOCAL".equals(params.getProperty("protocol", true))) {
-      fullpath = Filesystem.getFullPath(params.getProperty("dir", true), csvInFileName); 
-    }
-    else {
-      fullpath = params.getProperty("protocol", true)+"://"+params.getProperty("host", true)+":"+params.getProperty("port", "(default port)")+"/"+params.getProperty("dir", true)+"/"+csvInFileName; 
+    }else {
+      oic.setInputResource(csvInFileName.substring(0, csvInFileName.lastIndexOf(".csv")) + "_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".csv");
+      if ("LOCAL".equals(params.getProperty("protocol", true))) {
+        fullpath = Filesystem.getFullPath(params.getProperty("dir", true), csvInFileName);
+      }
+      else {
+        fullpath = params.getProperty("protocol", true)+"://"+params.getProperty("host", true)+":"+params.getProperty("port", "(default port)")+"/"+params.getProperty("dir", true)+"/"+csvInFileName;
+      }
     }
     oic.setInputResourceFullPath(fullpath);
     oic.setStatus(StatusInfo.newProcessingInstance(null, null)); // "processing", perché il parsing è in corso

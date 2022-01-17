@@ -5,6 +5,8 @@ public interface ValueConstant {
     boolean FALSE = false;
     String MAGAZZINO_CONTEXT = "FAI_ORDINE_IN*";
     String IMPORT_ACRONYM = "IMP_ORDINE_IN";
+    String CALCULATOR_ACRONYM = "FABBISOGNO_CALCULATOR";
+    String PROCUREMENT_ACRONYM = "APPROVVIGIONAMENTO_MGR";
     String HOST_KEY = "host";
     String PASSWORD_KEY = "password";
     String MAGAZZINO_ACRONYM = "magazzino_acronym";

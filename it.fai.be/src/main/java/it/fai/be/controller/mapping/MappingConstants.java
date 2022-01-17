@@ -11,5 +11,7 @@ public class MappingConstants {
 
     public static final String UPLOAD_MAPPING = "/api/upload";
     public static final String EXECUTE_IMPORT_TASK = "/importCSV/{taskOID}";
+    public static final String EXECUTE_CALCULATOR_TASK = "/fabbisognoCalculator/{taskOID}";
+    public static final String PROCUREMENT_MANAGER_TASK = "/approvvigionamentoManager/{taskOID}";
 
 }

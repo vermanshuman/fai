@@ -13,11 +13,34 @@ import java.util.Calendar;
 
 public abstract class AbstractGenericTask implements GenericTask {
   
-  
-  
-  static Logger logger = Logger.getLogger(AbstractGenericTask.class);
 
-  
+  static Logger logger;
+
+  static {
+    java.util.Properties properties = new java.util.Properties();
+    setLoggerProperty(properties, "log4j.rootLogger", "INFO, ConsoleAppender, FileAppender");
+    setLoggerProperty(properties, "log4j.appender.FileAppender", "org.apache.log4j.RollingFileAppender");
+    setLoggerProperty(properties, "log4j.appender.FileAppender.File", "D:/log/GenericTaskFactory-" + (new java.text.SimpleDateFormat("yyMMdd-HHmmss")).format(java.util.Calendar.getInstance().getTime()) + ".log");
+    setLoggerProperty(properties, "log4j.appender.FileAppender.MaxFileSize", "100MB");
+    setLoggerProperty(properties, "log4j.appender.FileAppender.MaxBackupIndex", "10");
+    setLoggerProperty(properties, "log4j.appender.FileAppender.layout", "org.apache.log4j.PatternLayout");
+    setLoggerProperty(properties, "log4j.appender.FileAppender.layout.ConversionPattern", "%d{dd/MM/yyyy HH:mm:ss} [%-5p][%8.8t]  %L@%C - %m%n");
+    setLoggerProperty(properties, "log4j.appender.ConsoleAppender", "org.apache.log4j.ConsoleAppender");
+    setLoggerProperty(properties, "log4j.appender.ConsoleAppender.layout", "org.apache.log4j.PatternLayout");
+    setLoggerProperty(properties, "log4j.appender.ConsoleAppender.layout.ConversionPattern", "%d{dd/MM/yyyy HH:mm:ss} [%-5p][%8.8t]  %L@%C - %m%n");
+    setLoggerProperty(properties, "log4j.logger.org.apache.axis", "INFO");
+    setLoggerProperty(properties, "log4j.logger.org.apache.hc", "INFO");
+    setLoggerProperty(properties, "log4j.logger.org.apache.http.auth", "INFO");
+    setLoggerProperty(properties, "log4j.logger.org.apache.commons.net.ftp", "INFO");
+    org.apache.log4j.PropertyConfigurator.configure(properties);
+    logger = Logger.getLogger(AbstractGenericTask.class);
+  }
+
+  static void setLoggerProperty(java.util.Properties properties, String key, String defaultValue) {
+    properties.setProperty(key, System.getProperty(key, defaultValue));
+  }
+
+
   protected String acronym;
   protected Calendar nowReference;
   protected Connection conn;

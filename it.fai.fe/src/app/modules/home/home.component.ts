@@ -322,8 +322,14 @@ export class HomeComponent implements OnInit {
 
     onExecute(uploadTask: UploadTask): void {
         console.log('execute import: ', uploadTask);
-        this.uploadTaskService.executeImportCSV(uploadTask.oid).subscribe(_ => {
+        this.uploadTaskService.executeImportCSV(uploadTask.oid).subscribe(() => {
             this.refreshUploadedFiles();
+            this.uploadTaskService.executeCalculator(uploadTask.oid).subscribe(() => {
+                this.refreshUploadedFiles();
+                this.uploadTaskService.procurementTask(uploadTask.oid).subscribe(() => {
+                    this.refreshUploadedFiles();
+                });
+            });
         });
     }
 }

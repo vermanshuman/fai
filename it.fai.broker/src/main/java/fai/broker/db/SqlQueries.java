@@ -111,7 +111,7 @@ public class SqlQueries {
 			int col = 0;
 			// OID
 			stmt.setLong(++col, oic.getOid());
-			// INPUT_RESOURCE
+			//
 			SqlUtilities.setString(stmt, ++col, oic.getInputResource());
 			// INPUT_RESOURCE_FULL_PATH
 			SqlUtilities.setString(stmt, ++col, oic.getInputResourceFullPath());
@@ -306,6 +306,7 @@ public class SqlQueries {
 		return statusInfo;
 
 	}
+
 
 	public static void insertOrdineIn(long ordineInCollectionOid, OrdineIn ordine, Connection conn) throws Exception {
 		final String METH_NAME = new Object() {
@@ -1976,6 +1977,7 @@ public class SqlQueries {
 				uploadTaskConfig.setCsvFileName(rs.getString("TASK_CSV_FILE_NAME"));
 				uploadTaskConfig.setMagazzinoAcronym(rs.getString("TASK_MAGAZZINO_ACRONYM"));
 				uploadTaskConfig.setStatus(asUploadStatusInfo(rs, ""));
+				uploadTaskConfig.setOrderCount(rs.getInt("ORDER_COUNT"));
 				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "TASK_CREATION_TS"));
 				list.add(uploadTaskConfig);
 			}
@@ -2109,6 +2111,127 @@ public class SqlQueries {
 		SqlUtilities.setCalendar(stmt, ++col, uploadStatus.getStatusUpdatedTs());
 		//
 		return col;
+	}
+
+	public static List<OrdineInCollection> findOrdineInCollectionByInputResource(String inputResource, Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		String sql;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<OrdineInCollection> list = new ArrayList<>();
+		try {
+			String wc = "WHERE INPUT_RESOURCE=" + SqlUtilities.getAsStringFieldValue(inputResource);
+			Properties params = new Properties();
+			params.setProperty("whereCondition", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getOrdineInCollectionByCondition.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				OrdineInCollection ordineInCollection = new OrdineInCollection();
+				ordineInCollection.setOid(rs.getLong("OID"));
+				ordineInCollection.setUniqueID(rs.getString("UNIQUE_ID"));
+				list.add(ordineInCollection);
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+
+	}
+
+	public static int countOrdineInByCollectionID(Long oidOrdineincollection, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		int totalOrders;
+		try {
+			Properties params = new Properties();
+			params.setProperty("OID_ORDINEINCOLLECTION", "" + oidOrdineincollection);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "countOrdineInByCollectionID.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			rs.next();
+			totalOrders = rs.getInt(1);
+
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
+					+ "» nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return totalOrders;
+	}
+	public static void setUploadTaskStatus(long taskOID, long oidStatusToAssign, String statusDescr,
+														 String statusTechDescr, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {    }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		//
+		String sql = null;
+		Statement stmt = null;
+		try {
+			Properties params = new Properties();
+			params.setProperty("RUN_START_TS", SqlUtilities.calendarToOracleToDate(Calendar.getInstance()));
+			params.setProperty("OID", ""+taskOID);
+			params.setProperty("OID_STATUS", ""+ oidStatusToAssign);
+			params.setProperty("STATUS_DESCR", ""+ SqlUtilities.getAsStringFieldValue(statusDescr));
+			params.setProperty("STATUS_TECH_DESCR", SqlUtilities.getAsStringFieldValue(statusTechDescr));
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "setUploadTaskStatus.sql", params);
+
+			stmt = conn.createStatement();
+			stmt.executeUpdate(sql);
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
+	}
+
+	public static void setUploadTaskOrderCount(long taskOID, int orderCount, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {    }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		//
+		String sql = null;
+		Statement stmt = null;
+		try {
+			Properties params = new Properties();
+			params.setProperty("OID", ""+taskOID);
+			params.setProperty("ORDER_COUNT", ""+ orderCount);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "setUploadTaskCount.sql", params);
+
+			stmt = conn.createStatement();
+			stmt.executeUpdate(sql);
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
 	}
 
 	protected static UploadStatusInfo asUploadStatusInfo(ResultSet rs, String columnPrefix) throws Exception {

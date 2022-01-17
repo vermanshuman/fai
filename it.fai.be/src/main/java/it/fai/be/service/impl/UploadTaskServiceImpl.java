@@ -1,9 +1,6 @@
 package it.fai.be.service.impl;
 
-import fai.broker.models.UploadCSVStatus;
-import fai.broker.models.UploadStatusInfo;
-import fai.broker.models.UploadTaskConfig;
-import fai.broker.models.UploadTaskProperty;
+import fai.broker.models.*;
 import fai.broker.task.GenericTask;
 import fai.common.db.SqlQueries;
 import it.fai.be.constant.ValueConstant;
@@ -88,19 +85,77 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
         if(uploadTask != null){
             uploadTaskDTO = setUploadTask(uploadTask);
-            String acronym = "IMP_ORDINE_IN";
-            String className = SqlQueries.getGenericTaskConfigClassName(acronym, conn);
+
+            String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.IMPORT_ACRONYM, conn);
             if (className == null || "".equals(className))
                 throw new IllegalArgumentException(
                         "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
             //
             GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
-            genericTask.setup(acronym + "@" + taskOID,  Calendar.getInstance(), conn);
+            genericTask.setup(ValueConstant.IMPORT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
             String error = genericTask.doJob();
+            if(error == null){
+                try {
+                    List<OrdineInCollection> ordineInCollections = fai.broker.db.SqlQueries.findOrdineInCollectionByInputResource(uploadTask.getCsvFileName(), conn);
+                    if(ordineInCollections != null && ordineInCollections.size() > 0){
+                        Long ordineInCollectionId = ordineInCollections.get(0).getOid();
+                        int orderCount = fai.broker.dnb.SqlQueries.countOrdineInByCollectionID(ordineInCollectionId, conn);
+                        fai.broker.db.SqlQueries.setUploadTaskOrderCount(taskOID, orderCount, conn);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            uploadTaskDTO.setMessage(error);
         }
         return uploadTaskDTO;
     }
 
+    @Override
+    public UploadTaskDTO calculatorTask(Long taskOID, Connection conn) throws Exception {
+        log.debug("Calculate Task" , taskOID);
+        UploadTaskDTO uploadTaskDTO = null;
+        UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
+        if(uploadTask != null){
+            uploadTaskDTO = setUploadTask(uploadTask);
+
+            String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.CALCULATOR_ACRONYM, conn);
+            if (className == null || "".equals(className))
+                throw new IllegalArgumentException(
+                        "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
+            //
+            GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
+            genericTask.setup(ValueConstant.CALCULATOR_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
+            String error = genericTask.doJob();
+            uploadTaskDTO.setMessage(error);
+        }
+        return uploadTaskDTO;
+    }
+
+    @Override
+    public UploadTaskDTO procurementManagerTask(Long taskOID, Connection conn) throws Exception {
+        log.debug("Procurement Task" , taskOID);
+        UploadTaskDTO uploadTaskDTO = null;
+        UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
+        if(uploadTask != null){
+
+
+            String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.PROCUREMENT_ACRONYM, conn);
+            if (className == null || "".equals(className))
+                throw new IllegalArgumentException(
+                        "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
+            //
+            GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
+            genericTask.setup(ValueConstant.PROCUREMENT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
+            String error = genericTask.doJob();
+            if(error == null){
+                fai.broker.db.SqlQueries.setUploadTaskStatus(taskOID, UploadCSVStatus.VALUE_PROCESSED.getOid(),null , null, conn);
+            }
+            uploadTaskDTO = setUploadTask(uploadTask);
+            uploadTaskDTO.setMessage(error);
+        }
+        return uploadTaskDTO;
+    }
 
     private UploadTaskDTO setUploadTask(UploadTaskConfig uploadTaskConfig) {
         UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();
@@ -110,6 +165,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         uploadTaskDTO.setCsvFileName(uploadTaskConfig.getCsvFileName());
         uploadTaskDTO.setExecutionStatus(uploadTaskConfig.getStatus().getStatusDescr());
         uploadTaskDTO.setMagazzinoAcronym(uploadTaskConfig.getMagazzinoAcronym());
+        uploadTaskDTO.setOrderCount(uploadTaskConfig.getOrderCount());
         return uploadTaskDTO;
     }
 

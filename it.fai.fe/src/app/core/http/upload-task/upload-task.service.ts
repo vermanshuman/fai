@@ -22,5 +22,11 @@ export class UploadTaskService extends ObservableApiService<UploadTask> {
 
     executeImportCSV = (taskOID: number):
         Observable<UploadTask> => this.apiService.get(`/upload/importCSV/${taskOID}`)
+
+    executeCalculator = (taskOID: number):
+        Observable<UploadTask> => this.apiService.get(`/upload/fabbisognoCalculator/${taskOID}`)
+
+    procurementTask = (taskOID: number):
+        Observable<UploadTask> => this.apiService.get(`/upload/approvvigionamentoManager/${taskOID}`)
 }
 
