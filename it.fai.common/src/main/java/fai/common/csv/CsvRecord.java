@@ -119,7 +119,9 @@ public class CsvRecord {
   
   public int getHeaderIndex(String fieldName, boolean mandatory) {
     Integer idx = headersIndexes.get(fieldName);
-    if (idx == null && mandatory) throw new CsvException("campo "+fieldName+" inesistente");
+    if (idx == null && mandatory) {
+      throw new CsvException("campo "+fieldName+" inesistente");
+    }
     return idx == null ? -1 : idx;
   }
   

@@ -3,6 +3,7 @@ package fai.broker.util;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class CsvToModels {
   
   
   public void setInputStream(InputStream is) throws Exception {
-    reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+    reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1));
     csv = new CsvRecord();
     csv.setFieldSeparator(";");
     csv.setStringFormat('"', '"');
@@ -120,11 +121,11 @@ public class CsvToModels {
         ordine.setEmailAcquirente(csv.getString("Email dell'acquirente", true, false));
         ordine.setIndirizzoAcquirente1(csv.getString("Indirizzo dell'acquirente 1", true, true));
         ordine.setIndirizzoAcquirente2(csv.getString("Indirizzo dell'acquirente 2", true, false));
-        ordine.setCittaAcquirente(csv.getString("Citt� dell'acquirente", true, true));
+        ordine.setCittaAcquirente(csv.getString("Citt\u00E0 dell'acquirente", true, true));
         ordine.setStatoAcquirente(csv.getString("Stato dell'acquirente", true, true));
         ordine.setCapAcquirente(csv.getString("CAP dell'acquirente", true, true));
         ordine.setPaeseAcquirente(csv.getString("Paese dell'acquirente", true, true));
-        ordine.setQuantita(csv.getInteger("Quantit�", true, true));
+        ordine.setQuantita(csv.getInteger("Quantit\u00E0", true, true));
         ordine.setSpedizioneEImballaggio(csv.getDouble("Spedizione e imballaggio", true, true));
         ordine.setAssicurazione(csv.getDouble("Assicurazione", true, true));
         ordine.setTariffaPerContrassegno(csv.getDouble("Tariffa per contrassegno", true, true));
@@ -153,14 +154,14 @@ public class CsvToModels {
         ordine.setCfFatturazione(csv.getString("CF fatturazione", true, true));
         ordine.setPivaFatturazione(csv.getString("PIva fatturazione", true, false));
         ordine.setIndirizzoFatturazione(csv.getString("Indirizzo fatturazione", true, true));
-        ordine.setCittaFatturazione(csv.getString("Citt� fatturazione", true, true));
+        ordine.setCittaFatturazione(csv.getString("Citt\u00E0 fatturazione", true, true));
         ordine.setStatoFatturazione(csv.getString("Stato fatturazione", true, true));
         ordine.setCapFatturazione(csv.getString("CAP fatturazione", true, true));
         ordine.setPaeseFatturazione(csv.getString("Paese fatturazione", true, true));
         ordine.setCodicefe(csv.getString("codiceFE", true, false));
         ordine.setPec(csv.getString("PEC", true, false));
         ordine.setNote(csv.getString("Note", true, false));
-        ordine.setQuantita(csv.getInteger("Quantit�", true, true));
+        ordine.setQuantita(csv.getInteger("Quantit\u00E0", true, true));
         ordine.setAliquotaIvaInclusa(csv.getInteger("Aliquota IVA inclusa", true, false));
         ordine.setDettagliVariazione(csv.getString("Dettagli variazione", true, false));
         ordini.add(ordine);
@@ -173,7 +174,7 @@ public class CsvToModels {
         riga.setNumeroOggetto(csv.getString("Numero oggetto", true, true));
         riga.setTitoloInserzione(csv.getString("Titolo inserzione", true, false));
         riga.setEtichettaPersonalizzata(csv.getString("Etichetta personalizzata", true, true));
-        riga.setQuantita(csv.getInteger("Quantit�", true, true));
+        riga.setQuantita(csv.getInteger("Quantit\u00E0", true, true));
         riga.setPrezzoFinale(prezzoFinale);
         riga.setAliquotaIvaInclusa(csv.getInteger("Aliquota IVA inclusa", true, false));
         riga.setIdProdottoUnivoco(csv.getString("ID prodotto univoco", true, false));

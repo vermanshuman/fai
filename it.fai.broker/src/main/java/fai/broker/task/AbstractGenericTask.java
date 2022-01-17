@@ -1,5 +1,7 @@
 package fai.broker.task;
 
+import fai.broker.models.UploadCSVStatus;
+import fai.broker.models.UploadTaskConfig;
 import fai.common.db.SqlQueries;
 import fai.common.models.GenericTaskConfig;
 import fai.common.task.RichPropertiesDB;
@@ -21,14 +23,20 @@ public abstract class AbstractGenericTask implements GenericTask {
   protected Connection conn;
   protected GenericTaskConfig taskConfig; 
   protected RichPropertiesDB params = null;
+  protected UploadTaskConfig uploadTaskConfig;
   
   @Override
   public void setup(String acronym, Calendar nowReference, Connection conn) throws Exception {
-    this.acronym = acronym;
+    String[] tokens = acronym.split("\\@");
+    this.acronym = tokens[0];
     this.nowReference = nowReference;
     this.conn = conn;
-    taskConfig = SqlQueries.getGenericTaskConfig(acronym, conn);
-    params = RichPropertiesDB.newRichPropertiesDB(taskConfig.getRichProperties(), acronym, conn);
+    if(tokens.length > 1){
+      uploadTaskConfig = fai.broker.db.SqlQueries.findUploadTask(Long.parseLong(tokens[1]), conn);
+    }else {
+      taskConfig = SqlQueries.getGenericTaskConfig(acronym, conn);
+      params = RichPropertiesDB.newRichPropertiesDB(taskConfig.getRichProperties(), acronym, conn);
+    }
     completeSetup();
   }
   
@@ -40,24 +48,39 @@ public abstract class AbstractGenericTask implements GenericTask {
     final String LOG_PREFIX = acronym+", "+METH_NAME+": ";
     logger.info(SqlQueries.logInfo(LOG_PREFIX + "...", null, null, conn));
     conn.commit();
-    if (isThisWeekdayExecutionAllowed() == false) {
+    if (uploadTaskConfig == null && isThisWeekdayExecutionAllowed() == false) {
       logger.info(SqlQueries.logInfo(LOG_PREFIX + "nessuna operazione da svolgere in base al pattern settimanale", null, null, conn));
       conn.commit();
       return null;
     }
     //
-    String error = null;
-    SqlQueries.setGenericTaskNewSession(taskConfig.getOid(), conn);
+    String error;
+    if(uploadTaskConfig != null){
+      fai.broker.db.SqlQueries.setUploadTaskNewSession(uploadTaskConfig.getOid(), conn);
+    }else {
+      SqlQueries.setGenericTaskNewSession(taskConfig.getOid(), conn);
+    }
     try {
       error = doJobExecute();
       if (error == null) {
-        SqlQueries.setGenericTaskSessionCompleted(taskConfig.getOid(), true, null, conn);
+
+        if(uploadTaskConfig != null){
+          fai.broker.db.SqlQueries.setUploadTaskSessionCompleted(uploadTaskConfig.getOid(), true,
+                  UploadCSVStatus.VALUE_PROCESSING.getOid(), UploadCSVStatus.VALUE_PROCESSING.getDescr(), null, conn);
+        }
+        else
+          SqlQueries.setGenericTaskSessionCompleted(taskConfig.getOid(), true, null, conn);
         logger.info(SqlQueries.logInfo(LOG_PREFIX + "task completato senza errori", null, null, conn));
       }
       else {
         conn.rollback(); // eventuale rollaback per qualsisi cosa non sia stato commitatto
         logger.error(SqlQueries.logError(LOG_PREFIX+"il task non sarà portato a termine per il seguente motivo: "+error, null, null, conn));
-        SqlQueries.setGenericTaskSessionCompleted(taskConfig.getOid(), false, error, conn);
+        if(uploadTaskConfig != null){
+          fai.broker.db.SqlQueries.setUploadTaskSessionCompleted(uploadTaskConfig.getOid(), false,
+                  UploadCSVStatus.VALUE_ERROR.getOid(), UploadCSVStatus.VALUE_ERROR.getDescr(), error, conn);
+        }else {
+          SqlQueries.setGenericTaskSessionCompleted(taskConfig.getOid(), false, error, conn);
+        }
       }
       conn.commit();
     }
@@ -65,7 +88,12 @@ public abstract class AbstractGenericTask implements GenericTask {
 		th.printStackTrace();
       error = LOG_PREFIX+ExceptionsTool.getExceptionDescription("task interrotto causa eccezione intattesa", th);
       logger.error(SqlQueries.logError(error, null, th, conn), th);
-      SqlQueries.setGenericTaskSessionCompleted(taskConfig.getOid(), false, error, conn);
+      if(uploadTaskConfig != null){
+        fai.broker.db.SqlQueries.setUploadTaskSessionCompleted(uploadTaskConfig.getOid(), false,
+                UploadCSVStatus.VALUE_ERROR.getOid(), UploadCSVStatus.VALUE_ERROR.getDescr(), error, conn);
+      }else {
+        SqlQueries.setGenericTaskSessionCompleted(taskConfig.getOid(), false, error, conn);
+      }
       conn.commit();
     }
     return error;

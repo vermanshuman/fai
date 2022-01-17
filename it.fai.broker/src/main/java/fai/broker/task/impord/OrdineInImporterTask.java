@@ -7,16 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import fai.broker.models.*;
 import fai.broker.task.AbstractGenericTask;
 import fai.common.ftp.FtpFactory;
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
-import fai.broker.models.ItemStatus;
-import fai.broker.models.OrdineIn;
-import fai.broker.models.OrdineInCollection;
-import fai.broker.models.OrdineInRigaDett;
-import fai.broker.models.StatusInfo;
 import fai.broker.util.CsvToModels;
 import fai.common.ftp.Ftp;
 import fai.common.models.FtpConfig;
@@ -41,8 +37,6 @@ public class OrdineInImporterTask extends AbstractGenericTask {
   
   static Logger logger = Logger.getLogger(OrdineInImporterTask.class);
   
-
-
   protected FtpConfig ftpConfig = null;
   protected String csvInFileName = null; 
   protected String csvInFileNameUID = null;
@@ -55,19 +49,28 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     final String LOG_PREFIX = METH_NAME + ": ";
     logger.info(LOG_PREFIX + "...");
     //
-    ftpConfig = new FtpConfig();
-    String protocol = params.getProperty("protocol", true);
-    boolean protocolIsLocal = "LOCAL".equals(protocol);
-    csvDirectory = params.getProperty("dir", true);
+    if(uploadTaskConfig == null){
+      ftpConfig = new FtpConfig();
+      String protocol = params.getProperty("protocol", true);
+      boolean protocolIsLocal = "LOCAL".equals(protocol);
+      csvDirectory = params.getProperty("dir", true);
 
-    ftpConfig.setFtpProtocol(protocol);
-    ftpConfig.setFtpHost(params.getProperty("host", protocolIsLocal ? false : true));
-    ftpConfig.setFtpPort(params.getInteger("port", false));
-    ftpConfig.setFtpDir(csvDirectory);
-    ftpConfig.setFtpLogin(params.getProperty("login", false));
-    ftpConfig.setFtpPassword(params.getProperty("password", false));
-    ftpConfig.setFtpPasswordEncr(params.getBoolean("passwordEncr", false));
-    csvInFileName = params.getProperty("csvInFileName", true); // suppongo, al momento (2021.06.21), che il nome del file sia sempre lo stesso
+      ftpConfig.setFtpProtocol(protocol);
+      ftpConfig.setFtpHost(params.getProperty("host", protocolIsLocal ? false : true));
+      ftpConfig.setFtpPort(params.getInteger("port", false));
+      ftpConfig.setFtpDir(csvDirectory);
+      ftpConfig.setFtpLogin(params.getProperty("login", false));
+      ftpConfig.setFtpPassword(params.getProperty("password", false));
+      ftpConfig.setFtpPasswordEncr(params.getBoolean("passwordEncr", false));
+      csvInFileName = params.getProperty("csvInFileName", true); // suppongo, al momento (2021.06.21), che il nome del file sia sempre lo stesso
+    }else {
+      csvInFileName = uploadTaskConfig.getCsvFileName();
+      List<UploadTaskProperty> uploadTaskProperties = SqlQueries.findUploadTaskProperty("csvUploadRootDir", conn);
+      if(uploadTaskProperties != null && uploadTaskProperties.size() > 0){
+        csvDirectory = uploadTaskProperties.get(0).getValue() + FileSystems.getDefault().getSeparator() + uploadTaskConfig.getMagazzinoAcronym();
+      }
+    }
+
 
   }
   
@@ -91,7 +94,8 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     Ftp ftp = null;
     InputStream is = null;
     try {
-      if ("LOCAL".equals(params.getProperty("protocol", true))) {
+      if (uploadTaskConfig != null || (params != null &&
+              "LOCAL".equals(params.getProperty("protocol", true)))) {
         is = new FileInputStream(csvDirectory + FileSystems.getDefault().getSeparator() + csvInFileName); //ftp.getInputStream(csvInFileName);
       }else {
         ftp = FtpFactory.newFtp(ftpConfig);
@@ -140,7 +144,7 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     //
     Ftp ftp = null;
     InputStream is = null;
-    String magazzinoAcronym = params.getProperty("magazzino_acronym", true);
+    String magazzinoAcronym = uploadTaskConfig != null ? uploadTaskConfig.getMagazzinoAcronym() : params.getProperty("magazzino_acronym", true);
     //
     // --- creazione del nuovo ORDINE_IN_COLLECTION ---
     //
@@ -150,7 +154,9 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     oic.setBatchId(Long.parseLong((new SimpleDateFormat("yyMMddHHmmss")).format(Calendar.getInstance().getTime())));
     oic.setInputResource(csvInFileName.substring(0, csvInFileName.lastIndexOf(".csv")) + "_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".csv");
     String fullpath = null;
-    if ("LOCAL".equals(params.getProperty("protocol", true))) {
+    if(uploadTaskConfig != null) {
+      fullpath = Filesystem.getFullPath(csvDirectory, csvInFileName);
+    }else if ("LOCAL".equals(params.getProperty("protocol", true))) {
       fullpath = Filesystem.getFullPath(params.getProperty("dir", true), csvInFileName); 
     }
     else {
@@ -169,14 +175,14 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     int lineCount = 0;
     try {
 
-      if ("LOCAL".equals(params.getProperty("protocol", true))) {
-        is = new FileInputStream(csvDirectory + FileSystems.getDefault().getSeparator() + csvInFileName); //ftp.getInputStream(csvInFileName);
+      if (uploadTaskConfig != null ||
+              (params != null && "LOCAL".equals(params.getProperty("protocol", true)))) {
+        is = new FileInputStream(csvDirectory + FileSystems.getDefault().getSeparator() + csvInFileName);
       }else {
+        //ftp.getInputStream(csvInFileName);
         ftp = FtpFactory.newFtp(ftpConfig);
         is = ftp.getInputStream(csvInFileName);
       }
-      //ftp = FtpFactory.newFtp(ftpConfig);
-      //is = new FileInputStream("D:\\FAI\\docs\\web_order.csv"); //ftp.getInputStream(csvInFileName);;
       csvToModels = new CsvToModels();
       csvToModels.setInputStream(is);
       Timeout timeout = new Timeout(5000, false);
@@ -210,6 +216,9 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     // --- attribuzione dei CODICE_MINSAN o CODICE_EAN alle righe degli ordini ---
     //
     logger.info(LOG_PREFIX+"attribuzione dei codici MinSan/EAN ...");
+    if(uploadTaskConfig != null){
+      uploadTaskConfig.setOrderCount(ordini.size());
+    }
     //AnagraficaFarmaciMinSanEanCache anagrafica = new AnagraficaFarmaciMinSanEanCache();// SqlQueries.getAnagraficaFarmaciMinSanEanCache(conn);
     for (int i = 0; i < ordini.size(); i++) {
       OrdineIn ordine = ordini.get(i);

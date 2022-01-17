@@ -4,6 +4,7 @@ import fai.broker.models.UploadCSVStatus;
 import fai.broker.models.UploadStatusInfo;
 import fai.broker.models.UploadTaskConfig;
 import fai.broker.models.UploadTaskProperty;
+import fai.broker.task.GenericTask;
 import fai.common.db.SqlQueries;
 import it.fai.be.constant.ValueConstant;
 import it.fai.be.dto.CSVFileDTO;
@@ -85,10 +86,17 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         log.debug("Execute Task" , taskOID);
         UploadTaskDTO uploadTaskDTO = null;
         UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
-        System.out.println(">>>>>>>>>>>>> " + uploadTask);
         if(uploadTask != null){
             uploadTaskDTO = setUploadTask(uploadTask);
-            uploadTaskDTO.setExecutionStatus(UploadStatusInfo.newProcessingInstance(null, null).getStatus().getDescr());
+            String acronym = "IMP_ORDINE_IN";
+            String className = SqlQueries.getGenericTaskConfigClassName(acronym, conn);
+            if (className == null || "".equals(className))
+                throw new IllegalArgumentException(
+                        "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
+            //
+            GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
+            genericTask.setup(acronym + "@" + taskOID,  Calendar.getInstance(), conn);
+            String error = genericTask.doJob();
         }
         return uploadTaskDTO;
     }
