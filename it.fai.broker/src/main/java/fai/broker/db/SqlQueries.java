@@ -2209,6 +2209,47 @@ public class SqlQueries {
 		}
 	}
 
+	public static OrdineOut insertOrdineOut(OrdineOut ordineOut, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		PreparedStatement stmt = null;
+		try {
+			ordineOut.setOid(fai.common.db.SqlQueries.getOidNextVal(conn));
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertOrdineOut.sql");
+			stmt = conn.prepareStatement(sql);
+			int col = 0;
+			// OID
+			stmt.setLong(++col, ordineOut.getOid());
+			// ID_ORDINE
+			stmt.setString(++col, ordineOut.getIdOrdine());
+			// ID_VENDITA
+			stmt.setString(++col, ordineOut.getIdRicevuta());
+			// OID_FORNITORE
+			stmt.setLong(++col, ordineOut.getFornitore().getOid());
+			// OID_STATUS
+			stmt.setLong(++col, ordineOut.getStatus().getOid());
+			// CREATION_TS
+			SqlUtilities.setCalendar(stmt, ++col, Calendar.getInstance());
+			stmt.executeUpdate();
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
+					+ "» nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
+
+		return ordineOut;
+	}
+
 	public static void setUploadTaskOrderCount(long taskOID, int orderCount, Connection conn) throws Exception {
 		final String METH_NAME = new Object() {    }.getClass().getEnclosingMethod().getName();
 		logger.debug("method: " + METH_NAME);
@@ -2268,4 +2309,39 @@ public class SqlQueries {
 				+" AND OID_MAGAZZINO IS NOT NULL";
 		fai.common.db.SqlQueries.executeUpdate(sql, conn);
 	}
+
+	public static void updateApprovvigionamentoFarmacoOrdine(ApprovvigionamentoFarmaco approv,  Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		PreparedStatement stmt = null;
+		try {
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateApprovvigionamentoFarmacoOrineOut.sql");
+			stmt = conn.prepareStatement(sql);
+			int col = 0;
+			// ID_ORDINE
+			SqlUtilities.setLong(stmt, ++col,
+					approv.getOrdineOut() == null ? null : approv.getOrdineOut().getOid());
+			// QUANTITA
+			stmt.setInt(++col, approv.getQuantita());
+			// OID
+			stmt.setLong(++col, approv.getOid());
+			//
+			stmt.executeUpdate();
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
+					+ "» nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
+	}
+
 }

@@ -116,10 +116,16 @@ public class ComifarSupplierService extends AbstractSupplierService {
 
         OrdineOut ordineOut = new OrdineOut();
         ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
-        ordineOut.setIdOrdine(processedOrders != null && !processedOrders.isEmpty()
-                ? processedOrders.get(0).getNumeroOrdineFornitore() : null);
+        if(approvvigionamento != null && approvvigionamento.size() > 0)
+            ordineOut.setFornitore(approvvigionamento.get(0).getFornitore());
+        if(processedOrders != null && !processedOrders.isEmpty()){
+            ordineOut.setIdOrdine(processedOrders.get(0).getNumeroOrdineFornitore());
+            ordineOut.setIdRicevuta(processedOrders.get(0).getIdVendita());
+        }
+
         ordineOut.setFornitore(approvvigionamento != null && approvvigionamento.size() > 0 ? approvvigionamento.get(0).getFornitore() : null);
 
+        ordineOut = SqlQueries.insertOrdineOut(ordineOut, conn);
 
         for (ApprovvigionamentoFarmaco appr : approvvigionamento) {
             fai.common.db.SqlQueries.logInfo("inoltro richiesta d'ordine a " + asShortDescr() + " ...",
@@ -133,21 +139,21 @@ public class ComifarSupplierService extends AbstractSupplierService {
                     .findFirst();
 
             if (matchedProduct.isPresent()) {
-                if (matchedProduct.get().getMissingQuantity() != null &&
-                        matchedProduct.get().getMissingQuantity() > 0) {
-                    ApprovvigionamentoFarmaco missingAppr = new ApprovvigionamentoFarmaco();
-                    missingAppr.setQuantita(matchedProduct.get().getMissingQuantity());
-                    missingAppr.setCodiceMinSan(appr.getCodiceMinSan());
-                    missingAppr.setStatus(StatusInfo.newToProcessInstance(null, null));
-                    SqlQueries.insertApprovvigionamentoFarmaco(missingAppr, conn);
-                }
+//                if (matchedProduct.get().getMissingQuantity() != null &&
+//                        matchedProduct.get().getMissingQuantity() > 0) {
+//                    ApprovvigionamentoFarmaco missingAppr = new ApprovvigionamentoFarmaco();
+//                    missingAppr.setQuantita(matchedProduct.get().getMissingQuantity());
+//                    missingAppr.setCodiceMinSan(appr.getCodiceMinSan());
+//                    missingAppr.setStatus(StatusInfo.newToProcessInstance(null, null));
+//                    SqlQueries.insertApprovvigionamentoFarmaco(missingAppr, conn);
+//                }
 
                 if (matchedProduct.get().getOrderedQuantity() != null &&
                         matchedProduct.get().getOrderedQuantity() > 0) {
                     appr.setQuantita(matchedProduct.get().getOrderedQuantity());
-                    appr.setStatus(StatusInfo.newProcessedInstance(null, null));
+                    // appr.setStatus(StatusInfo.newProcessedInstance(null, null));
                     appr.setOrdineOut(ordineOut);
-                    SqlQueries.updateApprovvigionamentoFarmaco(appr, false, conn);
+                    SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
                 }
             }
             //

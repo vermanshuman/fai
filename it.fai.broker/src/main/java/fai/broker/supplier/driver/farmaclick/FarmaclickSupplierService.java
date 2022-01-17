@@ -117,12 +117,14 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                         .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
                         .collect(Collectors.toList()));
 
-
         OrdineOut ordineOut = new OrdineOut();
         ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
-        ordineOut.setIdOrdine(processedOrders != null && !processedOrders.isEmpty()
-                ? processedOrders.get(0).getNumeroOrdineFornitore() : null);
-        ordineOut.setFornitore(approvvigionamento != null && approvvigionamento.size() > 0 ? approvvigionamento.get(0).getFornitore() : null);
+        if(approvvigionamento != null && approvvigionamento.size() > 0)
+            ordineOut.setFornitore(approvvigionamento.get(0).getFornitore());
+        if(processedOrders != null && !processedOrders.isEmpty()){
+            ordineOut.setIdOrdine(processedOrders.get(0).getNumeroOrdineFornitore());
+            ordineOut.setIdRicevuta(processedOrders.get(0).getIdVendita());
+        }
 
 
         for (ApprovvigionamentoFarmaco appr : approvvigionamento) {
@@ -137,20 +139,12 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                     .findFirst();
 
             if (matchedProduct.isPresent()) {
-                if (matchedProduct.get().getMissingQuantity() != null &&
-                        matchedProduct.get().getMissingQuantity() > 0) {
-                    ApprovvigionamentoFarmaco missingAppr = new ApprovvigionamentoFarmaco();
-                    missingAppr.setQuantita(matchedProduct.get().getMissingQuantity());
-                    missingAppr.setCodiceMinSan(appr.getCodiceMinSan());
-                    missingAppr.setStatus(StatusInfo.newToProcessInstance(null, null));
-                    SqlQueries.insertApprovvigionamentoFarmaco(missingAppr, conn);
-                }
-
                 if (matchedProduct.get().getOrderedQuantity() != null &&
                         matchedProduct.get().getMissingQuantity() > 0) {
                     appr.setQuantita(matchedProduct.get().getOrderedQuantity());
-                    appr.setStatus(StatusInfo.newProcessedInstance(null, null));
-                    SqlQueries.updateApprovvigionamentoFarmaco(appr, false, conn);
+                    // appr.setStatus(StatusInfo.newProcessedInstance(null, null));
+                    appr.setOrdineOut(ordineOut);
+                    SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
                 }
             }
             //

@@ -99,7 +99,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
                     List<OrdineInCollection> ordineInCollections = fai.broker.db.SqlQueries.findOrdineInCollectionByInputResource(uploadTask.getCsvFileName(), conn);
                     if(ordineInCollections != null && ordineInCollections.size() > 0){
                         Long ordineInCollectionId = ordineInCollections.get(0).getOid();
-                        int orderCount = fai.broker.dnb.SqlQueries.countOrdineInByCollectionID(ordineInCollectionId, conn);
+                        int orderCount = fai.broker.db.SqlQueries.countOrdineInByCollectionID(ordineInCollectionId, conn);
                         fai.broker.db.SqlQueries.setUploadTaskOrderCount(taskOID, orderCount, conn);
                     }
                 } catch (Exception e) {

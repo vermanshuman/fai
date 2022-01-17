@@ -15,28 +15,32 @@ public class ProcessedOrderBean {
 	private String errorDescription;
 
 	private String numeroOrdineFornitore;
+
+	private String idVendita;
 	
 	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Boolean orderStatus, String errorCode,
-			String errorDescription) {
+			String errorDescription, String idVendita) {
 		this.productCode = productCode;
 		this.orderedQuantity = orderedQuantity;
 		this.orderFailed = orderStatus;
 		this.errorCode = errorCode;
 		this.errorDescription = errorDescription;
+		this.idVendita = idVendita;
 	}
 
 	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
-							  String errorDescription) {
+							  String errorDescription, String idVendita) {
 		this.productCode = productCode;
 		this.orderedQuantity = orderedQuantity;
 		this.missingQuantity = missingQuantity;
 		this.orderFailed = orderStatus;
 		this.errorCode = errorCode;
 		this.errorDescription = errorDescription;
+		this.idVendita = idVendita;
 	}
 
 	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
-							  String errorDescription, String numeroOrdineFornitore) {
+							  String errorDescription, String numeroOrdineFornitore,String idVendita) {
 		this.productCode = productCode;
 		this.orderedQuantity = orderedQuantity;
 		this.missingQuantity = missingQuantity;
@@ -44,12 +48,14 @@ public class ProcessedOrderBean {
 		this.errorCode = errorCode;
 		this.errorDescription = errorDescription;
 		this.numeroOrdineFornitore = numeroOrdineFornitore;
+		this.idVendita = idVendita;
 	}
 	
-	public ProcessedOrderBean(String productCode, Integer orderedQuanity, Boolean orderStatus) {
+	public ProcessedOrderBean(String productCode, Integer orderedQuanity, Boolean orderStatus, String idVendita) {
 		this.productCode = productCode;
 		this.orderedQuantity = orderedQuanity;
 		this.orderFailed = orderStatus;
+		this.idVendita = idVendita;
 	}
 
 	public String getProductCode() {
@@ -106,5 +112,13 @@ public class ProcessedOrderBean {
 
 	public void setNumeroOrdineFornitore(String numeroOrdineFornitore) {
 		this.numeroOrdineFornitore = numeroOrdineFornitore;
+	}
+
+	public String getIdVendita() {
+		return idVendita;
+	}
+
+	public void setIdVendita(String idVendita) {
+		this.idVendita = idVendita;
 	}
 }

@@ -1,0 +1,18 @@
+INSERT INTO FAI_ORDINE_OUT
+(
+   OID
+  ,ID_ORDINE
+  ,ID_RICEVUTA
+  ,OID_FORNITORE
+  ,OID_STATUS
+   ,CREATION_TS
+)
+VALUES
+(
+   ?  -- OID
+  ,?  -- ID_ORDINE
+  ,?  -- ID_RICEVUTA
+  ,? -- OID_FORNITORE
+  ,?  -- OID_STATUS
+  ,?  -- CREATION_TS
+)

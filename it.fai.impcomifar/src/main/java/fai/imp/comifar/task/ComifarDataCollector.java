@@ -449,8 +449,8 @@ public class ComifarDataCollector extends AbstractDataCollector{
 							processedOrders.addAll(orderResponseBody.getOrderMissing().getItems()
 							.stream()
 							.map(item -> 
-							new ProcessedOrderBean(item.getProductCode(), item.getQuantity(),
-									Boolean.TRUE, item.getOutcome(), item.getOutcomeDescription()))
+							new ProcessedOrderBean(item.getProductCode(), item.getQuantity(), null,
+									Boolean.TRUE, item.getOutcome(), item.getOutcomeDescription(), head.getNumord(), head.getOrderReference()))
 							.collect(Collectors.toList()));
 							
 						}
@@ -459,8 +459,9 @@ public class ComifarDataCollector extends AbstractDataCollector{
 								&& orderResponseBody.getProcessedOrder().getItems().size() > 0) {
 							processedOrders.addAll(orderResponseBody.getProcessedOrder().getItems()
 							.stream()
-							.map(item -> 
-							new ProcessedOrderBean(item.getProductCode(), item.getQuantity(), Boolean.FALSE))
+							.map(item ->
+									new ProcessedOrderBean(item.getProductCode(), item.getQuantity(), null,
+											Boolean.FALSE, item.getOutcome(), item.getOutcomeDescription(), head.getOrderReference()))
 							.collect(Collectors.toList()));
 						}
 					}

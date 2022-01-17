@@ -64,27 +64,27 @@ public class FarmaclickDataCollectorApp {
   productOrderRequestBeanTwo.setProductCode("029401027");
   productOrderRequestBeanTwo.setQuantity(1);
 
-//  List<ProductBean> productBeans = dataCollector.doGetAvailiblityData(Stream.of(productOrderRequestBean, productOrderRequestBeanTwo).collect(Collectors.toList()));
-//
-//  productBeans
-//          .stream()
-//          .forEach(p -> {
-//            System.out.println(p.getProductCode() + " " + p.getQuantity() + " " + p.getAvailibility());
-//          });
+  List<ProductBean> productBeans = dataCollector.doGetAvailiblityData(Stream.of(productOrderRequestBean, productOrderRequestBeanTwo).collect(Collectors.toList()));
+
+  productBeans
+          .stream()
+          .forEach(p -> {
+            System.out.println(p.getProductCode() + " " + p.getQuantity() + " " + p.getAvailibility());
+          });
     
     productOrderRequestBean = new ProductBean();
     productOrderRequestBean.setProductCode("012745028");
     productOrderRequestBean.setQuantity(10);
-    List<ProcessedOrderBean> processedOrderBeans =  dataCollector.doOrderProducts(Stream.of(productOrderRequestBean).collect(Collectors.toList()));
-
-    	    processedOrderBeans
-	    .stream()
-	    .forEach(p -> {
-	    	System.out.println("Order status for product: " + p.getProductCode() + " is " + p.getOrderFailed());
-	    	if(p.getOrderFailed()) {
-	    		System.out.println("reason for order failure " + p.getErrorCode() + " : " + p.getErrorDescription());
-	    	}
-	    });
+//    List<ProcessedOrderBean> processedOrderBeans =  dataCollector.doOrderProducts(Stream.of(productOrderRequestBean).collect(Collectors.toList()));
+//
+//    	    processedOrderBeans
+//	    .stream()
+//	    .forEach(p -> {
+//	    	System.out.println("Order status for product: " + p.getProductCode() + " is " + p.getOrderFailed());
+//	    	if(p.getOrderFailed()) {
+//	    		System.out.println("reason for order failure " + p.getErrorCode() + " : " + p.getErrorDescription());
+//	    	}
+//	    });
   }
 
 }
