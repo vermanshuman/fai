@@ -1,6 +1,5 @@
 package fai.imp.farmaclick.config;
 
-import fai.imp.farmaclick.task.FarmaclickDataCollector;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -9,7 +8,7 @@ import java.util.Properties;
 
 public class PropertiesLoader {
 
-    private static final String PROJECT_PROPERTIES_FILE_NAME = "application.properties";
+    private static final String PROJECT_PROPERTIES_FILE_NAME = "project.properties";
 
     static Logger logger = Logger.getLogger(PropertiesLoader.class);
 
