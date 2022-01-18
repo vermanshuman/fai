@@ -2275,6 +2275,31 @@ public class SqlQueries {
 		}
 	}
 
+	public static void setUploadTaskOrderStatus(long taskOID, String orderStatus, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {    }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		//
+		String sql = null;
+		Statement stmt = null;
+		try {
+			Properties params = new Properties();
+			params.setProperty("OID", ""+taskOID);
+			params.setProperty("ORDER_STATUS", orderStatus);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "setUploadTaskOrderStatus.sql", params);
+
+			stmt = conn.createStatement();
+			stmt.executeUpdate(sql);
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
+	}
+
 	protected static UploadStatusInfo asUploadStatusInfo(ResultSet rs, String columnPrefix) throws Exception {
 		if (columnPrefix == null)
 			columnPrefix = "";

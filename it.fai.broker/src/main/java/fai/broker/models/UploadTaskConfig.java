@@ -16,6 +16,7 @@ public class UploadTaskConfig extends AbstractModel {
     public static int RUN_DONE;
     public static int RUN_DESCR;
     public static int ORDER_COUNT;
+    public static int ORDER_STATUS;
 
     public static final Attribute[] attributes = buildAttributes(UploadTaskConfig.class, new Attribute[]{ //@formatter:off
             new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -29,6 +30,7 @@ public class UploadTaskConfig extends AbstractModel {
             new Attribute("runDone", null, Boolean.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("runDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("orderCount", null, Integer.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
+            new Attribute("orderStatus", null, String.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
     }); //@formatter:on
 
 
@@ -172,4 +174,15 @@ public class UploadTaskConfig extends AbstractModel {
         return getInt(ORDER_COUNT);
     }
 
+
+    /**
+     * ORDER_COUNT
+     **/
+    public boolean setOrderStatus(String orderStatus) {
+        return setString(ORDER_STATUS, orderStatus);
+    }
+
+    public String getOrderStatus() {
+        return getString(ORDER_STATUS);
+    }
 }

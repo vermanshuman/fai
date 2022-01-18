@@ -147,6 +147,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
             //
             GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
             genericTask.setup(ValueConstant.PROCUREMENT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
+
             String error = genericTask.doJob();
             if(error == null){
                 fai.broker.db.SqlQueries.setUploadTaskStatus(taskOID, UploadCSVStatus.VALUE_PROCESSED.getOid(),null , null, conn);
@@ -166,6 +167,8 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         uploadTaskDTO.setExecutionStatus(uploadTaskConfig.getStatus().getStatusDescr());
         uploadTaskDTO.setMagazzinoAcronym(uploadTaskConfig.getMagazzinoAcronym());
         uploadTaskDTO.setOrderCount(uploadTaskConfig.getOrderCount());
+
+        uploadTaskDTO.setOrderStatus(uploadTaskConfig.getOrderStatus());
         return uploadTaskDTO;
     }
 
