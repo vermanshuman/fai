@@ -179,7 +179,8 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     if (error != null) return error;
     
     SqlQueries.deleteApprovvigionamentoWithQuantitaZero(conn);
-
+    conn.commit();
+    
     for (Fornitore fornitore : env.getFornitori()) {
     	Long fornitoreId = fornitore.getOid();
     	List<ApprovvigionamentoFarmaco> approvvigionamentoToOrder = SqlQueries.getAllApprovvigionamentoFarmacoByFornitore(ItemStatus.VALUE_PROCESSING, fornitoreId, conn);

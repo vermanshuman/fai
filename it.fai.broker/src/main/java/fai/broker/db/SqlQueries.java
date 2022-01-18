@@ -2319,10 +2319,70 @@ public class SqlQueries {
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
 		Properties params = new Properties();
-		params.setProperty("OID_STATUS", String.valueOf(status.getOid()));
-		params.setProperty("FORNITORE_ID", String.valueOf(fornitoreId));
-		String sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllApprovvigionamentoFarmacoByStatusAndFornitore.sql", params);
-		return getAllApprovvigionamentoCommon(sql, conn);
+		params.setProperty("OID_STATUS", SqlUtilities.getAsIntegerFieldValue(status.getOid().intValue()));
+		params.setProperty("FORNITORE_ID", SqlUtilities.getAsIntegerFieldValue(fornitoreId.intValue()));
+		String sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getApprovvigionamentoFarmacoByFornitore.sql", params);
+		//return getAllApprovvigionamentoCommon(sql, conn);
+		
+		Statement statement = null;
+		ResultSet resultSet = null;
+		List<ApprovvigionamentoFarmaco> list = new LinkedList<ApprovvigionamentoFarmaco>();
+		try {
+			long approvOidBak = -1;
+			ApprovvigionamentoFarmaco currApprov = null;
+			statement = conn.createStatement();
+			resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				long approvOid = resultSet.getLong("OID");
+				if (approvOid != approvOidBak) {
+					currApprov = new ApprovvigionamentoFarmaco();
+					currApprov.setOid(approvOid);
+					currApprov.setCodiceMinSan(resultSet.getString("CODICE_MINSAN"));
+					currApprov.setCodiceEan(resultSet.getString("CODICE_EAN"));
+					currApprov.setQuantita(resultSet.getInt("QUANTITA"));
+					currApprov
+							.setDisponibilitaRichiestaReq(SqlUtilities.getCalendar(resultSet, "DISPONIBILITA_RICHIESTA_REQ"));
+					currApprov
+							.setDisponibilitaRichiestaRes(SqlUtilities.getCalendar(resultSet, "DISPONIBILITA_RICHIESTA_RES"));
+					currApprov.setDisponibilitaConfermataReq(
+							SqlUtilities.getCalendar(resultSet, "DISPONIBILITA_CONFERMATA_REQ"));
+					currApprov.setDisponibilitaConfermataRes(
+							SqlUtilities.getCalendar(resultSet, "DISPONIBILITA_CONFERMATA_RES"));
+					currApprov.setIdOrdine(resultSet.getString("ID_ORDINE"));
+					currApprov.setIdRicevuta(resultSet.getString("ID_RICEVUTA"));
+					currApprov.setStatus(asStatusInfo(resultSet, ""));
+					currApprov.setPrezzoUnitario(SqlUtilities.getDouble(resultSet, "PREZZO_UNITARIO"));
+					currApprov.setPrezzoTotale(SqlUtilities.getDouble(resultSet, "PREZZO_TOTALE"));
+					currApprov.setAliquotaIva(SqlUtilities.getDouble(resultSet, "ALIQUOTA_IVA"));
+					currApprov.setAliquotaIvaInclusa(SqlUtilities.asBoolean(resultSet.getString("ALIQUOTA_IVA_INCLUSA")));
+					currApprov.setMagazzinoAcronym(resultSet.getString("MAGAZZINO_ACRONYM"));
+					Long oidOrdineOut = SqlUtilities.getLong(resultSet, "OID_ORDINEOUT");
+					if (oidOrdineOut != null) {
+						currApprov.setOrdineOut(new OrdineOut());
+						currApprov.getOrdineOut().setOid(oidOrdineOut);
+					}
+					list.add(currApprov);
+				}
+				approvOidBak = approvOid;
+				
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
+					+ "» nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(statement);
+			SqlUtilities.closeWithNoException(resultSet);
+		}
+		return list;
 	}
 
 	public static void deleteApprovvigionamentoWithQuantitaZero(Connection conn) throws Exception {
