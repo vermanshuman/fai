@@ -2383,8 +2383,7 @@ public class SqlQueries {
 		}.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
-		String sql = "DELETE FROM FAI_APPROVVIGIONAMENTO_FARMACO WHERE QUANTITA = 0 "
-				+" AND OID_FORNITORE IS NOT NULL";
+		String sql = "DELETE FROM FAI_APPROVVIGIONAMENTO_FARMACO WHERE QUANTITA = 0";
 		fai.common.db.SqlQueries.executeUpdate(sql, conn);
 	}
 
