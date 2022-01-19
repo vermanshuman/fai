@@ -39,51 +39,38 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     //
     AnagraficaFarmaciMinSanEanCache anagrafica = new AnagraficaFarmaciMinSanEanCache();//SqlQueries.getAnagraficaFarmaciMinSanEanCache(conn);
     env.setAnagrafica(anagrafica);
-    Set<Long> selectedFornitori = new HashSet<>();
-    if(uploadTaskConfig == null){
-      //check FAI_FORNITORE_CALENDAR
-      Calendar current = Calendar.getInstance();
-      int dateOfWeek = current.get(Calendar.DAY_OF_WEEK);
-      List<FornitoreCalendar> fornitoriCalendars = SqlQueries.getAllFornitoreCalendarByDateOfWeek(conn, dateOfWeek);
+    //check FAI_FORNITORE_CALENDAR
+    Calendar current = Calendar.getInstance();
+    int dateOfWeek = current.get(Calendar.DAY_OF_WEEK);
+    List<FornitoreCalendar> fornitoriCalendars = SqlQueries.getAllFornitoreCalendarByDateOfWeek(conn, dateOfWeek);
+    Set<Long> selectedFornitori =  new HashSet<Long>();
+    for(FornitoreCalendar c : fornitoriCalendars) {
+      Calendar start = c.getHourStart();
+      Calendar end = c.getHourEnd();
 
-      for(FornitoreCalendar c : fornitoriCalendars) {
-        Calendar start = c.getHourStart();
-        Calendar end = c.getHourEnd();
+      start.set(Calendar.YEAR, current.get(Calendar.YEAR));
+      start.set(Calendar.MONTH, current.get(Calendar.MONTH));
+      start.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
 
-        start.set(Calendar.YEAR, current.get(Calendar.YEAR));
-        start.set(Calendar.MONTH, current.get(Calendar.MONTH));
-        start.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
+      end.set(Calendar.YEAR, current.get(Calendar.YEAR));
+      end.set(Calendar.MONTH, current.get(Calendar.MONTH));
+      end.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
 
-        end.set(Calendar.YEAR, current.get(Calendar.YEAR));
-        end.set(Calendar.MONTH, current.get(Calendar.MONTH));
-        end.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-
-        if(start.compareTo(current) <= 0 && end.compareTo(current) >= 0) {
-          selectedFornitori.add(c.getOidFornitore());
-        }
+      if(start.compareTo(current) <= 0 && end.compareTo(current) >= 0) {
+        selectedFornitori.add(c.getOidFornitore());
       }
-      env.setSelectedFornitori(selectedFornitori);
     }
+    env.setSelectedFornitori(selectedFornitori);
 
-    
     //
     // --- caricamento dell'Anagrafica di tutti i Fornitori ---
     //
     List<Fornitore> allFornitori = SqlQueries.getAllFornitore(conn);
-    logger.info("allFornitori size ------------------- :: "+allFornitori.size());
     List<Fornitore> fornitori = new ArrayList<>();
-    if(uploadTaskConfig == null){
-      for(Fornitore f : allFornitori) {
-        if(selectedFornitori.contains(f.getOid())) {
-          fornitori.add(f);
-        }
+    for(Fornitore f : allFornitori) {
+      if(selectedFornitori.contains(f.getOid())) {
+        fornitori.add(f);
       }
-    }else {
-      for(Fornitore f : allFornitori) {
-        selectedFornitori.add(f.getOid());
-      }
-      env.setSelectedFornitori(selectedFornitori);
-      fornitori.addAll(allFornitori);
     }
     env.setFornitori(fornitori);
 
