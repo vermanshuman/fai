@@ -139,19 +139,24 @@ public class ComifarSupplierService extends AbstractSupplierService {
                     .findFirst();
 
             if (matchedProduct.isPresent()) {
-//                if (matchedProduct.get().getMissingQuantity() != null &&
-//                        matchedProduct.get().getMissingQuantity() > 0) {
-//                    ApprovvigionamentoFarmaco missingAppr = new ApprovvigionamentoFarmaco();
-//                    missingAppr.setQuantita(matchedProduct.get().getMissingQuantity());
-//                    missingAppr.setCodiceMinSan(appr.getCodiceMinSan());
-//                    missingAppr.setStatus(StatusInfo.newToProcessInstance(null, null));
-//                    SqlQueries.insertApprovvigionamentoFarmaco(missingAppr, conn);
-//                }
+                if (matchedProduct.get().getMissingQuantity() != null &&
+                        matchedProduct.get().getMissingQuantity() > 0) {
+
+                    int existingRecord = SqlQueries.checkMissingApprovvigionamentoFarmaco(codiceMinsan, conn);
+                    if(existingRecord == 0){
+                        ApprovvigionamentoFarmaco missingAppr = new ApprovvigionamentoFarmaco();
+                        missingAppr.setQuantita(matchedProduct.get().getMissingQuantity());
+                        missingAppr.setCodiceMinSan(appr.getCodiceMinSan());
+                        missingAppr.setStatus(StatusInfo.newToProcessInstance(null, null));
+                        missingAppr.setMagazzinoAcronym(appr.getMagazzinoAcronym());
+                        SqlQueries.insertApprovvigionamentoFarmaco(missingAppr, conn);
+                    }
+                }
 
                 if (matchedProduct.get().getOrderedQuantity() != null &&
                         matchedProduct.get().getOrderedQuantity() > 0) {
                     appr.setQuantita(matchedProduct.get().getOrderedQuantity());
-                    // appr.setStatus(StatusInfo.newProcessedInstance(null, null));
+                    appr.setStatus(StatusInfo.newProcessedInstance(null, null));
                     appr.setOrdineOut(ordineOut);
                     SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
                 }

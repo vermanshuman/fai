@@ -182,8 +182,8 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     conn.commit();
     
     for (Fornitore fornitore : env.getFornitori()) {
-    	Long fornitoreId = fornitore.getOid();
-    	List<ApprovvigionamentoFarmaco> approvvigionamentoToOrder = SqlQueries.getAllApprovvigionamentoFarmacoByFornitore(ItemStatus.VALUE_PROCESSING, fornitoreId, conn);
+    	List<ApprovvigionamentoFarmaco> approvvigionamentoToOrder =
+                SqlQueries.getAllApprovvigionamentoFarmacoByFornitore(ItemStatus.VALUE_PROCESSING, fornitore, conn);
         logger.info("approvvigionamentoToOrder size :: "+approvvigionamentoToOrder.size());
         if(approvvigionamentoToOrder.size() > 0){
           SupplierService service = env.getFornitoreSupplierService(fornitore.getCodice());

@@ -368,9 +368,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 						actualResponse = disponibilita.getOutcome().getOutcome();
 					}
 					if (!"OK".equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
-//					ProductAvailibilityBean productAvailibilityBean = new ProductAvailibilityBean();
-//					productAvailibilityBean.setProductCode(product.getProductCode());
-					if(disponibilita.getAvail() != null && disponibilita.getAvail().getAvailable() != null 
+					if(disponibilita.getAvail() != null && disponibilita.getAvail().getAvailable() != null
 							&& disponibilita.getAvail().getAvailable().equalsIgnoreCase("S")) {
 						
 						if(disponibilita.getOffers() != null) {
@@ -394,7 +392,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 			}else {
 				product.setAvailibility(null);
 			}
-		
+
 		}
 		return products;
 	}
@@ -449,7 +447,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 							processedOrders.addAll(orderResponseBody.getOrderMissing().getItems()
 							.stream()
 							.map(item -> 
-							new ProcessedOrderBean(item.getProductCode(), item.getQuantity(), null,
+							new ProcessedOrderBean(item.getProductCode(),null , item.getQuantity(),
 									Boolean.TRUE, item.getOutcome(), item.getOutcomeDescription(), head.getNumord(), head.getOrderReference()))
 							.collect(Collectors.toList()));
 							

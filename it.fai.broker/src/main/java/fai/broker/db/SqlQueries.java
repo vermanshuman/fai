@@ -1,27 +1,18 @@
 package fai.broker.db;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
 import fai.broker.models.*;
-import fai.imp.base.models.FaiImportConfig;
-import org.apache.log4j.Logger;
-
 import fai.broker.util.AnagraficaFarmaciMinSanEanCache;
 import fai.common.db.SqlUtilities;
 import fai.common.models.GenericTaskConfig;
 import fai.common.util.CollectionsTool;
 import fai.common.util.Timeout;
+import org.apache.log4j.Logger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.*;
 
 public class SqlQueries {
 
@@ -2312,7 +2303,8 @@ public class SqlQueries {
 		return usi;
 	}
 
-	public static List<ApprovvigionamentoFarmaco> getAllApprovvigionamentoFarmacoByFornitore(ItemStatus status, Long fornitoreId, Connection conn)
+	public static List<ApprovvigionamentoFarmaco> getAllApprovvigionamentoFarmacoByFornitore(
+			ItemStatus status, Fornitore fornitore, Connection conn)
 			throws Exception {
 		final String METH_NAME = new Object() {
 		}.getClass().getEnclosingMethod().getName();
@@ -2320,7 +2312,7 @@ public class SqlQueries {
 		logger.info(LOG_PREFIX + "...");
 		Properties params = new Properties();
 		params.setProperty("OID_STATUS", SqlUtilities.getAsIntegerFieldValue(status.getOid().intValue()));
-		params.setProperty("FORNITORE_ID", SqlUtilities.getAsIntegerFieldValue(fornitoreId.intValue()));
+		params.setProperty("FORNITORE_ID", SqlUtilities.getAsIntegerFieldValue(fornitore.getOid().intValue()));
 		String sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getApprovvigionamentoFarmacoByFornitore.sql", params);
 		//return getAllApprovvigionamentoCommon(sql, conn);
 		
@@ -2337,6 +2329,7 @@ public class SqlQueries {
 				if (approvOid != approvOidBak) {
 					currApprov = new ApprovvigionamentoFarmaco();
 					currApprov.setOid(approvOid);
+					currApprov.setFornitore(fornitore);
 					currApprov.setCodiceMinSan(resultSet.getString("CODICE_MINSAN"));
 					currApprov.setCodiceEan(resultSet.getString("CODICE_EAN"));
 					currApprov.setQuantita(resultSet.getInt("QUANTITA"));
@@ -2391,7 +2384,7 @@ public class SqlQueries {
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
 		String sql = "DELETE FROM FAI_APPROVVIGIONAMENTO_FARMACO WHERE QUANTITA = 0 "
-				+" AND OID_MAGAZZINO IS NOT NULL";
+				+" AND OID_FORNITORE IS NOT NULL";
 		fai.common.db.SqlQueries.executeUpdate(sql, conn);
 	}
 
@@ -2411,6 +2404,8 @@ public class SqlQueries {
 					approv.getOrdineOut() == null ? null : approv.getOrdineOut().getOid());
 			// QUANTITA
 			stmt.setInt(++col, approv.getQuantita());
+			// OID STatus
+			stmt.setLong(++col, approv.getStatus().getStatus().getOid());
 			// OID
 			stmt.setLong(++col, approv.getOid());
 			//
@@ -2429,4 +2424,35 @@ public class SqlQueries {
 		}
 	}
 
+	public static Integer checkMissingApprovvigionamentoFarmaco(String codiceMinSan, Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		List<ApprovvigionamentoFarmaco> list = new LinkedList<>();
+		String sql;
+		Statement stmt = null;
+		ResultSet rs = null;
+		int recordCount = 0;
+		try {
+			String wc = "WHERE OID_MAGAZZINO IS NULL AND OID_FORNITORE IS NULL";
+			if (codiceMinSan != null) wc += " AND CODICE_MINSAN = "+SqlUtilities.getAsStringFieldValue(codiceMinSan);
+			Properties params = new Properties();
+			params.setProperty("whereCondition", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "checkMissingApprovvigionamentoFarmaco.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			if(rs.next()){
+				recordCount = rs.getInt(1);
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return recordCount;
+	}
 }
