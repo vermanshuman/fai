@@ -1,6 +1,7 @@
 package fai.broker.task.apprmgr;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,6 +10,7 @@ import fai.broker.db.SqlQueries;
 import fai.broker.models.ApprovvigionamentoFarmaco;
 import fai.broker.models.ItemStatus;
 import fai.broker.models.Magazzino;
+import fai.broker.models.StatusInfo;
 import fai.broker.models.TipoFarmaco;
 import fai.broker.supplier.SupplierService;
 import fai.broker.supplier.SupplierService.ManagedRequest;
@@ -117,6 +119,16 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
     boolean isMagazzino = true;
     boolean bestMatchCanBeMoreThanRequested = isMagazzino; 
     mru.process("disponibilità Magazzino", managedRequests, bestMatchCanBeMoreThanRequested, isMagazzino);
+    conn.commit();
+    
+    List<ApprovvigionamentoFarmaco> approvvigionamentoProcessing = SqlQueries.getAllApprovvigionamentoFarmaco(ItemStatus.VALUE_PROCESSING, conn);
+    for(ApprovvigionamentoFarmaco approvvigionamentoFarmaco : approvvigionamentoProcessing) {
+    	approvvigionamentoFarmaco.setStatus(StatusInfo.newProcessedInstance(null, null));
+    	approvvigionamentoFarmaco.setDisponibilitaConfermataReq(Calendar.getInstance());
+    	SqlQueries.updateApprovvigionamentoFarmaco(approvvigionamentoFarmaco, false, conn);
+    }
+    conn.commit();
+    
     //
     // --- ricaricamento dei FAI_APPROVVIGIONAMENTO_FARMACO "TO_PROCESS" ---
     //
