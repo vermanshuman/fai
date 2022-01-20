@@ -371,8 +371,8 @@ public class ComifarDataCollector extends AbstractDataCollector{
 					if(disponibilita.getAvail() != null && disponibilita.getAvail().getAvailable() != null
 							&& disponibilita.getAvail().getAvailable().equalsIgnoreCase("S")) {
 						
-						if(disponibilita.getOffers() != null) {
-							List<Offer> offers = disponibilita.getOffers().getOffers();
+						if(disponibilita.getAvail().getOffers() != null) {
+							List<Offer> offers = disponibilita.getAvail().getOffers().getOffers();
 							if(offers != null && !offers.isEmpty()) {
 								Optional<Offer> validOffer =
 								offers.stream()

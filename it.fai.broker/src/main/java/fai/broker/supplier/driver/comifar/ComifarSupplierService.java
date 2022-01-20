@@ -144,6 +144,7 @@ public class ComifarSupplierService extends AbstractSupplierService {
 
                     ApprovvigionamentoFarmaco approvvigionamentoFarmaco = SqlQueries.checkMissingApprovvigionamentoFarmaco(codiceMinsan, conn);
                     if(approvvigionamentoFarmaco == null){
+                        approvvigionamentoFarmaco = new ApprovvigionamentoFarmaco();
                         approvvigionamentoFarmaco.setQuantita(matchedProduct.get().getMissingQuantity());
                         approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
                         approvvigionamentoFarmaco.setStatus(StatusInfo.newToProcessInstance(null, null));

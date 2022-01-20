@@ -14,9 +14,7 @@ public class Disponibilita {
 	
 	@XmlElement(name="dispon")
 	private Dispon avail;
-	
-	@XmlElement(name="offerte")
-	private Offers offers;
+
 
 	public Esito getOutcome() {
 		return outcome;
@@ -32,13 +30,5 @@ public class Disponibilita {
 
 	public void setAvail(Dispon avail) {
 		this.avail = avail;
-	}
-
-	public Offers getOffers() {
-		return offers;
-	}
-
-	public void setOffers(Offers offers) {
-		this.offers = offers;
 	}
 }
