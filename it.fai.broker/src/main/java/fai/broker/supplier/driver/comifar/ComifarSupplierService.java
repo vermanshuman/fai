@@ -142,14 +142,20 @@ public class ComifarSupplierService extends AbstractSupplierService {
                 if (matchedProduct.get().getMissingQuantity() != null &&
                         matchedProduct.get().getMissingQuantity() > 0) {
 
-                    int existingRecord = SqlQueries.checkMissingApprovvigionamentoFarmaco(codiceMinsan, conn);
-                    if(existingRecord == 0){
-                        ApprovvigionamentoFarmaco missingAppr = new ApprovvigionamentoFarmaco();
-                        missingAppr.setQuantita(matchedProduct.get().getMissingQuantity());
-                        missingAppr.setCodiceMinSan(appr.getCodiceMinSan());
-                        missingAppr.setStatus(StatusInfo.newToProcessInstance(null, null));
-                        missingAppr.setMagazzinoAcronym(appr.getMagazzinoAcronym());
-                        SqlQueries.insertApprovvigionamentoFarmaco(missingAppr, conn);
+                    ApprovvigionamentoFarmaco approvvigionamentoFarmaco = SqlQueries.checkMissingApprovvigionamentoFarmaco(codiceMinsan, conn);
+                    if(approvvigionamentoFarmaco == null){
+                        approvvigionamentoFarmaco.setQuantita(matchedProduct.get().getMissingQuantity());
+                        approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
+                        approvvigionamentoFarmaco.setStatus(StatusInfo.newToProcessInstance(null, null));
+                        approvvigionamentoFarmaco.setMagazzinoAcronym(appr.getMagazzinoAcronym());
+                        SqlQueries.insertApprovvigionamentoFarmaco(approvvigionamentoFarmaco, conn);
+                    }else {
+                        approvvigionamentoFarmaco.setFornitore(appr.getFornitore());
+                        Integer updatedQuantity = approvvigionamentoFarmaco.getQuantita() + matchedProduct.get().getMissingQuantity();
+                        approvvigionamentoFarmaco.setQuantita(updatedQuantity);
+                        approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
+                        approvvigionamentoFarmaco.setCodiceEan(matchedProduct.get().getProductCode());
+                        SqlQueries.updateApprovvigionamentoFarmaco(approvvigionamentoFarmaco, false, conn);
                     }
                 }
 

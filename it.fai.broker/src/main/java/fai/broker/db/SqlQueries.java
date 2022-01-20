@@ -2424,14 +2424,14 @@ public class SqlQueries {
 		}
 	}
 
-	public static Integer checkMissingApprovvigionamentoFarmaco(String codiceMinSan, Connection conn) throws Exception {
+	public static ApprovvigionamentoFarmaco checkMissingApprovvigionamentoFarmaco(String codiceMinSan, Connection conn) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		logger.debug("method: " + METH_NAME);
-		List<ApprovvigionamentoFarmaco> list = new LinkedList<>();
+		ApprovvigionamentoFarmaco approv = null;
 		String sql;
 		Statement stmt = null;
 		ResultSet rs = null;
-		int recordCount = 0;
+		Long recordOID = null;
 		try {
 			String wc = "WHERE OID_MAGAZZINO IS NULL AND OID_FORNITORE IS NULL";
 			if (codiceMinSan != null) wc += " AND CODICE_MINSAN = "+SqlUtilities.getAsStringFieldValue(codiceMinSan);
@@ -2441,7 +2441,10 @@ public class SqlQueries {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			if(rs.next()){
-				recordCount = rs.getInt(1);
+				approv = new ApprovvigionamentoFarmaco();
+				approv.setOid( rs.getLong("OID"));
+				approv.setQuantita(rs.getInt("QUANTITA"));
+				approv.setStatus(asStatusInfo(rs, ""));
 			}
 		}
 		catch (Throwable th) {
@@ -2453,6 +2456,6 @@ public class SqlQueries {
 			SqlUtilities.closeWithNoException(stmt);
 			SqlUtilities.closeWithNoException(rs);
 		}
-		return recordCount;
+		return approv;
 	}
 }
