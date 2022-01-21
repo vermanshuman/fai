@@ -2,47 +2,47 @@
   <div class="">
     <!-- d-flex align-items-end  -->
     <div class="pb-3">
-     <div class="row">
-       <div class="col-md-8">
-        <div class="row">
-          <div class="col-md-3 pb-2 pr-0">
-            <div class="">
-              <label class="form-label mb-0" for="daInputDate">{{'home.from' | translate | uppercase}}</label>
-              <input class="form-control" type="text" placeholder="da" aria-label="default input example" type="date" id="daInputDate">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-md-3 pb-2 pr-0">
+              <div class="">
+                <label class="form-label mb-0" for="daInputDate">{{'home.from' | translate | uppercase}}</label>
+                <input class="form-control" type="text" placeholder="da" aria-label="default input example" type="date" id="daInputDate">
+              </div>
             </div>
-          </div>
-          <div class="col-md-3 pr-0">
-            <div class="">
-              <label class="form-label mb-0" for="aInputDate">{{'home.to' | translate | uppercase}}</label>
-              <input class="form-control" type="text" placeholder="a" aria-label="default input example" type="date" id="aInputDate">
+            <div class="col-md-3 pr-0">
+              <div class="">
+                <label class="form-label mb-0" for="aInputDate">{{'home.to' | translate | uppercase}}</label>
+                <input class="form-control" type="text" placeholder="a" aria-label="default input example" type="date" id="aInputDate">
+              </div>
             </div>
-          </div>
-          <div class="col-md-1 pb-2">
-            <div class="">
-              <label></label>
-              <div>
-                <button class="btn btn-primary" type="button">{{'home.search' | translate}}</button>
+            <div class="col-md-1 pb-2">
+              <div class="">
+                <label></label>
+                <div>
+                  <button class="btn btn-primary" type="button">{{'home.search' | translate}}</button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 pb-2 pr-0">
+              <div class="">
+                <label class="form-label mb-0" for="fileOrdiniInputSearch">{{'home.ordersFile' | translate}}</label>
+                <input class="form-control" type="text" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
+              </div>
+            </div>
+            <div class="col-md-2 pb-2">
+              <div class="">
+                <label class="form-label mb-0" for="idVenditaInputSearch">{{'home.idSale' | translate}}</label>
+                <input class="form-control" type="text" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
               </div>
             </div>
           </div>
-          <div class="col-md-2 pb-2 pr-0">
-            <div class="">
-              <label class="form-label mb-0" for="fileOrdiniInputSearch">{{'home.ordersFile' | translate}}</label>
-              <input class="form-control" type="text" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
-            </div>
-          </div>
-          <div class="col-md-2 pb-2">
-            <div class="">
-              <label class="form-label mb-0" for="idVenditaInputSearch">{{'home.idSale' | translate}}</label>
-              <input class="form-control" type="text" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
-            </div>
-          </div>
         </div>
-       </div>
-       <div class="col-md-4">
+        <div class="col-md-4">
 
-       </div>
-     </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row">
@@ -55,82 +55,82 @@
               <!-- tab-body-max-width -->
               <div class="card-body p-5">
                 <div class="row">
-                    <div class="col-md-12">
-                      <div class="row">
-                        <div class="col-md-1"></div>
-                        <div class="col-md-10">
-                            <div class="configure-btn-box">
-                            <div *ngIf="getCSVScheduleDetail && getCSVScheduleDetail.csvSchedule">
-                              <b>Pianificazione import CSV: Prossima esecuzione prevista il</b>: {{getCSVScheduleDetail?.csvSchedule}}
-                            </div>
-                            <div class="text-right ml-auto">
-                            <button type="button" class="btn primary-btn-with-icon"
+                  <div class="col-md-12">
+                    <div class="row">
+                      <div class="col-md-1"></div>
+                      <div class="col-md-10">
+                        <div class="configure-btn-box">
+                          <div *ngIf="getCSVScheduleDetail && getCSVScheduleDetail.csvSchedule">
+                            <b>Pianificazione import CSV: Prossima esecuzione prevista il</b>: {{getCSVScheduleDetail?.csvSchedule}}
+                          </div>
+                          <div class="text-right ml-auto">
+                            <button type="button" class="btn primary-btn-with-icon large"
                                     (click)="initFtpConfigForm(); ftpConfigureModal.show();">
                               <i class="fa fa-gear"></i>
                               <span>Configura</span>
                             </button>
                           </div>
+                        </div>
+                      </div>
+                      <div class="col-md-1"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <form [formGroup]="fileUploadForm" class="mt-5">
+                      <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-7">
+                          <div class="form-group">
+                            <div class="input-group">
+                              <input hidden type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+                                application/vnd.ms-excel" #uploader (change)="browseFile($event)"/>
+                              <input type="text" name="input2-group2" class="form-control" placeholder="{{'home.uploadFile' | translate}}"
+                                     autocomplete="upload file" formControlName="fileName" required>
+                              <span class="input-group-append">
+                                  <button type="button" class="btn btn-secondary" (click)="uploader.click()">Browse</button>
+                                </span>
+                            </div>
+                            <div class="error-text" *ngIf="fileUploadForm?.get('fileName')?.errors?.required &&
+                                    fileUploadForm?.get('fileName')?.dirty">Please select a file</div>
+                            <p *ngIf="fileUploadErrMsg" class="text-red">{{fileUploadErrMsg}}</p>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="row">
+                            <div class="col-md-9">
+                              <div class="form-group">
+                                <select class="form-control" name="magazzino" formControlName="magazzino" required>
+                                  <option value="">MAGAZZINO</option>
+                                  <option value="UPS">UPS di Formello</option>
+                                  <option value="LORETO">Magazzino Loreto</option>
+                                </select>
+                                <div class="error-text" *ngIf="fileUploadForm?.get('magazzino')?.errors?.required &&
+                                        fileUploadForm?.get('magazzino')?.dirty">Magazinno is required</div>
+                              </div>
+                            </div>
+                            <div class="col-md-3">
+                              <button class="btn btn-primary" type="button" (click)="uploadFile()">Upload</button>
+                            </div>
                           </div>
                         </div>
                         <div class="col-md-1"></div>
                       </div>
-                    </div>
-                    <div class="col-md-12">
-                      <form [formGroup]="fileUploadForm" class="mt-5">
-                        <div class="row">
-                          <div class="col-md-1"></div>
-                          <div class="col-md-7">
-                            <div class="form-group">
-                              <div class="input-group">
-                                <input hidden type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
-                                application/vnd.ms-excel" #uploader (change)="browseFile($event)"/>
-                                <input type="text" name="input2-group2" class="form-control" placeholder="{{'home.uploadFile' | translate}}"
-                                      autocomplete="upload file" formControlName="fileName" required>
-                                <span class="input-group-append">
-                                  <button type="button" class="btn btn-secondary" (click)="uploader.click()">Browse</button>
-                                </span>
-                              </div>
-                              <div class="error-text" *ngIf="fileUploadForm?.get('fileName')?.errors?.required &&
-                                    fileUploadForm?.get('fileName')?.dirty">Please select a file</div>
-                              <p *ngIf="fileUploadErrMsg" class="text-red">{{fileUploadErrMsg}}</p>
-                            </div>
-                          </div>
-                          <div class="col-md-3">
-                            <div class="row">
-                              <div class="col-md-9">
-                                <div class="form-group">
-                                  <select class="form-control" name="magazzino" formControlName="magazzino" required>
-                                    <option value="">MAGAZZINO</option>
-                                    <option value="UPS">UPS di Formello</option>
-                                    <option value="LORETO">Magazzino Loreto</option>
-                                  </select>
-                                  <div class="error-text" *ngIf="fileUploadForm?.get('magazzino')?.errors?.required &&
-                                        fileUploadForm?.get('magazzino')?.dirty">Magazinno is required</div>
-                                </div>
-                              </div>
-                              <div class="col-md-3">
-                                <button class="btn btn-primary" type="button" (click)="uploadFile()">Upload</button>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-1"></div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <app-generic-table
+                                  [tableData]="uploadedFiles$"
+                                  [tableColumns]="fileUploadTableColumns"
+                                  [rowActionIcons]="{custom: 'Eseguire', position: 'center'}"
+                                  [noSearchPanel]="true"
+                                  [isPageable]="true"
+                                  [paginationSizes]="[10, 15, 20]"
+                                  [defaultPageSize]="10"
+                                  (ngComplete)="onExecute($event)">
+                          </app-generic-table>
                         </div>
-                        <div class="row">
-                          <div class="col-md-12">
-                            <app-generic-table
-                              [tableData]="uploadedFiles$"
-                              [tableColumns]="fileUploadTableColumns"
-                              [rowActionIcons]="{custom: 'Eseguire', position: 'center'}"
-                              [noSearchPanel]="true"
-                              [isPageable]="true"
-                              [paginationSizes]="[10, 15, 20]"
-                              [defaultPageSize]="10"
-                              (ngComplete)="onExecute($event)">
-                            </app-generic-table>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
@@ -171,139 +171,183 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card mb-0 bg-lighter-gray">
-              <div class="card-body">
-                <form [formGroup]="ftpConfigForm" class="form-horizontal" *ngIf="ftpConfigForm">
-                                    <div class="form-group row">
-                    <label class="col-md-2 col-form-label">{{'home.ftpurl' | translate}}:</label>
-                    <div class="col-md-10">
-                      <input type="text" name="ftp_url" class="form-control" formControlName="ftp_url" required>
-                      <div class="error-text" *ngIf="ftpConfigForm?.get('ftp_url')?.errors?.required &&
+        <tabset #ftpModalTabset id="ftpModalTabset">
+          <tab [heading]="'FTP'" class="fade-in">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card mb-0 bg-lighter-gray">
+                  <div class="card-body">
+                    <form [formGroup]="ftpConfigForm" class="form-horizontal" *ngIf="ftpConfigForm">
+                      <div class="form-group row">
+                        <label class="col-md-2 col-form-label">{{'home.ftpurl' | translate}}:</label>
+                        <div class="col-md-10">
+                          <input type="text" name="ftp_url" class="form-control" formControlName="ftp_url" required>
+                          <div class="error-text" *ngIf="ftpConfigForm?.get('ftp_url')?.errors?.required &&
                       ftpConfigForm?.get('ftp_url')?.dirty">Ftp url is required</div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-4 col-form-label" for="email-input">{{'home.user' | translate}}</label>
-                        <div class="col-md-8">
-                          <input type="text" name="email-input" class="form-control" autocomplete="email"
-                                 formControlName="username" id="email-input">
-                          <div class="error-text" *ngIf="ftpConfigForm?.get('username')?.errors?.required &&
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-md-4 col-form-label" for="email-input">{{'home.user' | translate}}</label>
+                            <div class="col-md-8">
+                              <input type="text" name="email-input" class="form-control" autocomplete="email"
+                                     formControlName="username" id="email-input">
+                              <div class="error-text" *ngIf="ftpConfigForm?.get('username')?.errors?.required &&
                       ftpConfigForm?.get('username')?.dirty">Username is required</div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-4 col-form-label" for="password-input">{{'home.password' | translate}}</label>
-                        <div class="col-md-8">
-                          <input type="password" name="password-input" class="form-control"
-                                 autocomplete="current-password" formControlName="password" id="password-input">
-                          <div class="error-text" *ngIf="ftpConfigForm?.get('password')?.errors?.required &&
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-md-4 col-form-label" for="password-input">{{'home.password' | translate}}</label>
+                            <div class="col-md-8">
+                              <input type="password" name="password-input" class="form-control"
+                                     autocomplete="current-password" formControlName="password" id="password-input">
+                              <div class="error-text" *ngIf="ftpConfigForm?.get('password')?.errors?.required &&
                       ftpConfigForm?.get('password')?.dirty">Password is required</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div class="clearfix"></div>
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-4 col-form-label" for="file-name">File name:</label>
-                        <div class="col-md-8">
-                          <input type="text" name="text-input" class="form-control" formControlName="file_name"
-                          id="file-name">
-                          <div class="error-text" *ngIf="ftpConfigForm?.get('file_name')?.errors?.required &&
+                      <div class="clearfix"></div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-md-4 col-form-label" for="file-name">File name:</label>
+                            <div class="col-md-8">
+                              <input type="text" name="text-input" class="form-control" formControlName="file_name"
+                                     id="file-name">
+                              <div class="error-text" *ngIf="ftpConfigForm?.get('file_name')?.errors?.required &&
                       ftpConfigForm?.get('file_name')?.dirty">File name is required</div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group row">
-                        <label class="col-md-4 col-form-label" for="ccmonth">Magazinno:</label>
-                        <div class="col-md-8">
-                          <select class="form-control" id="ccmonth" placeholder="" formControlName="magazinno">
-                            <option value="">MAGAZZINO</option>
-                            <option value="UPS">UPS di Formello</option>
-                            <option value="LORETO">Magazzino Loreto</option>
-                          </select>
-                          <div class="error-text" *ngIf="ftpConfigForm?.get('magazinno')?.errors?.required &&
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-md-4 col-form-label" for="ccmonth">Magazinno:</label>
+                            <div class="col-md-8">
+                              <select class="form-control" id="ccmonth" placeholder="" formControlName="magazinno">
+                                <option value="">MAGAZZINO</option>
+                                <option value="UPS">UPS di Formello</option>
+                                <option value="LORETO">Magazzino Loreto</option>
+                              </select>
+                              <div class="error-text" *ngIf="ftpConfigForm?.get('magazinno')?.errors?.required &&
                       ftpConfigForm?.get('magazinno')?.dirty">Magazinno is required</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Days</label>
-                    <div class="col-md-10 col-form-label">
-                      <div class="form-check form-check-inline mr-1">
-                        <input class="form-check-input" type="checkbox" value="Sun" formControlName="sunday"
-                        id="inline-checkbox1">
-                        <label class="form-check-label" for="inline-checkbox1">Sun</label>
-                      </div>
-                      <div class="form-check form-check-inline mr-1">
-                        <input class="form-check-input" type="checkbox" value="M" formControlName="monday"
-                        id="inline-checkbox2">
-                        <label class="form-check-label" for="inline-checkbox2">M</label>
-                      </div>
-                      <div class="form-check form-check-inline mr-1">
-                        <input class="form-check-input" type="checkbox" value="Tu" formControlName="tuesday"
-                        id="inline-checkbox3">
-                        <label class="form-check-label" for="inline-checkbox3">Tu</label>
-                      </div>
-                      <div class="form-check form-check-inline mr-1">
-                        <input class="form-check-input" type="checkbox" value="W" checked formControlName="wednesday"
-                        id="inline-checkbox4">
-                        <label class="form-check-label" for="inline-checkbox4">W</label>
-                      </div>
-                      <div class="form-check form-check-inline mr-1">
-                        <input class="form-check-input" type="checkbox" value="Th" formControlName="thursday"
-                        id="inline-checkbox5">
-                        <label class="form-check-label" for="inline-checkbox5">Th</label>
-                      </div>
-                      <div class="form-check form-check-inline mr-1">
-                        <input class="form-check-input" type="checkbox" value="F" checked formControlName="friday"
-                        id="inline-checkbox6">
-                        <label class="form-check-label" for="inline-checkbox6">F</label>
-                      </div>
-                      <div class="form-check form-check-inline mr-1">
-                        <input class="form-check-input" type="checkbox" value="Sat" formControlName="saturday"
-                        id="inline-checkbox7">
-                        <label class="form-check-label" for="inline-checkbox7">Sat</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Hours</label>
-                    <div class="col-md-10">
-                      <div class="d-flex mb-3" *ngFor="let control of ftpConfigForm.get('hours')['controls']; index as i"
-                           formArrayName="hours">
-                        <div>
-                            <input class="form-control" matInput type="time" [formControlName]="i" label="hh:mm"
-                                   [ngClass]="{'br-red ': !ftpConfigForm?.get('hours')?.value[i]}">
-                        </div>
-                        <div class="ml-3">
-                          <button (click)="addTime()" class="btn btn-outline-primary btn-sm"
-                                  *ngIf="(ftpConfigForm.get('hours')['controls']).length - 1 == i">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-                          </button>
-                          <button (click)="removeTime(i)" class="btn btn-outline-danger btn-sm"
-                                  *ngIf="(ftpConfigForm.get('hours')['controls']).length - 1 != i"  >
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                          </button>
+                      <div class="form-group row">
+                        <label class="col-md-2 col-form-label">Days</label>
+                        <div class="col-md-10 col-form-label">
+                          <div class="form-check form-check-inline mr-1">
+                            <input class="form-check-input" type="checkbox" value="Sun" formControlName="sunday"
+                                   id="inline-checkbox1">
+                            <label class="form-check-label" for="inline-checkbox1">Sun</label>
+                          </div>
+                          <div class="form-check form-check-inline mr-1">
+                            <input class="form-check-input" type="checkbox" value="M" formControlName="monday"
+                                   id="inline-checkbox2">
+                            <label class="form-check-label" for="inline-checkbox2">M</label>
+                          </div>
+                          <div class="form-check form-check-inline mr-1">
+                            <input class="form-check-input" type="checkbox" value="Tu" formControlName="tuesday"
+                                   id="inline-checkbox3">
+                            <label class="form-check-label" for="inline-checkbox3">Tu</label>
+                          </div>
+                          <div class="form-check form-check-inline mr-1">
+                            <input class="form-check-input" type="checkbox" value="W" checked formControlName="wednesday"
+                                   id="inline-checkbox4">
+                            <label class="form-check-label" for="inline-checkbox4">W</label>
+                          </div>
+                          <div class="form-check form-check-inline mr-1">
+                            <input class="form-check-input" type="checkbox" value="Th" formControlName="thursday"
+                                   id="inline-checkbox5">
+                            <label class="form-check-label" for="inline-checkbox5">Th</label>
+                          </div>
+                          <div class="form-check form-check-inline mr-1">
+                            <input class="form-check-input" type="checkbox" value="F" checked formControlName="friday"
+                                   id="inline-checkbox6">
+                            <label class="form-check-label" for="inline-checkbox6">F</label>
+                          </div>
+                          <div class="form-check form-check-inline mr-1">
+                            <input class="form-check-input" type="checkbox" value="Sat" formControlName="saturday"
+                                   id="inline-checkbox7">
+                            <label class="form-check-label" for="inline-checkbox7">Sat</label>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                      <div class="form-group row">
+                        <label class="col-md-2 col-form-label">Hours</label>
+                        <div class="col-md-10">
+                          <div class="d-flex mb-3" *ngFor="let control of ftpConfigForm.get('hours')['controls']; index as i"
+                               formArrayName="hours">
+                            <div>
+                              <input class="form-control" matInput type="time" [formControlName]="i" label="hh:mm"
+                                     [ngClass]="{'br-red ': !ftpConfigForm?.get('hours')?.value[i]}">
+                            </div>
+                            <div class="ml-3">
+                              <button (click)="addTime()" class="btn btn-outline-primary btn-sm"
+                                      *ngIf="(ftpConfigForm.get('hours')['controls']).length - 1 == i">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                              </button>
+                              <button (click)="removeTime(i)" class="btn btn-outline-danger btn-sm"
+                                      *ngIf="(ftpConfigForm.get('hours')['controls']).length - 1 != i"  >
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
                   </div>
-                </form>
+                </div>
+              </div>
+
+            </div><!--/.row-->
+          </tab>
+          <tab [heading]="'Calendar'" class="fade-in">
+            <div class="calendar-box">
+              <div class="form-group w-30">
+                <select class="form-control" name="magazzino" [(ngModel)]="selectedWarehouse">
+                  <option [value]="warehouse.value" *ngFor="let warehouse of warehouseList">{{warehouse.label}}</option>
+                </select>
+              </div>
+              <div class="form-group w-50">
+                <ng-multiselect-dropdown
+                        [placeholder]="'Weekdays'"
+                        [settings]="weekdayDropdownSettings"
+                        [data]="weekdays"
+                        [(ngModel)]="selectedDays"
+                        (onSelect)="onDaySelect($event)"
+                        (onSelectAll)="onSelectAllDays($event)"
+                >
+                </ng-multiselect-dropdown>
+              </div>
+              <div class="">
+                <button type="button" class="btn primary-btn-with-icon" (click)="addCalendarRecord()"
+                        [disabled]="!selectedWarehouse || selectedDays.length == 0">
+                  <i class="fa fa-plus"></i>
+                  <span>Agguingi</span>
+                </button>
               </div>
             </div>
-          </div>
-
-        </div><!--/.row-->
+            <div class="">
+              <app-generic-table
+                      [tableData]="calendarRecords$"
+                      [tableColumns]="calendarTableColumns"
+                      [rowActionIcons]="{edit: 'edit', delete: 'delete_outline', position: 'center'}"
+                      [noSearchPanel]="true"
+                      [isPageable]="true"
+                      [paginationSizes]="[10, 15, 20]"
+                      [defaultPageSize]="10"
+                      id="calendarTable"
+                      (ngDelete)="onCalendarDeleteClick($event)">
+              </app-generic-table>
+            </div>
+          </tab>
+        </tabset>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn danger-btn-with-icon" (click)="ftpConfigureModal.hide()">

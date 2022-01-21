@@ -24,6 +24,7 @@ export interface TableColumn {
   isInput?: boolean;
   isDropdown?: boolean;
   isHtml?: boolean;
+  showOutOf?: string[];
 }
 
 export interface RowActionIcons {

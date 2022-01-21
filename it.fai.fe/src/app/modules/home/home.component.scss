@@ -77,3 +77,24 @@
   align-items: center;
   justify-content: space-between;
 }
+
+
+.calendar-box {
+  display: flex;
+  justify-content: space-between;
+
+  .w-30 {
+    width: 30%;
+  }
+  .w-50 {
+    width: 50%;
+  }
+}
+
+::ng-deep #calendarTable {
+  table {
+    th:last-child {
+      min-width: 230px;
+    }
+  }
+}

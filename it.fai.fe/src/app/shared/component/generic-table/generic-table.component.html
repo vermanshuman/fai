@@ -113,7 +113,16 @@
           <div *ngIf="!checkIfItMultipleLines(resolve(tableColumn.dataKey, element))"
                (click)="tableColumn.clickable ? emitSelectRow(element) : ''"
                style="cursor: {{tableColumn.clickable ? 'pointer' : ''}};">
-            {{tableColumn?.method != null ? gridEvent(tableColumn.method, tableColumn.dataKey, element) : (tableColumn.isDate ? (resolve(tableColumn.dataKey, element) | date: 'dd/MM/yyyy hh:mm') : resolve(tableColumn.dataKey, element))}}
+            <ng-container *ngIf="!tableColumn.showOutOf">
+              {{tableColumn?.method != null ? gridEvent(tableColumn.method, tableColumn.dataKey, element) : (tableColumn.isDate ? (resolve(tableColumn.dataKey, element) | date: 'dd/MM/yyyy') : resolve(tableColumn.dataKey, element))}}
+            </ng-container>
+            <ng-container *ngIf="tableColumn.showOutOf">
+              {{(resolve(tableColumn.dataKey, element) ? resolve(tableColumn.dataKey, element) : 0)}}
+              <ng-container *ngFor="let so of tableColumn.showOutOf">
+                {{'/ ' + resolve(so, element)}}
+              </ng-container>
+            </ng-container>
+
           </div>
         </td>
       </ng-container>

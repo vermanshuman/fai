@@ -1,13 +1,31 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {GenericTaskService} from '../../core/http';
-import {CsvFile, GenericTask, GenericTaskProperty, Orders, UploadTask} from '../../core/models';
+import {CsvFile, GenericTask, GenericTaskProperty, Order, Orders, UploadTask} from '../../core/models';
 import {NotificationService} from '../../services/notification.service';
 import {UploadTaskService} from '../../core/http/upload-task/upload-task.service';
 import {TableColumn} from '../../shared/component/generic-table/generic-table.component';
 import {Observable, of} from 'rxjs';
 import {OrdersService} from '../../core/http/order/orders.service';
+import {WEEK_DAYS} from "../../config/weekdays";
+import {WEEK_DAYS_DD_CONFIG} from "../../config/weekdays-dd-config";
+import {FILE_UPLOAD_TABLE_COLUMNS} from "../../config/file-upload-table-columns";
+import {CALENDAR_TABLE_COLUMNS} from "../../config/calendar-table-columns";
 
+
+const WARE_HOUSE_LIST  = [
+    {
+        value: '',
+        label: 'MAGAZZINO'
+    }, {
+        value: 'UPS',
+        label: 'UPS di Formello'
+    },
+    {
+        value: 'LORETO',
+        label: 'Magazzino Loreto'
+    },
+];
 
 @Component({
     selector: 'app-home',
@@ -25,67 +43,9 @@ export class HomeComponent implements OnInit {
     @ViewChild('uploader') fileUploader: ElementRef;
     getCSVScheduleDetail: any = null;
     uploadedFiles$: Observable<UploadTask[]> | undefined;
-    orders$: Observable<Orders[]> | undefined;
-
-    public fileUploadTableColumns: TableColumn[] = [
-        {
-            name: 'Data',
-            dataKey: 'creationDate',
-            position: 'center',
-            isDate: true,
-            isSortable: true,
-        },
-        {
-            name: 'File Name',
-            dataKey: 'csvFileName',
-            position: 'center',
-            isSortable: true,
-        },
-        {
-            name: '# Ordini',
-            dataKey: 'orderCount',
-            position: 'center',
-            isSortable: true,
-        },
-        {
-            name: 'Stato Ordini',
-            dataKey: 'orderStatus',
-            position: 'center',
-            isSortable: true,
-        },
-        {
-            name: '% Linee Ordini evase',
-            dataKey: 'orderLinesFulfilled',
-            position: 'center',
-            isSortable: true
-        },
-        {
-            name: '% Linee Ordini processate',
-            dataKey: 'orderLinesProcessed',
-            position: 'center',
-            isSortable: true
-        },
-        {
-            name: '% Linee Ordini mancanti',
-            dataKey: 'orderLinesMissed',
-            position: 'center',
-            isSortable: true
-        },
-        {
-            name: 'Magazzino',
-            dataKey: 'magazzinoAcronym',
-            position: 'center',
-            isSortable: true
-        },
-        {
-            name: 'Stato esecuzione',
-            dataKey: 'executionStatus',
-            position: 'center',
-            isSortable: true
-        }
-    ];
-
-    public orderTableColumns: TableColumn[] = [
+    orders$: Observable<Order[]> | undefined;
+    fileUploadTableColumns: TableColumn[] = FILE_UPLOAD_TABLE_COLUMNS;
+    orderTableColumns: TableColumn[] = [
         {
             name: 'Id Vendita',
             dataKey: 'idVendita',
@@ -135,6 +95,14 @@ export class HomeComponent implements OnInit {
             isSortable: true
         }
     ];
+    @ViewChild('ftpModalTabset', { static: false }) ftpModalTabset: any;
+    weekdays = WEEK_DAYS;
+    selectedDays = [];
+    weekdayDropdownSettings = WEEK_DAYS_DD_CONFIG;
+    calendarRecords$: Observable<any[]> = of([]);
+    calendarTableColumns = CALENDAR_TABLE_COLUMNS;
+    warehouseList = JSON.parse(JSON.stringify(WARE_HOUSE_LIST));
+    selectedWarehouse = '';
 
     constructor(private formBuilder: FormBuilder,
                 private genericTaskService: GenericTaskService,
@@ -366,5 +334,52 @@ export class HomeComponent implements OnInit {
                 console.log('error', error);
                 this.notifyService.showError('Error in loading orders');
             });
+    }
+
+    onDaySelect(item: any): void {
+        console.log(item);
+    }
+    onSelectAllDays(items: any): void {
+        console.log(items);
+    }
+
+    private _getObjectKeyValue(key:string): any {
+        const getProp = prop => obj => obj[prop];
+        return getProp(key);
+    }
+
+    addCalendarRecord(): void {
+        console.log('selected warehouse', this.selectedWarehouse);
+        console.log('selected weekdays', this.selectedDays);
+        this.warehouseList = this.warehouseList.filter(w=>w.value != this.selectedWarehouse)
+        const record = {
+            warehouse: this.selectedWarehouse,
+            weekdays: this.selectedDays.map(this._getObjectKeyValue('item_text'))
+        }
+        let calendarRecords = [];
+        this.calendarRecords$.subscribe((records:any)=>{
+            calendarRecords = records
+        });
+        calendarRecords.push(record);
+        this.calendarRecords$ = of(calendarRecords);
+        this.selectedDays = [];
+        this.selectedWarehouse = '';
+    }
+
+    onCalendarDeleteClick(event: any): void {
+        console.log('event', event);
+        const removedWarehouse = WARE_HOUSE_LIST.filter(w => w.value === event.warehouse);
+        if (removedWarehouse.length > 0) {
+            this.warehouseList.unshift(removedWarehouse[0]);
+        }
+        let calendarRecords = [];
+        this.calendarRecords$.subscribe((records: any) => {
+            calendarRecords = records;
+        });
+        const index = calendarRecords.findIndex(w => w.warehouse === event.warehouse);
+        if (index >= 0) {
+            calendarRecords.splice(index, 1);
+            this.calendarRecords$ = of(calendarRecords);
+        }
     }
 }

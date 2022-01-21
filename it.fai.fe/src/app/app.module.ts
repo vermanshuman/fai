@@ -53,6 +53,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import { ToastrModule } from 'ngx-toastr';
 import { SharedModule } from './shared/shared.module';
+import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 
 
 @NgModule({
@@ -85,7 +86,8 @@ import { SharedModule } from './shared/shared.module';
             preventDuplicates: true,
             closeButton: true
         }),
-        SharedModule
+        SharedModule,
+        NgMultiSelectDropDownModule.forRoot()
     ],
   declarations: [
     AppComponent,
