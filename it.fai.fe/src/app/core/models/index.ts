@@ -6,4 +6,7 @@ export * from './generic-task/csv-file.model';
 export * from './upload-task/upload-task.model';
 export * from './upload-task/upload-tasks.model';
 
+export * from './orders/order.model';
+export * from './orders/orders.model';
+
 

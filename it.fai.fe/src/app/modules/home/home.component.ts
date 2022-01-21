@@ -1,11 +1,12 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {GenericTaskService} from '../../core/http';
-import {CsvFile, GenericTask, GenericTaskProperty, UploadTask} from '../../core/models';
+import {CsvFile, GenericTask, GenericTaskProperty, Orders, UploadTask} from '../../core/models';
 import {NotificationService} from '../../services/notification.service';
 import {UploadTaskService} from '../../core/http/upload-task/upload-task.service';
 import {TableColumn} from '../../shared/component/generic-table/generic-table.component';
 import {Observable, of} from 'rxjs';
+import {OrdersService} from '../../core/http/order/orders.service';
 
 
 @Component({
@@ -24,6 +25,7 @@ export class HomeComponent implements OnInit {
     @ViewChild('uploader') fileUploader: ElementRef;
     getCSVScheduleDetail: any = null;
     uploadedFiles$: Observable<UploadTask[]> | undefined;
+    orders$: Observable<Orders[]> | undefined;
 
     public fileUploadTableColumns: TableColumn[] = [
         {
@@ -83,9 +85,61 @@ export class HomeComponent implements OnInit {
         }
     ];
 
+    public orderTableColumns: TableColumn[] = [
+        {
+            name: 'Id Vendita',
+            dataKey: 'idVendita',
+            position: 'center',
+            isSortable: true,
+        },
+        {
+            name: 'Utente Web',
+            dataKey: 'userName',
+            position: 'center',
+            isSortable: true,
+        },
+        {
+            name: 'email',
+            dataKey: 'email',
+            position: 'center',
+            isSortable: true,
+        },
+        {
+            name: '# Linee',
+            dataKey: 'numberOfLines',
+            position: 'center',
+            isSortable: true,
+        },
+        {
+            name: 'Evase',
+            dataKey: 'orderLinesFulfilled',
+            position: 'center',
+            isSortable: true
+        },
+        {
+            name: 'Mancanti',
+            dataKey: 'missingCount',
+            position: 'center',
+            isSortable: true
+        },
+        {
+            name: 'Importo',
+            dataKey: 'amount',
+            position: 'center',
+            isSortable: true
+        },
+        {
+            name: 'Stato',
+            dataKey: 'status',
+            position: 'center',
+            isSortable: true
+        }
+    ];
+
     constructor(private formBuilder: FormBuilder,
                 private genericTaskService: GenericTaskService,
                 private uploadTaskService: UploadTaskService,
+                private ordersService: OrdersService,
                 private notifyService: NotificationService) {
     }
 
@@ -101,38 +155,6 @@ export class HomeComponent implements OnInit {
             console.log('IMP_ORDINE_IN data: ', data);
             this.genericTask = data;
         });
-        // this.uploadedFiles$ = of([
-        //   {
-        //     oid: 1,
-        //     creationDate: new Date(),
-        //     csvFileName: 'File Name 1',
-        //     orderCount: 1,
-        //     orderStatus: 'Completato',
-        //     orderLinesFulfilled: 'Order Lines Fulfilled 1',
-        //     orderLinesProcessed: 'Order Lines Processed 1',
-        //     orderLinesMissed: 'Order Lines Missed 1'
-        //   },
-        //   {
-        //     oid: 2,
-        //     creationDate: new Date(),
-        //     csvFileName: 'File Name 2',
-        //     orderCount: 3,
-        //     orderStatus: 'Annulato',
-        //     orderLinesFulfilled: 'Order Lines Fulfilled 2',
-        //     orderLinesProcessed: 'Order Lines Processed 2',
-        //     orderLinesMissed: 'Order Lines Missed 2'
-        //   },
-        //   {
-        //     oid: 3,
-        //     creationDate: new Date(),
-        //     csvFileName: 'File Name 3',
-        //     orderCount: 2,
-        //     orderStatus: null,
-        //     orderLinesFulfilled: 'Order Lines Fulfilled 3',
-        //     orderLinesProcessed: 'Order Lines Processed 3',
-        //     orderLinesMissed: 'Order Lines Missed 3'
-        //   }
-        // ]);
     }
 
     initFileUploadForm(): void {
@@ -322,14 +344,27 @@ export class HomeComponent implements OnInit {
 
     onExecute(uploadTask: UploadTask): void {
         console.log('execute import: ', uploadTask);
-        this.uploadTaskService.executeImportCSV(uploadTask.oid).subscribe(() => {
+        this.uploadTaskService.executeImportCSV(uploadTask?.oid).subscribe(() => {
             this.refreshUploadedFiles();
-            this.uploadTaskService.executeCalculator(uploadTask.oid).subscribe(() => {
+            this.uploadTaskService.executeCalculator(uploadTask?.oid).subscribe(() => {
                 this.refreshUploadedFiles();
-                this.uploadTaskService.procurementTask(uploadTask.oid).subscribe(() => {
+                this.uploadTaskService.procurementTask(uploadTask?.oid).subscribe(() => {
                     this.refreshUploadedFiles();
                 });
             });
         });
+    }
+
+    loadOrders(): void {
+        this.ordersService.findAll().subscribe(data => {
+                console.log('Orders ', data);
+                if (data && data.orders) {
+                    this.orders$ = of(data.orders);
+                }
+            },
+            (error: any) => {
+                console.log('error', error);
+                this.notifyService.showError('Error in loading orders');
+            });
     }
 }

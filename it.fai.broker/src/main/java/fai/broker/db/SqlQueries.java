@@ -2431,7 +2431,6 @@ public class SqlQueries {
 		String sql;
 		Statement stmt = null;
 		ResultSet rs = null;
-		Long recordOID = null;
 		try {
 			String wc = "WHERE OID_MAGAZZINO IS NULL AND OID_FORNITORE IS NULL";
 			if (codiceMinSan != null) wc += " AND CODICE_MINSAN = "+SqlUtilities.getAsStringFieldValue(codiceMinSan);
@@ -2458,4 +2457,85 @@ public class SqlQueries {
 		}
 		return approv;
 	}
+
+	public static List<OrdineIn> getAllOrdine(Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		String sql;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<OrdineIn> list = new ArrayList<>();
+		try {
+			String wc = "WHERE 1=1";
+			Properties params = new Properties();
+			params.setProperty("whereCondition", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllOrdine.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				OrdineIn ordine = new OrdineIn();
+				ordine.setOid(rs.getLong("OID"));
+				ordine.setStatus(asStatusInfo(rs, ""));
+				ordine.setIdVendita(rs.getLong("ID_VENDITA"));
+				ordine.setNomeCompletoAcquirente(rs.getString("NOME_COMPLETO_ACQUIRENTE"));
+				ordine.setEmailAcquirente(rs.getString("EMAIL_ACQUIRENTE"));
+				ordine.setPrezzoTotale(rs.getDouble("PREZZO_TOTALE"));
+				ordine.setQuantita(rs.getInt("QUANTITA"));
+				//ordine.setOIdCollection(rs.getLong("OID_ORDINEINCOLLECTION"));
+				ordine.setFulfilled(SqlUtilities.asBoolean(rs.getString("FULFILLED")));
+				ordine.setOrderCount(rs.getInt("ORDER_COUNT"));
+				list.add(ordine);
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+	}
+
+
+	public static Integer countOrdineInDataLinkedToMissingOnes(Long oidOrdine, boolean fornitoreIsNotNull,
+															   boolean magazzinoIsNotNull, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		Integer missingCount = 0;
+		try {
+			Properties params = new Properties();
+			params.setProperty("oidMagazzino", fornitoreIsNotNull ? "IS NOT NULL" : "IS NULL");
+			params.setProperty("oidFornitore", magazzinoIsNotNull ? "IS NOT NULL" : "IS NULL");
+			params.setProperty("oidOrdine", "" + oidOrdine);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "countOrdineInDataLinkedToMissingOnes.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				missingCount = rs.getInt("RECORDS_COUNT");
+			}
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
+					+ "» nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return missingCount;
+
+	}
+
 }

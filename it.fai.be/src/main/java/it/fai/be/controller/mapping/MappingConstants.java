@@ -14,4 +14,6 @@ public class MappingConstants {
     public static final String EXECUTE_CALCULATOR_TASK = "/fabbisognoCalculator/{taskOID}";
     public static final String PROCUREMENT_MANAGER_TASK = "/approvvigionamentoManager/{taskOID}";
 
+    public static final String ORDER_MAPPING = "/api/orders";
+
 }
