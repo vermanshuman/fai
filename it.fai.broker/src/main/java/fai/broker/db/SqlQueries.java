@@ -1040,6 +1040,8 @@ public class SqlQueries {
 					approv.getFornitore() == null ? null : approv.getFornitore().getOid());
 			// QUANTITA
 			stmt.setInt(++col, approv.getQuantita());
+			//DISPONIBILITA_CONFERMATA_REQ
+			stmt.setDate(++col, approv.getDisponibilitaConfermataReq() == null ? null : new java.sql.Date(approv.getDisponibilitaConfermataReq().getTimeInMillis()));
 			// OID_STATUS / STATUS_*
 			col = setStatusInfo(stmt, ++col, approv.getStatus());
 			// OID
@@ -2406,6 +2408,8 @@ public class SqlQueries {
 			stmt.setInt(++col, approv.getQuantita());
 			// OID STatus
 			stmt.setLong(++col, approv.getStatus().getStatus().getOid());
+			//DISPONIBILITA_CONFERMATA_REQ
+			stmt.setDate(++col, approv.getDisponibilitaConfermataReq() == null ? null : new java.sql.Date(approv.getDisponibilitaConfermataReq().getTimeInMillis()));
 			// OID
 			stmt.setLong(++col, approv.getOid());
 			//

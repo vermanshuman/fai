@@ -10,6 +10,7 @@ import fai.imp.base.task.AbstractDataCollector;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -165,6 +166,7 @@ public class ComifarSupplierService extends AbstractSupplierService {
                         matchedProduct.get().getOrderedQuantity() > 0) {
                     appr.setQuantita(matchedProduct.get().getOrderedQuantity());
                     appr.setStatus(StatusInfo.newProcessedInstance(null, null));
+                    appr.setDisponibilitaConfermataReq(Calendar.getInstance());
                     appr.setOrdineOut(ordineOut);
                     SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
                 }

@@ -3,6 +3,7 @@ SET CODICE_MINSAN     = ?
   , CODICE_EAN        = ?
   , OID_FORNITORE     = ?
   , QUANTITA          = ?
+  , DISPONIBILITA_CONFERMATA_REQ = ?
   , OID_STATUS        = ?
   , STATUS_DESCR      = ?
   , STATUS_TECH_DESCR = ?
