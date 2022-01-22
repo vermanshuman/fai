@@ -155,7 +155,6 @@ export class HomeComponent implements OnInit {
     }
 
     onFTPFormSave(): void {
-        console.log('....................... ' , this.calendarRecords$);
         this.ftpConfigForm.get('ftp_url').markAsDirty({onlySelf: true});
         this.ftpConfigForm.get('username').markAsDirty({onlySelf: true});
         this.ftpConfigForm.get('password').markAsDirty({onlySelf: true});

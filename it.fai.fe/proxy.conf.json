@@ -1,0 +1,10 @@
+{
+    "api/warehouse":{
+        "target": "http://localhost:3000",
+        "secure": false
+    },
+    "/fai/api/warehouse": {
+        "target": "http://localhost:3000",
+        "secure": false
+    }
+}
