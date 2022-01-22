@@ -339,3 +339,69 @@ td.mat-cell:not(.mat-column-expandedDetails) {
 .bg-red {
   background-color: red !important;
 }
+
+.edit-spec-btn {
+  padding: 0;
+  border: 1px solid #56a265;
+  color: #56a265 !important;
+  height: 32px;
+  line-height: inherit;
+}
+
+.edit-spec-icon {
+  //background-image: url('../../../../assets/img/pencil.png');
+  background-repeat: no-repeat;
+  background-size: 18px;
+  background-position-x: 11px;
+  background-position-y: 7px;
+  background-color: #56a265;
+  color: white !important;
+  height: 31px;
+  width: 39px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  padding-top: 4px;
+}
+
+.edit-spec-label {
+  padding-left: 8px;
+  padding-right: 15px;
+  color: #56a265 !important;
+}
+
+// delete button
+.delete-spec-btn {
+  padding: 0;
+  border: 1px solid #B7562C;
+  color: #B7562C !important;
+  height: 32px;
+  line-height: inherit;
+}
+
+.delete-spec-icon {
+  //background-image: url('../../../../assets/icon/pencil.png');
+  background-repeat: no-repeat;
+  background-size: 18px;
+  background-position-x: 11px;
+  background-position-y: 7px;
+  background-color: #B7562C;
+  color: white !important;
+  height: 31px;
+  width: 39px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  padding-top: 4px;
+  margin-left: -2px;
+}
+
+.delete-spec-label {
+  padding-left: 8px;
+  padding-right: 15px;
+  color: #B7562C !important;
+}
+
+.rounded {
+  border-radius: 8px!important;
+  background-color: white!important;
+  width: 115px;
+}

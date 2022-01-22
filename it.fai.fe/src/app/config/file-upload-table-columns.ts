@@ -13,19 +13,21 @@ export const FILE_UPLOAD_TABLE_COLUMNS: TableColumn[] = [
         dataKey: 'csvFileName',
         position: 'center',
         isSortable: true,
+        clickable: true
     },
     {
         name: '# Ordini',
         dataKey: 'orderCount',
         position: 'center',
-        isSortable: true,
-        'showOutOf': ['orderCount1', 'orderCount2']
+        isSortable: true
     },
     {
         name: 'Stato Ordini',
-        dataKey: 'orderStatus',
+        dataKey: 'fulFilledOrderCount',
         position: 'center',
         isSortable: true,
+        color: '#00B050',
+        'showOutOf': [{value: 'processedOrderCount', color: '#FFC000'}, {value: 'missingOrderCount', color: '#FF0000'}]
     },
     {
         name: '% Linee Ordini evase',
@@ -47,13 +49,13 @@ export const FILE_UPLOAD_TABLE_COLUMNS: TableColumn[] = [
     },
     {
         name: 'Magazzino',
-        dataKey: 'magazzino',
+        dataKey: 'magazzinoAcronym',
         position: 'center',
         isSortable: true
     },
     {
         name: 'Stato esecuzione',
-        dataKey: 'statoEsecuzione',
+        dataKey: 'executionStatus',
         position: 'center',
         isSortable: true
     }

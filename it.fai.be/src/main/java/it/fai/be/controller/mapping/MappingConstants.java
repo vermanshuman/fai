@@ -15,5 +15,9 @@ public class MappingConstants {
     public static final String PROCUREMENT_MANAGER_TASK = "/approvvigionamentoManager/{taskOID}";
 
     public static final String ORDER_MAPPING = "/api/orders";
+    public static final String TASK_ORDER_MAPPING = "/byTask/{taskOID}";
+
+    public static final String WAREHOUSE_MAPPING = "/api/warehouse";
+
 
 }

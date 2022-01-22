@@ -6,6 +6,7 @@ import fai.common.db.SqlUtilities;
 import fai.common.models.GenericTaskConfig;
 import fai.common.util.CollectionsTool;
 import fai.common.util.Timeout;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
@@ -1970,7 +1971,6 @@ public class SqlQueries {
 				uploadTaskConfig.setCsvFileName(rs.getString("TASK_CSV_FILE_NAME"));
 				uploadTaskConfig.setMagazzinoAcronym(rs.getString("TASK_MAGAZZINO_ACRONYM"));
 				uploadTaskConfig.setStatus(asUploadStatusInfo(rs, ""));
-				uploadTaskConfig.setOrderCount(rs.getInt("ORDER_COUNT"));
 				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "TASK_CREATION_TS"));
 				list.add(uploadTaskConfig);
 			}
@@ -2243,31 +2243,6 @@ public class SqlQueries {
 		return ordineOut;
 	}
 
-	public static void setUploadTaskOrderCount(long taskOID, int orderCount, Connection conn) throws Exception {
-		final String METH_NAME = new Object() {    }.getClass().getEnclosingMethod().getName();
-		logger.debug("method: " + METH_NAME);
-		//
-		String sql = null;
-		Statement stmt = null;
-		try {
-			Properties params = new Properties();
-			params.setProperty("OID", ""+taskOID);
-			params.setProperty("ORDER_COUNT", ""+ orderCount);
-			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "setUploadTaskCount.sql", params);
-
-			stmt = conn.createStatement();
-			stmt.executeUpdate(sql);
-		}
-		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
-			logger.error(msg, th);
-			throw new Exception(msg, th);
-		}
-		finally {
-			SqlUtilities.closeWithNoException(stmt);
-		}
-	}
-
 	public static void setUploadTaskOrderStatus(long taskOID, String orderStatus, Connection conn) throws Exception {
 		final String METH_NAME = new Object() {    }.getClass().getEnclosingMethod().getName();
 		logger.debug("method: " + METH_NAME);
@@ -2462,7 +2437,7 @@ public class SqlQueries {
 		return approv;
 	}
 
-	public static List<OrdineIn> getAllOrdine(Connection conn) throws Exception {
+	public static List<OrdineIn> getAllOrdine(Long collectionOID, Connection conn) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		logger.debug("method: " + METH_NAME);
 		String sql;
@@ -2470,7 +2445,13 @@ public class SqlQueries {
 		ResultSet rs = null;
 		List<OrdineIn> list = new ArrayList<>();
 		try {
-			String wc = "WHERE 1=1";
+			String wc = "";
+
+			if(collectionOID != null && collectionOID > 0){
+				wc = "WHERE ordine.OID_ORDINEINCOLLECTION=" + collectionOID;
+			}else {
+				wc = "WHERE 1=1";
+			}
 			Properties params = new Properties();
 			params.setProperty("whereCondition", wc);
 			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllOrdine.sql", params);

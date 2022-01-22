@@ -48,8 +48,8 @@
   <div class="row">
     <div class="col-md-12 mb-4">
       <!-- Nav tabs -->
-      <tabset>
-        <tab [heading]="'home.ordersFile' | translate" class="fade-in">
+      <tabset #navTabset id="navTabset">
+        <tab [heading]="'home.ordersFile' | translate" class="fade-in" (selectTab)="refreshUploadedFiles()">
           <div class="tab-body-content">
             <div class="card mb-0">
               <!-- tab-body-max-width -->
@@ -100,7 +100,7 @@
                             <div class="col-md-9">
                               <div class="form-group">
                                 <select class="form-control" name="magazzino" formControlName="magazzino" required>
-                                  <option value="">MAGAZZINO</option>
+                                  <option value="">--SELEZIONA  MAGAZZINO--</option>
                                   <option value="UPS">UPS di Formello</option>
                                   <option value="LORETO">Magazzino Loreto</option>
                                 </select>
@@ -125,7 +125,8 @@
                                   [isPageable]="true"
                                   [paginationSizes]="[10, 15, 20]"
                                   [defaultPageSize]="10"
-                                  (ngComplete)="onExecute($event)">
+                                  (ngComplete)="onExecute($event)"
+                                  (ngRowSelected)="onFileRowSelected($event)">
                           </app-generic-table>
                         </div>
                       </div>
@@ -136,7 +137,7 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'home.orders' | translate" class="fade-in" (selectionchange)="loadOrders()" (selectTab)="loadOrders()">
+        <tab [heading]="'home.orders' | translate" class="fade-in" (selectionchange)="loadOrders(undefined)" (selectTab)="loadOrders(uploadTask)">
           <div class="row">
             <div class="col-md-12">
               <app-generic-table
@@ -146,7 +147,8 @@
                       [isPageable]="true"
                       [paginationSizes]="[10, 15, 20]"
                       [defaultPageSize]="10"
-                      (ngComplete)="onExecute($event)">
+                      (ngComplete)="onExecute($event)"
+                      (ngRowSelected)="onOrderRowSelected($event)">
               </app-generic-table>
             </div>
           </div>
@@ -228,7 +230,7 @@
                             <label class="col-md-4 col-form-label" for="ccmonth">Magazinno:</label>
                             <div class="col-md-8">
                               <select class="form-control" id="ccmonth" placeholder="" formControlName="magazinno">
-                                <option value="">MAGAZZINO</option>
+                                <option value="">--SELEZIONA  MAGAZZINO--</option>
                                 <option value="UPS">UPS di Formello</option>
                                 <option value="LORETO">Magazzino Loreto</option>
                               </select>
@@ -308,44 +310,80 @@
             </div><!--/.row-->
           </tab>
           <tab [heading]="'Calendar'" class="fade-in">
-            <div class="calendar-box">
-              <div class="form-group w-30">
-                <select class="form-control" name="magazzino" [(ngModel)]="selectedWarehouse">
-                  <option [value]="warehouse.value" *ngFor="let warehouse of warehouseList">{{warehouse.label}}</option>
-                </select>
-              </div>
-              <div class="form-group w-50">
-                <ng-multiselect-dropdown
-                        [placeholder]="'Weekdays'"
-                        [settings]="weekdayDropdownSettings"
-                        [data]="weekdays"
-                        [(ngModel)]="selectedDays"
-                        (onSelect)="onDaySelect($event)"
-                        (onSelectAll)="onSelectAllDays($event)"
-                >
-                </ng-multiselect-dropdown>
+            <ng-container *ngIf="!isEdit">
+              <div class="calendar-box">
+                <div class="form-group w-30">
+                  <select class="form-control" name="calendarMagazzino" [(ngModel)]="selectedWarehouse">
+                    <option [value]="warehouse.value" *ngFor="let warehouse of warehouseList">{{warehouse.label}}</option>
+                  </select>
+                </div>
+                <div class="form-group w-50">
+                  <ng-multiselect-dropdown
+                          [placeholder]="'Weekdays'"
+                          [settings]="weekdayDropdownSettings"
+                          [data]="weekdays"
+                          [(ngModel)]="selectedDays"
+                          (onSelect)="onDaySelect($event)"
+                          (onSelectAll)="onSelectAllDays($event)"
+                  >
+                  </ng-multiselect-dropdown>
+                </div>
+                <div class="">
+                  <button type="button" class="btn primary-btn-with-icon" (click)="addCalendarRecord()"
+                          [disabled]="!selectedWarehouse || selectedDays.length == 0">
+                    <i class="fa fa-plus"></i>
+                    <span>Agguingi</span>
+                  </button>
+                </div>
               </div>
               <div class="">
-                <button type="button" class="btn primary-btn-with-icon" (click)="addCalendarRecord()"
-                        [disabled]="!selectedWarehouse || selectedDays.length == 0">
-                  <i class="fa fa-plus"></i>
-                  <span>Agguingi</span>
-                </button>
+                <app-generic-table
+                        [tableData]="calendarRecords$"
+                        [tableColumns]="calendarTableColumns"
+                        [rowActionIcons]="{edit: 'edit', delete: 'delete_outline', position: 'center'}"
+                        [noSearchPanel]="true"
+                        [isPageable]="true"
+                        [paginationSizes]="[10, 15, 20]"
+                        [defaultPageSize]="10"
+                        id="calendarTable"
+                        (ngDelete)="onCalendarDeleteClick($event)"
+                        (ngEdit)="onCalendarEditClick($event);">
+                </app-generic-table>
               </div>
-            </div>
-            <div class="">
-              <app-generic-table
-                      [tableData]="calendarRecords$"
-                      [tableColumns]="calendarTableColumns"
-                      [rowActionIcons]="{edit: 'edit', delete: 'delete_outline', position: 'center'}"
-                      [noSearchPanel]="true"
-                      [isPageable]="true"
-                      [paginationSizes]="[10, 15, 20]"
-                      [defaultPageSize]="10"
-                      id="calendarTable"
-                      (ngDelete)="onCalendarDeleteClick($event)">
-              </app-generic-table>
-            </div>
+            </ng-container>
+            <ng-container *ngIf="isEdit">
+              <div class="">
+                <h2>Edit</h2>
+              </div>
+              <div class="calendar-box">
+                <div class="form-group w-30">
+                  <select class="form-control" name="calendarMagazzino" [(ngModel)]="selectedWarehouse">
+                    <option [value]="warehouse.value" *ngFor="let warehouse of allWarehouseList">{{warehouse.label}}</option>
+                  </select>
+                </div>
+                <div class="form-group w-40">
+                  <ng-multiselect-dropdown
+                          [placeholder]="'Weekdays'"
+                          [settings]="weekdayDropdownSettings"
+                          [data]="weekdays"
+                          [(ngModel)]="selectedDays"
+                          (onSelect)="onDaySelect($event)"
+                          (onSelectAll)="onSelectAllDays($event)">
+                  </ng-multiselect-dropdown>
+                </div>
+                <div class="">
+                  <button type="button" class="btn success-btn-with-icon" (click)="updateCalendarRecord()"
+                          [disabled]="!selectedWarehouse || selectedDays.length == 0">
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    <span>{{'home.save' | translate}}</span>
+                  </button>
+                  <button type="button" class="btn danger-btn-with-icon" (click)="isEdit = false">
+                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                    <span>{{'home.close' | translate}}</span>
+                  </button>
+                </div>
+              </div>
+            </ng-container>
           </tab>
         </tabset>
       </div>

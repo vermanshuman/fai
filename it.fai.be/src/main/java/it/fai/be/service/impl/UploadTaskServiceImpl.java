@@ -6,26 +6,21 @@ import fai.common.db.SqlQueries;
 import it.fai.be.constant.ValueConstant;
 import it.fai.be.dto.CSVFileDTO;
 import it.fai.be.dto.UploadTaskDTO;
-import it.fai.be.dto.UploadTasksDTO;
 import it.fai.be.service.UploadTaskService;
 import it.fai.be.utils.DateUtil;
 import it.fai.be.utils.FilesUtils;
-import it.swdes.servlet.zip4j.model.UnzipParameters;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
+import javax.swing.text.html.Option;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -72,9 +67,11 @@ public class UploadTaskServiceImpl implements UploadTaskService {
     public List<UploadTaskDTO> findAll(String startDate, String endDate, Connection conn) throws Exception {
         log.debug("Find All Upload Tasks");
         List<UploadTaskConfig> uploadTasks = fai.broker.db.SqlQueries.getAllUploadTask(conn);
+        List<Magazzino> magazzini = fai.broker.db.SqlQueries.getAllMagazzino(ValueConstant.MAGAZZINO_CONTEXT, conn);
         return uploadTasks
                 .stream()
-                .map(uploadTask -> setUploadTask(uploadTask))
+                .map(uploadTask -> setUploadTask(uploadTask,magazzini))
+                .map(uploadTaskDTO -> setOrderCount(uploadTaskDTO, conn))
                 .collect(Collectors.toList());
     }
 
@@ -94,18 +91,6 @@ public class UploadTaskServiceImpl implements UploadTaskService {
             GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
             genericTask.setup(ValueConstant.IMPORT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
             String error = genericTask.doJob();
-            if(error == null){
-                try {
-                    List<OrdineInCollection> ordineInCollections = fai.broker.db.SqlQueries.findOrdineInCollectionByInputResource(uploadTask.getCsvFileName(), conn);
-                    if(ordineInCollections != null && ordineInCollections.size() > 0){
-                        Long ordineInCollectionId = ordineInCollections.get(0).getOid();
-                        int orderCount = fai.broker.db.SqlQueries.countOrdineInByCollectionID(ordineInCollectionId, conn);
-                        fai.broker.db.SqlQueries.setUploadTaskOrderCount(taskOID, orderCount, conn);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
             uploadTaskDTO.setMessage(error);
         }
         return uploadTaskDTO;
@@ -159,6 +144,10 @@ public class UploadTaskServiceImpl implements UploadTaskService {
     }
 
     private UploadTaskDTO setUploadTask(UploadTaskConfig uploadTaskConfig) {
+        return setUploadTask(uploadTaskConfig, null);
+    }
+
+    private UploadTaskDTO setUploadTask(UploadTaskConfig uploadTaskConfig, List<Magazzino> magazzini) {
         UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();
         uploadTaskDTO.setOid(uploadTaskConfig.getOid());
         if(uploadTaskConfig.getCreationTs() != null)
@@ -166,9 +155,34 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         uploadTaskDTO.setCsvFileName(uploadTaskConfig.getCsvFileName());
         uploadTaskDTO.setExecutionStatus(uploadTaskConfig.getStatus().getStatusDescr());
         uploadTaskDTO.setMagazzinoAcronym(uploadTaskConfig.getMagazzinoAcronym());
-        uploadTaskDTO.setOrderCount(uploadTaskConfig.getOrderCount());
-
         uploadTaskDTO.setOrderStatus(uploadTaskConfig.getOrderStatus());
+        uploadTaskDTO.setFulFilledOrderCount(1);
+        uploadTaskDTO.setProcessedOrderCount(0);
+        uploadTaskDTO.setMissingOrderCount(0);
+        uploadTaskDTO.setMagazzinoAcronym(uploadTaskConfig.getMagazzinoAcronym());
+        if(magazzini != null && !magazzini.isEmpty() &&
+                StringUtils.isNotBlank(uploadTaskConfig.getMagazzinoAcronym())){
+            Optional<Magazzino> warehouse = magazzini
+                    .stream()
+                    .filter(m -> m.getAcronym().equalsIgnoreCase(uploadTaskConfig.getMagazzinoAcronym()))
+                    .findFirst();
+            if(warehouse.isPresent())
+                uploadTaskDTO.setMagazzinoAcronym(warehouse.get().getDescr());
+        }
+        return uploadTaskDTO;
+    }
+
+    private UploadTaskDTO setOrderCount(UploadTaskDTO uploadTaskDTO, Connection conn){
+        try {
+            List<OrdineInCollection> ordineInCollections = fai.broker.db.SqlQueries.findOrdineInCollectionByInputResource(
+                    uploadTaskDTO.getCsvFileName(), conn);
+            if (ordineInCollections != null && ordineInCollections.size() > 0) {
+                Long ordineInCollectionId = ordineInCollections.get(0).getOid();
+                uploadTaskDTO.setOrderCount(fai.broker.db.SqlQueries.countOrdineInByCollectionID(ordineInCollectionId, conn));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return uploadTaskDTO;
     }
 

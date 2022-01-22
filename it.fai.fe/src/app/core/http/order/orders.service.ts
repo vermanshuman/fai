@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {ObservableApiService} from '../observable-api.service';
 import {ApiService} from '../api.service';
-import {Orders} from '../../models';
+import {GenericTask, Orders} from '../../models';
 
 
 @Injectable({
@@ -15,5 +15,8 @@ export class OrdersService extends ObservableApiService<Orders> {
     }
     findAll = ():
         Observable<Orders> => this.apiService.get(`/orders`)
+
+    findOrdersByCollection = (taskOID: number):
+        Observable<Orders> => this.apiService.get(`/orders/byTask/` + taskOID)
 }
 

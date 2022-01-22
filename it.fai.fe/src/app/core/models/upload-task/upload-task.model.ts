@@ -3,6 +3,9 @@ export interface UploadTask {
     creationDate: Date;
     csvFileName: string;
     orderCount: number;
+    fulFilledOrderCount: number;
+    processedOrderCount: number;
+    missingOrderCount: number;
     orderStatus: string;
     orderLinesFulfilled: string;
     orderLinesProcessed: string;

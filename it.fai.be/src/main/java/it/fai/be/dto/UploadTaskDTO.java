@@ -14,6 +14,9 @@ public class UploadTaskDTO extends ResponseDto{
     private Date creationDate;
     private String csvFileName;
     private Integer orderCount;
+    private Integer fulFilledOrderCount;
+    private Integer processedOrderCount;
+    private Integer missingOrderCount;
     private String orderStatus;
     private String orderLinesFulfilled;
     private String orderLinesProcessed;

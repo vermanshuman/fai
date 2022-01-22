@@ -9,4 +9,10 @@ export * from './upload-task/upload-tasks.model';
 export * from './orders/order.model';
 export * from './orders/orders.model';
 
+export * from './warehouses/warehouse.model';
+
+export * from './supplier-calendar/supplier-calendar.model';
+
+export * from './suppliers/suuplier.model';
+
 

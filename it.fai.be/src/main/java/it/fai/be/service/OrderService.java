@@ -8,4 +8,5 @@ public interface OrderService {
 
     List<OrderDTO> findAll(Connection conn) throws Exception;
 
+    List<OrderDTO> findOrdersByTask(Long taskOID, Connection conn) throws Exception;
 }

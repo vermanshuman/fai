@@ -15,7 +15,6 @@ public class UploadTaskConfig extends AbstractModel {
     public static int RUN_END_TS;
     public static int RUN_DONE;
     public static int RUN_DESCR;
-    public static int ORDER_COUNT;
     public static int ORDER_STATUS;
 
     public static final Attribute[] attributes = buildAttributes(UploadTaskConfig.class, new Attribute[]{ //@formatter:off
@@ -29,7 +28,6 @@ public class UploadTaskConfig extends AbstractModel {
             new Attribute("runEndTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("runDone", null, Boolean.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("runDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("orderCount", null, Integer.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
             new Attribute("orderStatus", null, String.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
     }); //@formatter:on
 
@@ -162,18 +160,6 @@ public class UploadTaskConfig extends AbstractModel {
     public String getRunDescr() {
         return getString(RUN_DESCR);
     }
-
-    /**
-     * ORDER_COUNT
-     **/
-    public boolean setOrderCount(Integer orderCount) {
-        return setInt(ORDER_COUNT, orderCount);
-    }
-
-    public Integer getOrderCount() {
-        return getInt(ORDER_COUNT);
-    }
-
 
     /**
      * ORDER_COUNT

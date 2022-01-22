@@ -219,9 +219,6 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     // --- attribuzione dei CODICE_MINSAN o CODICE_EAN alle righe degli ordini ---
     //
     logger.info(LOG_PREFIX+"attribuzione dei codici MinSan/EAN ...");
-    if(uploadTaskConfig != null){
-      uploadTaskConfig.setOrderCount(ordini.size());
-    }
     //AnagraficaFarmaciMinSanEanCache anagrafica = new AnagraficaFarmaciMinSanEanCache();// SqlQueries.getAnagraficaFarmaciMinSanEanCache(conn);
     for (int i = 0; i < ordini.size(); i++) {
       OrdineIn ordine = ordini.get(i);

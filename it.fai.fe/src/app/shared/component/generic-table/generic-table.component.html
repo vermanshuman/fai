@@ -79,7 +79,7 @@
            mat-table [dataSource]="tableDataSource" matSort multiTemplateDataRows (matSortChange)="sortTable($event)">
       <ng-container matColumnDef="groupedHeader" *ngIf="tableHeader">
         <th class="groupedHeader" mat-header-cell *matHeaderCellDef colspan="4"><span><mat-icon
-          class="clipboard"></mat-icon></span> <span style="position: absolute;margin-top: 6px;">{{tableHeader}}</span>
+                class="clipboard"></mat-icon></span> <span style="position: absolute;margin-top: 6px;">{{tableHeader}}</span>
         </th>
       </ng-container>
 
@@ -112,14 +112,14 @@
           </div>
           <div *ngIf="!checkIfItMultipleLines(resolve(tableColumn.dataKey, element))"
                (click)="tableColumn.clickable ? emitSelectRow(element) : ''"
-               style="cursor: {{tableColumn.clickable ? 'pointer' : ''}};">
+               style="cursor: {{tableColumn.clickable ? 'pointer' : ''}};  {{tableColumn.clickable ? 'color: #1E90FF' : ''}}">
             <ng-container *ngIf="!tableColumn.showOutOf">
               {{tableColumn?.method != null ? gridEvent(tableColumn.method, tableColumn.dataKey, element) : (tableColumn.isDate ? (resolve(tableColumn.dataKey, element) | date: 'dd/MM/yyyy') : resolve(tableColumn.dataKey, element))}}
             </ng-container>
             <ng-container *ngIf="tableColumn.showOutOf">
-              {{(resolve(tableColumn.dataKey, element) ? resolve(tableColumn.dataKey, element) : 0)}}
+              <span [ngStyle]="{'color': tableColumn.color}">{{(resolve(tableColumn.dataKey, element) ? resolve(tableColumn.dataKey, element) : 0)}}</span>
               <ng-container *ngFor="let so of tableColumn.showOutOf">
-                {{'/ ' + resolve(so, element)}}
+                / <span [ngStyle]="{'color': so.color}">{{resolve(so.value, element)}}</span>
               </ng-container>
             </ng-container>
 
@@ -150,16 +150,16 @@
             <button class="rounded mr-2 edit-spec-btn" mat-raised-button (click)="emitEditAction(element)"
                     [disabled]="addAction?.disabled" *ngIf="isEditable">
               <mat-icon class="edit-spec-icon">{{rowActionIcons.edit}}</mat-icon>
-              <mat-label class="edit-spec-label">edit</mat-label>
+              <mat-label class="edit-spec-label">modifica</mat-label>
             </button>
           </ng-container>
 
           <!-- Bottone per l'azione di cancellazione -->
           <ng-container *ngIf="rowActionIcons.delete && !isNoTextBtn">
-            <button class="rounded mr-2" mat-raised-button color="warn" (click)="emitDeleteAction(element)"
+            <button class="rounded delete-spec-btn mr-2" mat-raised-button color="warn" (click)="emitDeleteAction(element)"
                     [disabled]="addAction?.disabled" *ngIf="isEditable">
-              <mat-icon>{{rowActionIcons.delete}}</mat-icon>
-              <mat-label>delete</mat-label>
+              <mat-icon class="delete-spec-icon">{{rowActionIcons.delete}}</mat-icon>
+              <mat-label class="delete-spec-label">elimina</mat-label>
             </button>
           </ng-container>
 
@@ -200,7 +200,7 @@
             <button class="rounded ml-2 green" mat-raised-button (click)="emitCompleteAction(element)"
                     *ngIf="element?.executionStatus && (element?.executionStatus === 'ESEGUIRE' || element?.executionStatus === 'IN CORSO')"
                     [disabled]="element?.executionStatus && element?.executionStatus !== 'ESEGUIRE'"
-              [ngStyle]="{'background-color': element?.executionStatus==='IN CORSO' ? '#98AFC7' : ''}">
+                    [ngStyle]="{'background-color': element?.executionStatus==='IN CORSO' ? '#98AFC7' : ''}">
               <mat-label>{{element?.executionStatus ? element?.executionStatus : rowActionIcons.custom}}</mat-label>
             </button>
           </ng-container>

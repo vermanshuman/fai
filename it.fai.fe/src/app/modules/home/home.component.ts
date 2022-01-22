@@ -7,16 +7,18 @@ import {UploadTaskService} from '../../core/http/upload-task/upload-task.service
 import {TableColumn} from '../../shared/component/generic-table/generic-table.component';
 import {Observable, of} from 'rxjs';
 import {OrdersService} from '../../core/http/order/orders.service';
-import {WEEK_DAYS} from "../../config/weekdays";
-import {WEEK_DAYS_DD_CONFIG} from "../../config/weekdays-dd-config";
-import {FILE_UPLOAD_TABLE_COLUMNS} from "../../config/file-upload-table-columns";
-import {CALENDAR_TABLE_COLUMNS} from "../../config/calendar-table-columns";
+import {WEEK_DAYS} from '../../config/weekdays';
+import {WEEK_DAYS_DD_CONFIG} from '../../config/weekdays-dd-config';
+import {FILE_UPLOAD_TABLE_COLUMNS} from '../../config/file-upload-table-columns';
+import {CALENDAR_TABLE_COLUMNS} from '../../config/calendar-table-columns';
+import {ORDER_TABLE_COLUMNS} from '../../config/order-table-columns';
+import {WarehouseService} from '../../core/http/warehouses/warehouse.service';
 
 
 const WARE_HOUSE_LIST  = [
     {
         value: '',
-        label: 'MAGAZZINO'
+        label: '--SELEZIONA  MAGAZZINO--'
     }, {
         value: 'UPS',
         label: 'UPS di Formello'
@@ -45,69 +47,26 @@ export class HomeComponent implements OnInit {
     uploadedFiles$: Observable<UploadTask[]> | undefined;
     orders$: Observable<Order[]> | undefined;
     fileUploadTableColumns: TableColumn[] = FILE_UPLOAD_TABLE_COLUMNS;
-    orderTableColumns: TableColumn[] = [
-        {
-            name: 'Id Vendita',
-            dataKey: 'idVendita',
-            position: 'center',
-            isSortable: true,
-        },
-        {
-            name: 'Utente Web',
-            dataKey: 'userName',
-            position: 'center',
-            isSortable: true,
-        },
-        {
-            name: 'email',
-            dataKey: 'email',
-            position: 'center',
-            isSortable: true,
-        },
-        {
-            name: '# Linee',
-            dataKey: 'numberOfLines',
-            position: 'center',
-            isSortable: true,
-        },
-        {
-            name: 'Evase',
-            dataKey: 'orderLinesFulfilled',
-            position: 'center',
-            isSortable: true
-        },
-        {
-            name: 'Mancanti',
-            dataKey: 'missingCount',
-            position: 'center',
-            isSortable: true
-        },
-        {
-            name: 'Importo',
-            dataKey: 'amount',
-            position: 'center',
-            isSortable: true
-        },
-        {
-            name: 'Stato',
-            dataKey: 'status',
-            position: 'center',
-            isSortable: true
-        }
-    ];
+    orderTableColumns: TableColumn[] = ORDER_TABLE_COLUMNS;
     @ViewChild('ftpModalTabset', { static: false }) ftpModalTabset: any;
+    @ViewChild('navTabset', { static: false }) navTabset: any;
     weekdays = WEEK_DAYS;
     selectedDays = [];
     weekdayDropdownSettings = WEEK_DAYS_DD_CONFIG;
     calendarRecords$: Observable<any[]> = of([]);
     calendarTableColumns = CALENDAR_TABLE_COLUMNS;
+    allWarehouseList = WARE_HOUSE_LIST;
     warehouseList = JSON.parse(JSON.stringify(WARE_HOUSE_LIST));
     selectedWarehouse = '';
+    isEdit = false;
+    editCalendarRecordIndex = null;
+    activeTab = 1;
 
     constructor(private formBuilder: FormBuilder,
                 private genericTaskService: GenericTaskService,
                 private uploadTaskService: UploadTaskService,
                 private ordersService: OrdersService,
+                private warehouseService: WarehouseService,
                 private notifyService: NotificationService) {
     }
 
@@ -123,6 +82,9 @@ export class HomeComponent implements OnInit {
             console.log('IMP_ORDINE_IN data: ', data);
             this.genericTask = data;
         });
+        this.warehouseService.findAll().subscribe(data => {
+            console.log('Warehouse data: ', data);
+        });
     }
 
     initFileUploadForm(): void {
@@ -133,6 +95,11 @@ export class HomeComponent implements OnInit {
     }
 
     initFtpConfigForm(): void {
+        this.calendarRecords$ = of([]);
+        this.warehouseList = JSON.parse(JSON.stringify(WARE_HOUSE_LIST));
+        this.selectedWarehouse = '';
+        this.isEdit = false;
+        this.editCalendarRecordIndex = null;
         const timeArray = [];
         if (this.genericTask?.scheduleTimes) {
             this.hoursList = this.genericTask?.scheduleTimes.split(',');
@@ -188,6 +155,7 @@ export class HomeComponent implements OnInit {
     }
 
     onFTPFormSave(): void {
+        console.log('....................... ' , this.calendarRecords$);
         this.ftpConfigForm.get('ftp_url').markAsDirty({onlySelf: true});
         this.ftpConfigForm.get('username').markAsDirty({onlySelf: true});
         this.ftpConfigForm.get('password').markAsDirty({onlySelf: true});
@@ -323,17 +291,30 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    loadOrders(): void {
-        this.ordersService.findAll().subscribe(data => {
-                console.log('Orders ', data);
-                if (data && data.orders) {
-                    this.orders$ = of(data.orders);
-                }
-            },
-            (error: any) => {
-                console.log('error', error);
-                this.notifyService.showError('Error in loading orders');
-            });
+    loadOrders(uploadTask: UploadTask): void {
+        if (uploadTask) {
+            this.ordersService.findOrdersByCollection(uploadTask.oid).subscribe(data => {
+                    console.log('Orders ', data);
+                    if (data && data.orders) {
+                        this.orders$ = of(data.orders);
+                    }
+                },
+                (error: any) => {
+                    console.log('error', error);
+                    this.notifyService.showError('Error in loading orders');
+                });
+        } else {
+            this.ordersService.findAll().subscribe(data => {
+                    console.log('Orders ', data);
+                    if (data && data.orders) {
+                        this.orders$ = of(data.orders);
+                    }
+                },
+                (error: any) => {
+                    console.log('error', error);
+                    this.notifyService.showError('Error in loading orders');
+                });
+        }
     }
 
     onDaySelect(item: any): void {
@@ -343,24 +324,26 @@ export class HomeComponent implements OnInit {
         console.log(items);
     }
 
-    private _getObjectKeyValue(key:string): any {
+    private _getObjectKeyValue(key: string): any {
         const getProp = prop => obj => obj[prop];
         return getProp(key);
     }
 
     addCalendarRecord(): void {
-        console.log('selected warehouse', this.selectedWarehouse);
-        console.log('selected weekdays', this.selectedDays);
-        this.warehouseList = this.warehouseList.filter(w=>w.value != this.selectedWarehouse)
+        this.warehouseList = this.warehouseList.filter(w => w.value !== this.selectedWarehouse);
         const record = {
             warehouse: this.selectedWarehouse,
-            weekdays: this.selectedDays.map(this._getObjectKeyValue('item_text'))
-        }
+            weekdays: (this.selectedDays.map(this._getObjectKeyValue('item_text')))?.toString()?.replace(/,[s]*/g, ', ')
+        };
         let calendarRecords = [];
-        this.calendarRecords$.subscribe((records:any)=>{
-            calendarRecords = records
+        this.calendarRecords$.subscribe((records: any) => {
+            calendarRecords = records;
         });
-        calendarRecords.push(record);
+        if (this.editCalendarRecordIndex === null) {
+            calendarRecords.push(record);
+        } else {
+            calendarRecords.splice(this.editCalendarRecordIndex, 1, record);
+        }
         this.calendarRecords$ = of(calendarRecords);
         this.selectedDays = [];
         this.selectedWarehouse = '';
@@ -381,5 +364,66 @@ export class HomeComponent implements OnInit {
             calendarRecords.splice(index, 1);
             this.calendarRecords$ = of(calendarRecords);
         }
+    }
+    onCalendarEditClick(event: any): void {
+        this.selectedWarehouse = event.warehouse;
+        this.selectedDays = [];
+        event.weekdays.split(', ').forEach((day: any) => {
+            const obj = {
+                item_id: day,
+                item_text: day
+            };
+            this.selectedDays.push(obj);
+        });
+        this.selectedDays = this.selectedDays.slice();
+        this.isEdit = true;
+        const selRec = WARE_HOUSE_LIST.filter(w => w.value === event.warehouse);
+        if (selRec.length > 0) {
+            this.warehouseList.push(selRec[0]);
+        }
+
+        let calendarRecords = [];
+        this.calendarRecords$.subscribe((records: any) => {
+            calendarRecords = records;
+        });
+        this.editCalendarRecordIndex = calendarRecords.findIndex(w => w === event);
+    }
+
+    updateCalendarRecord(): void {
+        if (this.editCalendarRecordIndex >= 0 ) {
+            this.addCalendarRecord();
+        }
+        setTimeout(() => {
+            this.onCancelEditCalendar();
+        });
+    }
+
+    onCancelEditCalendar(): void {
+        this.isEdit = false;
+        this.selectedWarehouse = '';
+        this.selectedDays = [];
+    }
+
+    onFileRowSelected(uploadTask: UploadTask): void {
+        console.log('row selected: ', uploadTask);
+        this.activeOrderTab(uploadTask);
+    }
+
+    activeOrderTab(uploadTask: UploadTask): void {
+        console.log('active Ordini Tab');
+        this.navTabset.tabs[0]._active = false;
+        this.navTabset.tabs[1]._active = true;
+        this.loadOrders(uploadTask);
+    }
+
+    onOrderRowSelected(uploadTask: UploadTask): void {
+        console.log('row selected: ', uploadTask);
+        this.activeProductTab();
+    }
+
+    activeProductTab(): void {
+        console.log('active Prodotti Tab');
+        this.navTabset.tabs[1]._active = false;
+        this.navTabset.tabs[2]._active = true;
     }
 }

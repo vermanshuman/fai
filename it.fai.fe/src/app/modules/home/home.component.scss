@@ -1,53 +1,53 @@
 .fade-in {
-    animation-name: FadeIn;
-    animation-duration: 1s;
-    transition-timing-function: linear;
-  }
-  
-  @keyframes FadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  
-  @-moz-keyframes FadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  
-  @-webkit-keyframes FadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  
-  @-o-keyframes FadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
+  animation-name: FadeIn;
+  animation-duration: 1s;
+  transition-timing-function: linear;
+}
 
-  @-ms-keyframes FadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
+@keyframes FadeIn {
+  0% {
+    opacity: 0;
   }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes FadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes FadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes FadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes FadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
 .modal-header {
   background-color: #20a8d8;
@@ -78,13 +78,15 @@
   justify-content: space-between;
 }
 
-
 .calendar-box {
   display: flex;
   justify-content: space-between;
 
   .w-30 {
     width: 30%;
+  }
+  .w-40 {
+    width: 40%;
   }
   .w-50 {
     width: 50%;
@@ -94,7 +96,10 @@
 ::ng-deep #calendarTable {
   table {
     th:last-child {
-      min-width: 230px;
+      min-width: 275px;
+    }
+    td:last-child {
+      padding-right: 0;
     }
   }
 }

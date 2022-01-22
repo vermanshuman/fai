@@ -46,6 +46,27 @@ public class OrderController extends AbstractController {
         } finally {
             DbUtils.closeSilent(conn);
         }
+    }
 
+    /**
+     * Find all orders for collection.
+     */
+    @GetMapping(MappingConstants.TASK_ORDER_MAPPING)
+    @ApiOperation(value = "Find all manual tasks for collection", response = OrderDTO.class)
+    public ResponseEntity<OrdersDTO> findOrdersByTask(@PathVariable Long taskOID) {
+        Connection conn = null;
+        OrdersDTO ordersDTO = new OrdersDTO();
+        try {
+            conn = getConnection();
+            List<OrderDTO> orders = service.findOrdersByTask(taskOID, conn);
+            ordersDTO.setOrders(orders);
+            return new ResponseEntity<>(ordersDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            ordersDTO.setMessage(e.getMessage());
+            return new ResponseEntity<>(ordersDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            DbUtils.closeSilent(conn);
+        }
     }
 }
