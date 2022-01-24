@@ -1,0 +1,9 @@
+{
+  "config": {
+  "message": null,
+  "errorCode": null,
+  "errorDescription": null,
+  "success": false,
+  "csvSchedule": "24/01/2022 12:00"
+  }
+}

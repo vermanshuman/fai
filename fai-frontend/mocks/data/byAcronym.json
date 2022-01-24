@@ -1,0 +1,23 @@
+{
+  "byAcronym": {
+    "message": null,
+    "errorCode": null,
+    "errorDescription": null,
+    "success": false,
+    "oid": 20381,
+    "acronym": "IMP_ORDINE_IN",
+    "scheduleTimes": "11:00,12:00",
+    "scheduledDays": "XXX--XX",
+    "richProperties": {
+      "port": "21",
+      "dir": "G:\\FAI\\docs",
+      "magazzino_acronym": "UPS",
+      "passwordEncr": "false",
+      "csvInFileName": "web_order.csv",
+      "login": "anshuman",
+      "password": "india123",
+      "protocol": "FTP",
+      "host": "127.0.0.1"
+    }
+  }
+}

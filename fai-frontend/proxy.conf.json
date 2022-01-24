@@ -15,5 +15,15 @@
         "target": "http://localhost:3000",
         "secure": false,
         "pathRewrite": {"upload/^.*": "/upload"}
+    },
+    "/fai/api/config/byAcronym": {
+        "target": "http://localhost:3000",
+        "secure": false,
+        "pathRewrite": {"^.*/config/byAcronym/^.*": "/byAcronym"}
+    },
+    "/fai/api/config": {
+        "target": "http://localhost:3000",
+        "secure": false,
+        "pathRewrite": {"config/^.*": "/config"}
     }
 }

@@ -133,13 +133,13 @@ export class HomeComponent implements OnInit {
             this.ftpConfigForm.controls['password'].setValidators([Validators.required]);
         }
         if (this.genericTask?.scheduledDays) {
-            this.ftpConfigForm.get('sunday')?.setValue(true);
-            this.ftpConfigForm.get('monday')?.setValue(true);
-            this.ftpConfigForm.get('tuesday')?.setValue(true);
-            this.ftpConfigForm.get('wednesday')?.setValue(true);
-            this.ftpConfigForm.get('thursday')?.setValue(true);
-            this.ftpConfigForm.get('friday')?.setValue(true);
-            this.ftpConfigForm.get('saturday')?.setValue(true);
+            this.ftpConfigForm.get('sunday')?.setValue(this.genericTask?.scheduledDays.charAt(0) === 'X');
+            this.ftpConfigForm.get('monday')?.setValue(this.genericTask?.scheduledDays.charAt(1) === 'X');
+            this.ftpConfigForm.get('tuesday')?.setValue(this.genericTask?.scheduledDays.charAt(2) === 'X');
+            this.ftpConfigForm.get('wednesday')?.setValue(this.genericTask?.scheduledDays.charAt(3) === 'X');
+            this.ftpConfigForm.get('thursday')?.setValue(this.genericTask?.scheduledDays.charAt(4) === 'X');
+            this.ftpConfigForm.get('friday')?.setValue(this.genericTask?.scheduledDays.charAt(5) === 'X');
+            this.ftpConfigForm.get('saturday')?.setValue(this.genericTask?.scheduledDays.charAt(6) === 'X');
         }
         this.ftpConfigForm?.get('magazinno')?.setValue(this.genericTask?.richProperties?.magazzino_acronym);
 

@@ -119,7 +119,7 @@
             <ng-container *ngIf="tableColumn.showOutOf">
               <span [ngStyle]="{'color': tableColumn.color}">{{(resolve(tableColumn.dataKey, element) ? resolve(tableColumn.dataKey, element) : 0)}}</span>
               <ng-container *ngFor="let so of tableColumn.showOutOf">
-                / <span [ngStyle]="{'color': so.color}">{{resolve(so.value, element)}}</span>
+                / <span [ngStyle]="{'color': so.color}">{{resolve(so.value, element) ? resolve(so.value, element) : 0}}</span>
               </ng-container>
             </ng-container>
 
