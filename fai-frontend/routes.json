@@ -1,4 +1,5 @@
 {
     "/fai/api/warehouse": "/warehouse",
-    "/fai/api/supplier": "/supplier"
+    "/fai/api/supplier": "/supplier",
+    "/fai/api/upload": "/upload"
 }

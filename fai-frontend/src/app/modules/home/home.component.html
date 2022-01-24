@@ -28,13 +28,13 @@
             <div class="col-md-2 pb-2 pr-0">
               <div class="">
                 <label class="form-label mb-0" for="fileOrdiniInputSearch">{{'home.ordersFile' | translate}}</label>
-                <input class="form-control" type="text" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
+                <input class="form-control" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
               </div>
             </div>
             <div class="col-md-2 pb-2">
               <div class="">
                 <label class="form-label mb-0" for="idVenditaInputSearch">{{'home.idSale' | translate}}</label>
-                <input class="form-control" type="text" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
+                <input class="form-control" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
               </div>
             </div>
           </div>
@@ -312,9 +312,9 @@
             <ng-container *ngIf="!isEdit">
               <div class="calendar-box">
                 <div class="form-group w-30">
-                  <select class="form-control" name="calendarMagazzino" [(ngModel)]="selectedWarehouse">
-                    <option value="">--SELEZIONA  MAGAZZINO--</option>
-                    <option [value]="warehouse?.acronym" *ngFor="let warehouse of warehouseList">{{warehouse.description}}</option>
+                  <select class="form-control" name="calendarMagazzino" [(ngModel)]="selectedSupplier">
+                    <option value="">--SELEZIONA FORNITORE--</option>
+                    <option [value]="supplier.codice" *ngFor="let supplier of suppliers">{{supplier.codice}}</option>
                   </select>
                 </div>
                 <div class="form-group w-50">
@@ -330,7 +330,7 @@
                 </div>
                 <div class="">
                   <button type="button" class="btn primary-btn-with-icon" (click)="addCalendarRecord()"
-                          [disabled]="!selectedWarehouse || selectedDays.length == 0">
+                          [disabled]="!selectedSupplier || selectedDays.length == 0">
                     <i class="fa fa-plus"></i>
                     <span>Agguingi</span>
                   </button>
@@ -357,9 +357,9 @@
               </div>
               <div class="calendar-box">
                 <div class="form-group w-30">
-                  <select class="form-control" name="calendarMagazzino" [(ngModel)]="selectedWarehouse">
-                    <option value="">--SELEZIONA  MAGAZZINO--</option>
-                    <option [value]="warehouse.acronym" *ngFor="let warehouse of allWarehouseList">{{warehouse.description}}</option>
+                  <select class="form-control" name="calendarMagazzino" [(ngModel)]="selectedSupplier">
+                    <option value="">--SELEZIONA FORNITORE--</option>
+                    <option [value]="supplier.codice" *ngFor="let supplier of allSuppliers">{{supplier.codice}}</option>
                   </select>
                 </div>
                 <div class="form-group w-40">
@@ -374,7 +374,7 @@
                 </div>
                 <div class="">
                   <button type="button" class="btn success-btn-with-icon" (click)="updateCalendarRecord()"
-                          [disabled]="!selectedWarehouse || selectedDays.length == 0">
+                          [disabled]="!selectedSupplier || selectedDays.length == 0">
                     <i class="fa fa-check-circle" aria-hidden="true"></i>
                     <span>{{'home.save' | translate}}</span>
                   </button>

@@ -1,7 +1,7 @@
 export const CALENDAR_TABLE_COLUMNS = [
     {
-        name: 'Magazzino',
-        dataKey: 'warehouse',
+        name: 'Fornitore',
+        dataKey: 'supplier',
         position: 'center',
         isSortable: true,
     },

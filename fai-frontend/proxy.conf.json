@@ -10,5 +10,10 @@
     "/fai/api/supplier": {
         "target": "http://localhost:3000",
         "secure": false
+    },
+    "/fai/api/upload": {
+        "target": "http://localhost:3000",
+        "secure": false,
+        "pathRewrite": {"upload/^.*": "/upload"}
     }
 }

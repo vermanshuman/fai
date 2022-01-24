@@ -344,6 +344,7 @@ td.mat-cell:not(.mat-column-expandedDetails) {
   padding: 0;
   border: 1px solid #56a265;
   color: #56a265 !important;
+  background: white!important;
   height: 32px;
   line-height: inherit;
 }
@@ -373,6 +374,7 @@ td.mat-cell:not(.mat-column-expandedDetails) {
 .delete-spec-btn {
   padding: 0;
   border: 1px solid #B7562C;
+  background: white!important;
   color: #B7562C !important;
   height: 32px;
   line-height: inherit;
@@ -402,6 +404,5 @@ td.mat-cell:not(.mat-column-expandedDetails) {
 
 .rounded {
   border-radius: 8px!important;
-  background-color: white!important;
   width: 115px;
 }
