@@ -1,0 +1,18 @@
+{
+  "home": {
+    "ordersFile": "File Ordini",
+    "orders": "Ordini",
+    "products": "Prodotti",
+    "from": "da",
+    "to": "a",
+    "search": "Cerca",
+    "idSale": "id Vendita",
+    "close":  "Chiudi",
+    "save": "Salva",
+    "ftpconfig": "Configurazione FTP",
+    "ftpurl": "Ftp Host",
+    "user": "Utente",
+    "password": "Password",
+    "uploadFile": "Caricare un file"
+  }
+}

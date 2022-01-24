@@ -1,0 +1,30 @@
+{
+  "warehouse": {
+    "message": null,
+    "errorCode": null,
+    "errorDescription": null,
+    "success": false,
+    "warehouses": [
+      {
+        "message": null,
+        "errorCode": null,
+        "errorDescription": null,
+        "success": false,
+        "oid": 5,
+        "acronym": "LORETO",
+        "description": "Magazzino Loreto",
+        "organisationCode": ""
+      },
+      {
+        "message": null,
+        "errorCode": null,
+        "errorDescription": null,
+        "success": false,
+        "oid": 1,
+        "acronym": "UPS",
+        "description": "UPS di Formello",
+        "organisationCode": "FAI_LORETOGALLO"
+      }
+    ]
+  }
+}

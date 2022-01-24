@@ -1,0 +1,75 @@
+// If you want to override variables do it here
+@import "variables";
+@import "toaster";
+
+// Import styles
+@import "~@coreui/coreui/scss/coreui";
+
+// If you want to add something do it here
+@import "custom";
+
+.nav-tabs .nav-link{
+    background: -webkit-linear-gradient(top, #5ba4a4 0%,#4e8c8a 100%);
+    color: #385c5b;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-shadow: 1px 1px 1px rgb(255 255 255 / 30%);
+    border-radius: 3px 3px 0 0;
+    box-shadow: 2px 0 2px rgb(0 0 0 / 10%), -2px 0 2px rgb(0 0 0 / 10%);
+}
+
+.nav-tabs .nav-link.active{
+    box-shadow: none;
+    color: #385c5b;
+}
+
+.nav-tabs .nav-link:hover{
+    background: -webkit-linear-gradient(top, #5ba4a4 0%,#5ba4a4 100%);
+    border-color: #5ba4a4 #5ba4a4 #5ba4a4;
+}
+
+.nav-tabs .nav-link.active:hover{
+    background: #ffffff;
+    border-color: #c8ced3 #c8ced3 #ffffff;
+}
+
+.tab-content > .active {
+    transition: opacity ease-out 0.2s 0.1s;
+}
+
+.bg-lighter-gray {
+     background: #f9f9f9;
+ }
+
+.ng-dirty.ng-invalid {
+    border-color: red!important;
+    box-shadow: none!important;
+}
+
+.error-text {
+    color: red;
+    font-weight: 500;
+}
+
+.br-red {
+    border: 1px solid red;
+}
+
+.br-4px {
+    border-radius: 4px;
+}
+
+.nav-tabs .nav-item {
+  margin: 2px 3px 2px 0px;
+}
+
+.text-red{
+    color: red;
+}
+
+.primary-btn-with-icon.large i {
+    line-height: 2.3rem!important;
+}

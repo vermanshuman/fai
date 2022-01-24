@@ -1,0 +1,449 @@
+<link rel="stylesheet" href="generic-table.component.scss">
+<ng-container>
+  <div class="mat-elevation-z24 data-table mx-auto">
+    <div class="row" *ngIf="!noSearchPanel">
+      <!-- Table Filter   -->
+      <ng-container *ngIf="isFilterable">
+        <div class="col-4 search-input-block" *ngIf="!isMatCardTable">
+          <mat-label class="textFilter" style="display: none;">textFilter</mat-label>
+          <mat-form-field class="p-3">
+            <mat-label class="inside-text">textFilter</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="textFilter"
+                   [disabled]="addAction?.disabled">
+          </mat-form-field>
+        </div>
+        <div class="col-8" style="margin-top: 7px;border-right: 1px solid lightgray;height: 50px;"
+             *ngIf="isMatCardTable">
+          <div class="col-8 input-form" style="margin-top: -10px;">
+            <mat-label>FILTRA LA RICERCA</mat-label>
+            <mat-form-field class="p-3">
+              <input matInput (keyup)="applyFilter($event)" class="search-input">
+            </mat-form-field>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Table DA Date Filter   -->
+      <ng-container *ngIf="isDADateFilterable">
+        <div class="col-2">
+          <mat-form-field class="p-3">
+            <mat-label>DA</mat-label>
+            <input matInput [matDatepicker]="picker" (keyup.backspace)="deleteDADateFilter()"
+                   (dateChange)="applyDADateFilter($event)" [value]="selectedDADate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </ng-container>
+
+      <!-- Table A Date Filter   -->
+      <ng-container *ngIf="isADateFilterable">
+        <div class="col-2">
+          <mat-form-field class="p-3">
+            <mat-label>A</mat-label>
+            <input matInput [matDatepicker]="picker" (keyup.backspace)="deleteADateFilter()"
+                   (dateChange)="applyADateFilter($event)" [value]="selectedADate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </ng-container>
+
+      <!--Add New element -->
+      <ng-container *ngIf="addAction">
+        <div class="col p-lg-4" *ngIf="!isMatCardTable">
+          <div class="float-right mr-xl-5">
+            <button mat-raised-button color="primary" (click)="emitAddAction()" [disabled]="addAction.disabled">
+              <mat-icon>{{addAction.buttonIcon}}</mat-icon>
+              <mat-label>{{addAction.buttonText}}</mat-label>
+            </button>
+          </div>
+        </div>
+        <div class="col" style="margin-top: -10px;padding-bottom: 0px !important;" *ngIf="isMatCardTable">
+          <div class="col-9">
+            <button mat-raised-button class="aggiungi float-right button-r" (click)="emitAddAction()"
+                    [disabled]="addAction.disabled">
+              <mat-icon class="file-alt"></mat-icon>
+              <mat-label style="height: 39px;">{{addAction.buttonText}}</mat-label>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div [classList]="isFormComponentTable ? 'mat-elevation-z0' : 'mat-elevation-z24 data-table mt-4'"
+       *ngIf="!isMatCardTable">
+    <!-- Table -->
+    <table [classList]="isFormComponentTable ? 'table-responsive' : ''" *ngIf="!tableHeader" cdk-scrollable
+           mat-table [dataSource]="tableDataSource" matSort multiTemplateDataRows (matSortChange)="sortTable($event)">
+      <ng-container matColumnDef="groupedHeader" *ngIf="tableHeader">
+        <th class="groupedHeader" mat-header-cell *matHeaderCellDef colspan="4"><span><mat-icon
+                class="clipboard"></mat-icon></span> <span style="position: absolute;margin-top: 6px;">{{tableHeader}}</span>
+        </th>
+      </ng-container>
+
+      <!-- data columns -->
+      <ng-container *ngFor="let tableColumn of tableColumns" [matColumnDef]="tableColumn.name">
+        <!-- if sortable column header -->
+        <ng-container *ngIf="tableColumn.isSortable; else notSortable">
+          <th mat-header-cell *matHeaderCellDef [mat-sort-header]="tableColumn.name"
+              [class.text-right]="tableColumn.position == 'right'"
+              [class.text-center]="tableColumn.position == 'center'"
+              [style.width]="tableColumn?.columnWidth ? tableColumn.columnWidth : ''"
+              [arrowPosition]="tableColumn.position === 'right' ? 'before' : 'after'">
+            {{(inUpperCase ? (tableColumn.name | uppercase) : tableColumn.name)}}
+          </th>
+        </ng-container>
+        <!-- else not sortable -->
+        <ng-template #notSortable>
+          <th mat-header-cell *matHeaderCellDef [class.text-right]="tableColumn.position == 'right'"
+              [style.width]="tableColumn?.columnWidth ? tableColumn.columnWidth : ''"
+              [class.text-center]="tableColumn.position == 'center'">
+            {{(inUpperCase ? (tableColumn.name | uppercase) : tableColumn.name)}}
+          </th>
+        </ng-template>
+
+        <!-- column data -->
+        <td mat-cell *matCellDef="let element" [class.text-right]="tableColumn.position == 'right'"
+            [class.text-center]="tableColumn.position == 'center'">
+          <div *ngIf="checkIfItMultipleLines(resolve(tableColumn.dataKey, element))">
+            <div *ngFor="let el of resolve(tableColumn.dataKey, element)">{{el}}</div>
+          </div>
+          <div *ngIf="!checkIfItMultipleLines(resolve(tableColumn.dataKey, element))"
+               (click)="tableColumn.clickable ? emitSelectRow(element) : ''"
+               style="cursor: {{tableColumn.clickable ? 'pointer' : ''}};  {{tableColumn.clickable ? 'color: #1E90FF' : ''}}">
+            <ng-container *ngIf="!tableColumn.showOutOf">
+              {{tableColumn?.method != null ? gridEvent(tableColumn.method, tableColumn.dataKey, element) : (tableColumn.isDate ? (resolve(tableColumn.dataKey, element) | date: 'dd/MM/yyyy') : resolve(tableColumn.dataKey, element))}}
+            </ng-container>
+            <ng-container *ngIf="tableColumn.showOutOf">
+              <span [ngStyle]="{'color': tableColumn.color}">{{(resolve(tableColumn.dataKey, element) ? resolve(tableColumn.dataKey, element) : 0)}}</span>
+              <ng-container *ngFor="let so of tableColumn.showOutOf">
+                / <span [ngStyle]="{'color': so.color}">{{resolve(so.value, element)}}</span>
+              </ng-container>
+            </ng-container>
+
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- action columns -->
+      <ng-container *ngIf="rowActionIcons" [matColumnDef]="'actions'">
+        <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': rowActionIcons.custom ? '' : (rowActionIcons.apri ? '30%' : '22.5%')}"
+            [class.text-right]="rowActionIcons.position == 'right'"
+            [class.text-center]="rowActionIcons.position == 'center'">
+          {{(inUpperCase ? (('actions') | uppercase) : 'Azioni')}}
+        </th>
+        <td mat-cell *matCellDef="let element"
+            [class.text-right]="rowActionIcons.position == 'right'"
+            [class.text-center]="rowActionIcons.position == 'center'">
+          <!-- Bottone per l'azione di dowload -->
+          <ng-container *ngIf="rowActionIcons.download">
+            <button class="rounded mr-2" mat-raised-button (click)="emitDownloadAction(element)">
+              <mat-icon>{{rowActionIcons.download}}</mat-icon>
+              <mat-label>download</mat-label>
+            </button>
+          </ng-container>
+
+          <!-- Bottone per l'azione di modifica -->
+          <ng-container *ngIf="rowActionIcons.edit && !isNoTextBtn">
+            <button class="rounded mr-2 edit-spec-btn" mat-raised-button (click)="emitEditAction(element)"
+                    [disabled]="addAction?.disabled" *ngIf="isEditable">
+              <mat-icon class="edit-spec-icon">{{rowActionIcons.edit}}</mat-icon>
+              <mat-label class="edit-spec-label">modifica</mat-label>
+            </button>
+          </ng-container>
+
+          <!-- Bottone per l'azione di cancellazione -->
+          <ng-container *ngIf="rowActionIcons.delete && !isNoTextBtn">
+            <button class="rounded delete-spec-btn mr-2" mat-raised-button color="warn" (click)="emitDeleteAction(element)"
+                    [disabled]="addAction?.disabled" *ngIf="isEditable">
+              <mat-icon class="delete-spec-icon">{{rowActionIcons.delete}}</mat-icon>
+              <mat-label class="delete-spec-label">elimina</mat-label>
+            </button>
+          </ng-container>
+
+          <!-- Bottone per l'azione di cancellazione -->
+          <ng-container *ngIf="rowActionIcons.delete && isNoTextBtn">
+            <button class="rounded mr-2 salva-btn no-text" mat-raised-button color="warn"
+                    (click)="emitEditAction(element)" [disabled]="addAction?.disabled" *ngIf="isEditable">
+              <mat-icon class="check"></mat-icon>
+            </button>
+          </ng-container>
+
+          <!-- Bottone per l'azione di modifica -->
+          <ng-container *ngIf="rowActionIcons.edit && isNoTextBtn">
+            <button class="rounded mr-2 cancel-btn no-text" mat-raised-button (click)="emitDeleteAction(element)"
+                    [disabled]="addAction?.disabled" *ngIf="isEditable">
+              <mat-icon class="cancel"></mat-icon>
+            </button>
+          </ng-container>
+
+          <!-- Bottone per l'azione di cancellazione -->
+          <ng-container *ngIf="rowActionIcons.apri">
+            <br/>
+            <button class="rounded ml-2 blue" mat-raised-button (click)="emitDownloadAction(element)"
+                    style="margin-top: 0.5em">
+              <mat-icon>{{rowActionIcons.apri}}</mat-icon>
+              <mat-label>apri</mat-label>
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="rowActionIcons.complete">
+            <button class="rounded ml-2 green" mat-raised-button (click)="emitCompleteAction(element)">
+              <mat-icon>{{rowActionIcons.complete}}</mat-icon>
+              <mat-label>complete</mat-label>
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="rowActionIcons.custom">
+            <button class="rounded ml-2 green" mat-raised-button (click)="emitCompleteAction(element)"
+                    *ngIf="element?.executionStatus && (element?.executionStatus === 'ESEGUIRE' || element?.executionStatus === 'IN CORSO')"
+                    [disabled]="element?.executionStatus && element?.executionStatus !== 'ESEGUIRE'"
+                    [ngStyle]="{'background-color': element?.executionStatus==='IN CORSO' ? '#98AFC7' : ''}">
+              <mat-label>{{element?.executionStatus ? element?.executionStatus : rowActionIcons.custom}}</mat-label>
+            </button>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <ng-container *ngIf="!rowBg">
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </ng-container>
+      <ng-container *ngIf="rowBg">
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.bg-red]="getBackgroundColor(row)"></tr>
+      </ng-container>
+
+      <!-- No data row -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [colSpan]="displayedColumns.length">noData</td>
+      </tr>
+    </table>
+
+    <!-- With table header -->
+    <table *ngIf="tableHeader" mat-table [dataSource]="tableDataSource" matSort multiTemplateDataRows
+           (matSortChange)="sortTable($event)">
+      <!-- data columns -->
+      <ng-container matColumnDef="groupedHeader">
+        <th mat-header-cell *matHeaderCellDef [attr.colspan]="displayedColumns.length" class="blue">
+          {{tableHeader}}
+        </th>
+      </ng-container>
+
+      <ng-container *ngFor="let tableColumn of tableColumns" [matColumnDef]="tableColumn.name">
+        <!-- if sortable column header -->
+        <ng-container *ngIf="tableColumn.isSortable; else notSortable">
+          <th mat-header-cell *matHeaderCellDef [mat-sort-header]="tableColumn.name"
+              [class.text-right]="tableColumn.position == 'right'"
+              [style.width]="tableColumn?.columnWidth ? tableColumn.columnWidth : ''"
+              [class.text-center]="tableColumn.position == 'center'"
+              [arrowPosition]="tableColumn.position === 'right' ? 'before' : 'after'">
+            {{tableColumn.name}}
+          </th>
+        </ng-container>
+        <!-- else not sortable -->
+        <ng-template #notSortable>
+          <th mat-header-cell *matHeaderCellDef [class.text-right]="tableColumn.position == 'right'"
+              [style.width]="tableColumn?.columnWidth ? tableColumn.columnWidth : ''"
+              [class.text-center]="tableColumn.position == 'center'">
+            {{tableColumn.name}}
+          </th>
+        </ng-template>
+
+        <!-- column data -->
+        <td mat-cell *matCellDef="let element" [class.text-right]="tableColumn.position == 'right'"
+            [class.text-center]="tableColumn.position == 'center'">
+          <div *ngIf="checkIfItMultipleLines(resolve(tableColumn.dataKey, element))">
+            <div *ngFor="let el of resolve(tableColumn.dataKey, element); let i = index">
+              <div *ngIf="i==0" style="font-size: 1vw">{{el}}</div>
+              <div *ngIf="i!=0" style="font-size: 0.8vw">{{el}}</div>
+            </div>
+          </div>
+          <div *ngIf="!checkIfItMultipleLines(resolve(tableColumn.dataKey, element))">
+            {{tableColumn?.method != null ? gridEvent(tableColumn.method, tableColumn.dataKey, element) : (tableColumn.isDate ? (resolve(tableColumn.dataKey, element) | date: 'dd/MM/yyyy hh:mm') : resolve(tableColumn.dataKey, element))}}
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- action columns -->
+      <ng-container *ngIf="rowActionIcons" [matColumnDef]="'Actions'">
+        <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': (rowActionIcons.apri ? '30%' : '22.5%')}"
+            [class.text-right]="rowActionIcons.position == 'right'"
+            [class.text-center]="rowActionIcons.position == 'center'">
+          {{actions}}
+        </th>
+        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': (isShortActions ? '10%' : '22.5%')}"
+            [class.text-right]="rowActionIcons.position == 'right'"
+            [class.text-center]="rowActionIcons.position == 'center'">
+          <!-- Bottone per l'azione di dowload -->
+          <ng-container *ngIf="rowActionIcons.download">
+            <button class="rounded mr-2" mat-raised-button (click)="emitDownloadAction(element)">
+              <mat-icon>{{rowActionIcons.download}}</mat-icon>
+              <mat-label>download</mat-label>
+            </button>
+          </ng-container>
+
+          <!-- Bottone per l'azione di modifica -->
+          <ng-container *ngIf="rowActionIcons.edit">
+            <button class="rounded mr-2" mat-raised-button (click)="emitEditAction(element)"
+                    [disabled]="addAction?.disabled" *ngIf="isEditable">
+              <mat-icon>{{rowActionIcons.edit}}</mat-icon>
+              <mat-label>edit</mat-label>
+            </button>
+          </ng-container>
+
+          <!-- Bottone per l'azione di cancellazione -->
+          <ng-container *ngIf="rowActionIcons.delete">
+            <button class="rounded mr-2" mat-raised-button color="warn" (click)="emitDeleteAction(element)"
+                    [disabled]="addAction?.disabled" *ngIf="isEditable">
+              <mat-icon>{{rowActionIcons.delete}}</mat-icon>
+              <mat-label>delete</mat-label>
+            </button>
+          </ng-container>
+
+          <!-- Bottone per l'azione di cancellazione -->
+          <ng-container *ngIf="rowActionIcons.apri">
+            <br/>
+            <button class="rounded ml-2 blue" mat-raised-button (click)="emitDownloadAction(element)"
+                    style="margin-top: 0.5em">
+              <mat-icon>{{rowActionIcons.apri}}</mat-icon>
+              <mat-label>apri</mat-label>
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="rowActionIcons.complete">
+            <button class="rounded ml-2 green" mat-raised-button (click)="emitCompleteAction(element)">
+              <mat-icon>{{rowActionIcons.complete}}</mat-icon>
+              <mat-label>complete</mat-label>
+            </button>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container *ngIf="tableHeader">
+        <tr class="groupedHeader" mat-header-row *matHeaderRowDef="groupedColumns; sticky: true"></tr>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- No data row -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [colSpan]="displayedColumns.length">noData</td>
+      </tr>
+    </table>
+
+    <mat-paginator *ngIf="!isFormComponentTable" #matPaginator
+                   [pageSizeOptions]="paginationSizes"
+                   [pageSize]="defaultPageSize"
+                   showFirstLastButtons>
+    </mat-paginator>
+  </div>
+  <div class="col-12 red-style-cointainer" *ngIf="isMatCardTable">
+    <mat-card class="mat-elevation-z4 mat-card-red">
+
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="clipboard"></mat-icon>
+          <span>LISTA DEI CONTRATTI</span></mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="mat-elevation-z24 data-table">
+          <!-- Table -->
+          <table mat-table [dataSource]="tableDataSource" matSort multiTemplateDataRows
+                 (matSortChange)="sortTable($event)">
+            <!-- data columns -->
+            <ng-container *ngFor="let tableColumn of tableColumns" [matColumnDef]="tableColumn.name">
+              <!-- if sortable column header -->
+              <ng-container *ngIf="tableColumn.isSortable; else notSortable">
+                <th mat-header-cell *matHeaderCellDef [mat-sort-header]="tableColumn.name"
+                    [class.text-right]="tableColumn.position == 'right'"
+                    [class.text-center]="tableColumn.position == 'center'"
+                    [arrowPosition]="tableColumn.position === 'right' ? 'before' : 'after'">
+                  {{tableColumn.name | uppercase}}
+                </th>
+              </ng-container>
+              <!-- else not sortable -->
+              <ng-template #notSortable>
+                <th mat-header-cell *matHeaderCellDef [class.text-right]="tableColumn.position == 'right'"
+                    [class.text-center]="tableColumn.position == 'center'">
+                  {{tableColumn.name | uppercase}}
+                </th>
+              </ng-template>
+
+              <!-- column data -->
+              <td mat-cell *matCellDef="let element" [class.text-right]="tableColumn.position == 'right'"
+                  [class.text-center]="tableColumn.position == 'center'" [class.text-bold]="tableColumn.isBold">
+                <div>{{tableColumn.isCurrency ? ('€.' + (resolve(tableColumn.dataKey, element) | currency:'€':'')) : (tableColumn.isPercentage ? (resolve(tableColumn.dataKey, element) | percent) : (tableColumn?.method != null ? gridEvent(tableColumn.method, tableColumn.dataKey, element) : (tableColumn.isDate ? (resolve(tableColumn.dataKey, element) | date: 'dd/MM/yyyy hh:mm') : resolve(tableColumn.dataKey, element))))}}</div>
+              </td>
+            </ng-container>
+
+            <!-- action columns -->
+            <ng-container *ngIf="rowActionIcons" [matColumnDef]="'actions'">
+              <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': (rowActionIcons.apri ? '30%' : '11%')}"
+                  [class.text-right]="rowActionIcons.position == 'right'"
+                  [class.text-center]="rowActionIcons.position == 'center'">
+                {{'actions' | uppercase}}
+              </th>
+              <td mat-cell *matCellDef="let element"
+                  [class.text-right]="rowActionIcons.position == 'right'"
+                  [class.text-center]="rowActionIcons.position == 'center'">
+                <!-- Bottone per l'azione di dowload -->
+                <ng-container *ngIf="rowActionIcons.download">
+                  <button class="rounded mr-2" mat-raised-button (click)="emitDownloadAction(element)">
+                    <mat-icon>{{rowActionIcons.download}}</mat-icon>
+                    <mat-label>download</mat-label>
+                  </button>
+                </ng-container>
+
+                <!-- Bottone per l'azione di modifica -->
+                <ng-container *ngIf="rowActionIcons.edit">
+                  <button class="button-r ricovera-green" mat-raised-button (click)="emitEditAction(element)"
+                          [disabled]="addAction?.disabled" *ngIf="isEditable">
+                    <mat-icon class="bed"></mat-icon>
+                    <mat-label>edit</mat-label>
+                  </button>
+                </ng-container>
+
+                <!-- Bottone per l'azione di cancellazione -->
+                <ng-container *ngIf="rowActionIcons.delete">
+                  <button class="button-r elimina-red" mat-raised-button (click)="emitDeleteAction(element)"
+                          [disabled]="addAction?.disabled" *ngIf="isEditable">
+                    <mat-icon class="elimina-red-icon"></mat-icon>
+                    <mat-label>delete</mat-label>
+                  </button>
+                </ng-container>
+
+                <!-- Bottone per l'azione di cancellazione -->
+                <ng-container *ngIf="rowActionIcons.apri">
+                  <br/>
+                  <button class="rounded ml-2 blue" mat-raised-button (click)="emitDownloadAction(element)"
+                          style="margin-top: 0.5em">
+                    <mat-icon>{{rowActionIcons.apri}}</mat-icon>
+                    <mat-label>apri</mat-label>
+                  </button>
+                </ng-container>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <!-- No data row -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" [colSpan]="displayedColumns.length">noData</td>
+            </tr>
+          </table>
+
+          <!-- Pagination -->
+          <mat-paginator #matPaginator
+                         [pageSizeOptions]="paginationSizes"
+                         [pageSize]="defaultPageSize"
+                         showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</ng-container>

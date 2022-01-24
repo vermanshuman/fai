@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>it.fai</groupId>
+        <artifactId>fai-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>it.fai</groupId>
+    <artifactId>impcomifar</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>Fai Comifar</name>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>it.fai</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-discovery</groupId>
+            <artifactId>commons-discovery</artifactId>
+            <version>0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <encoding>Cp1252</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <executions>
+                    <execution>
+                        <id>install1</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/built/itswdes.jar</file>
+                            <groupId>itswdes</groupId>
+                            <artifactId>itswdes</artifactId>
+                            <version>2.26.51</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install2</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/built/itswdesdatabase.jar</file>
+                            <groupId>itswdes</groupId>
+                            <artifactId>itswdesdatabase</artifactId>
+                            <version>1.7.5</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install3</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/built/itswdesmodels.jar</file>
+                            <groupId>itswdes</groupId>
+                            <artifactId>itswdesmodels</artifactId>
+                            <version>2.16.42</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install4</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/built/itswdesdecrypt.jar</file>
+                            <groupId>itswdes</groupId>
+                            <artifactId>itswdesdecrypt</artifactId>
+                            <version>1.0.1</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install5</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/built/itswdesencrypt.jar</file>
+                            <groupId>itswdes</groupId>
+                            <artifactId>itswdesencrypt</artifactId>
+                            <version>1.0.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install6</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/built/itswdeshttp.jar</file>
+                            <groupId>itswdes</groupId>
+                            <artifactId>itswdeshttp</artifactId>
+                            <version>2.7.8</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install7</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/standard/soap-javax.xml.soap_1.2.0.v201005080501.jar</file>
+                            <groupId>javax.xml</groupId>
+                            <artifactId>soap</artifactId>
+                            <version>1.2.0.v201005080501</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install8</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/built/genericservlet.jar</file>
+                            <groupId>genericservlet</groupId>
+                            <artifactId>genericservlet</artifactId>
+                            <version>1.19.6</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install9</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/standard/javax.xml.rpc-1.1.0-20081006.jar</file>
+                            <groupId>javax.xml</groupId>
+                            <artifactId>rpc</artifactId>
+                            <version>1.1.0-20081006</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install10</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>../jars/standard/ojdbc8.jar</file>
+                            <groupId>com.oracle.jdbc</groupId>
+                            <artifactId>ojdbc8</artifactId>
+                            <version>12.2.0.1.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
