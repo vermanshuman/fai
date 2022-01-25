@@ -1,4 +1,5 @@
 export interface Order {
+    oid: number;
     idVendita: number;
     userName: string;
     email: string;

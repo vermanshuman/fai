@@ -6,7 +6,6 @@ import {
     GenericTask,
     GenericTaskProperty,
     Order,
-    Orders,
     Supplier,
     UploadTask,
     Warehouse
@@ -23,6 +22,8 @@ import {CALENDAR_TABLE_COLUMNS} from '../../config/calendar-table-columns';
 import {ORDER_TABLE_COLUMNS} from '../../config/order-table-columns';
 import {WarehouseService} from '../../core/http/warehouses/warehouse.service';
 import {SupplierService} from '../../core/http/supplier/supplier.service';
+import {PRODUCT_TABLE_COLUMNS} from '../../config/product-table-columns';
+import {ProductService} from '../../core/http/product/product.service';
 
 @Component({
     selector: 'app-home',
@@ -59,6 +60,10 @@ export class HomeComponent implements OnInit {
     isEdit = false;
     editCalendarRecordIndex = null;
     activeTab = 1;
+    calendarStartDate = '';
+    calendarEndDate = '';
+    products$: Observable<any[]> | undefined;
+    productTableColumns: TableColumn[] = PRODUCT_TABLE_COLUMNS;
 
     constructor(private formBuilder: FormBuilder,
                 private genericTaskService: GenericTaskService,
@@ -66,6 +71,7 @@ export class HomeComponent implements OnInit {
                 private ordersService: OrdersService,
                 private warehouseService: WarehouseService,
                 private supplierService: SupplierService,
+                private productService: ProductService,
                 private notifyService: NotificationService) {
     }
 
@@ -364,7 +370,9 @@ export class HomeComponent implements OnInit {
             this.suppliers = this.suppliers.filter(w => w.codice !== this.selectedSupplier);
             const record = {
                 supplier: this.selectedSupplier,
-                weekdays: (this.selectedDays.map(this._getObjectKeyValue('item_text')))?.toString()?.replace(/,[s]*/g, ', ')
+                weekdays: (this.selectedDays.map(this._getObjectKeyValue('item_text')))?.toString()?.replace(/,[s]*/g, ', '),
+                start_hour: this.calendarStartDate,
+                end_hour: this.calendarEndDate
             };
             calendarRecords = [];
             this.calendarRecords$.subscribe((records: any) => {
@@ -438,6 +446,8 @@ export class HomeComponent implements OnInit {
         this.previousSelectedSupplier = '';
         this.selectedDays = [];
         this.editCalendarRecordIndex = null;
+        this.calendarStartDate = '';
+        this.calendarEndDate = '';
     }
 
     onFileRowSelected(uploadTask: UploadTask): void {
@@ -452,14 +462,45 @@ export class HomeComponent implements OnInit {
         this.loadOrders(uploadTask);
     }
 
-    onOrderRowSelected(uploadTask: UploadTask): void {
-        console.log('row selected: ', uploadTask);
-        this.activeProductTab();
+    onOrderRowSelected(order: Order): void {
+        console.log('row selected: ', order);
+        this.activeProductTab(order);
     }
 
-    activeProductTab(): void {
-        console.log('active Prodotti Tab');
+    activeProductTab(order: Order): void {
+        console.log('active Prodotti Tab' , order);
         this.navTabset.tabs[1]._active = false;
         this.navTabset.tabs[2]._active = true;
+        this.loadProducts(order);
+    }
+
+    loadProducts(order: Order): void {
+        if (order) {
+            this.productService.findProductsByOrder(order.oid).subscribe(data => {
+                    console.log('Products for order ', data);
+                    if (data && data.products) {
+                        this.products$ = of(data.products);
+                    } else {
+                        this.products$ = of([]);
+                    }
+                },
+                (error: any) => {
+                    console.log('error', error);
+                    this.notifyService.showError('Error in loading products for order');
+                });
+        } else {
+            this.productService.findAll().subscribe(data => {
+                    console.log('Products ', data);
+                    if (data && data.products) {
+                        this.products$ = of(data.products);
+                    } else {
+                        this.products$ = of([]);
+                    }
+                },
+                (error: any) => {
+                    console.log('error', error);
+                    this.notifyService.showError('Error in loading products');
+                });
+        }
     }
 }

@@ -15,4 +15,7 @@ export * from './supplier-calendar/supplier-calendar.model';
 
 export * from './suppliers/suuplier.model';
 
+export * from './products/product.model';
+export * from './products/products.model';
+
 

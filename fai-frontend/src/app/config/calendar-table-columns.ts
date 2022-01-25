@@ -10,5 +10,17 @@ export const CALENDAR_TABLE_COLUMNS = [
         dataKey: 'weekdays',
         position: 'center',
         isSortable: true,
-    }
-]
+    },
+    {
+        name: 'Start time',
+        dataKey: 'start_hour',
+        position: 'center',
+        isSortable: true,
+    },
+    {
+        name: 'End time',
+        dataKey: 'end_hour',
+        position: 'center',
+        isSortable: true,
+    },
+];

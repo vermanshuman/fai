@@ -8,7 +8,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class OrderDTO extends ResponseDto{
-
+    private Long oid;
     private Long idVendita;
     private String userName;
     private String email;
