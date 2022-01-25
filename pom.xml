@@ -87,14 +87,14 @@
   </dependencies>
 
   <modules>
-    <module>common</module>
-    <module>faiorainvmgr</module>
-    <module>faimodels</module>
-    <module>impcomifar</module>
-    <module>impfarmaclick</module>
-    <module>impfarmadati</module>
-    <module>broker</module>
-    <module>be</module>
+    <module>it.fai.common</module>
+    <module>it.fai.faiorainvmgr</module>
+    <module>it.fai.faimodels</module>
+    <module>it.fai.impcomifar</module>
+    <module>it.fai.impfarmaclick</module>
+    <module>it.fai.impfarmadati</module>
+    <module>it.fai.broker</module>
+    <module>it.fai.be</module>
   </modules>
 
 </project>
