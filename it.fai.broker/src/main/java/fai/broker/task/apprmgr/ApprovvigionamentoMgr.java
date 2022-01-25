@@ -160,10 +160,10 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     //
     // --- management of ORDERS_IN to be suspended ---
     //
-    SospensioneOrdini sospensioneOrdini = new SospensioneOrdini();
+    /*SospensioneOrdini sospensioneOrdini = new SospensioneOrdini();
     sospensioneOrdini.setup(env, conn);
     error = sospensioneOrdini.doJob();
-    if (error != null) return error;
+    if (error != null) return error;*/
     
     SqlQueries.deleteApprovvigionamentoWithQuantitaZero(conn);
     conn.commit();
