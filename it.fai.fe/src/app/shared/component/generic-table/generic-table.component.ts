@@ -26,6 +26,8 @@ export interface TableColumn {
   isHtml?: boolean;
   showOutOf?: { value: string, color: string }[];
   color?: string;
+  isHidden?: boolean;
+  statusIcons?: { icon?: string, color?: string , key: string, value: string, className?: string}[];
 }
 
 export interface RowActionIcons {

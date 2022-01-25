@@ -471,7 +471,14 @@ export class HomeComponent implements OnInit {
         console.log('active Prodotti Tab' , order);
         this.navTabset.tabs[1]._active = false;
         this.navTabset.tabs[2]._active = true;
+        this.productTableColumns[0].isHidden = false;
+        this.productTableColumns[1].isHidden = true;
         this.loadProducts(order);
+    }
+
+    onSelectProductsTab(): void {
+        this.productTableColumns[0].isHidden = true;
+        this.productTableColumns[1].isHidden = false;
     }
 
     loadProducts(order: Order): void {

@@ -1,5 +1,6 @@
 export interface Product {
     idVendita: number;
+    csvFileName: string;
     minsan: string;
     productDescription: string;
     totalQuantity: number;

@@ -8,6 +8,13 @@ export const PRODUCT_TABLE_COLUMNS: TableColumn[] = [
         isSortable: true
     },
     {
+        name: 'File Name',
+        dataKey: 'csvFileName',
+        position: 'center',
+        isSortable: true,
+        isHidden: true,
+    },
+    {
         name: 'Minsan',
         dataKey: 'minsan',
         position: 'center',

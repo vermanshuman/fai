@@ -25,5 +25,9 @@
         "target": "http://localhost:3000",
         "secure": false,
         "pathRewrite": {"config/^.*": "/config"}
+    },
+    "/fai/api/products": {
+        "target": "http://localhost:3000",
+        "secure": false
     }
 }

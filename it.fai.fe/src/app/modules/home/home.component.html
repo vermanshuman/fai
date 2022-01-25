@@ -153,9 +153,9 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'home.products' | translate" class="fade-in"  (selectionchange)="loadProducts(undefined)" (selectTab)="loadProducts(undefined)">
+        <tab [heading]="'home.products' | translate" class="fade-in"  (selectionchange)="loadProducts(undefined)" (selectTab)="onSelectProductsTab();loadProducts(undefined)">
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12 products-table">
               <app-generic-table
                       [tableData]="products$"
                       [tableColumns]="productTableColumns"

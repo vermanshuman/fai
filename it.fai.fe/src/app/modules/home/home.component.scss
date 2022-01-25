@@ -105,13 +105,23 @@
   }
 }
 
-::ng-deep #calendarTable {
-  table {
-    th:last-child {
-      min-width: 275px;
+::ng-deep {
+  #calendarTable {
+    table {
+      th:last-child {
+        min-width: 275px;
+      }
+      td:last-child {
+        padding-right: 0;
+      }
     }
-    td:last-child {
-      padding-right: 0;
+  }
+  .products-table {
+    .cdk-column-File-Name {
+      min-width: 240px;
+    }
+    .cdk-column-Minsan {
+      min-width: 100px;
     }
   }
 }
