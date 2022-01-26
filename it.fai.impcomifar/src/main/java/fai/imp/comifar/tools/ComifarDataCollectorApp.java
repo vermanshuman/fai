@@ -61,7 +61,7 @@ public class ComifarDataCollectorApp {
 		ComifarDataCollector dataCollector = new ComifarDataCollector(config, conn);
 		
 		// Start Collecting data
-		//dataCollector.doCollectData();
+		dataCollector.doCollectData();
 		// End Collecting data
 		
 		// Check availibility
@@ -73,23 +73,23 @@ public class ComifarDataCollectorApp {
 		// End Check availibility
 		
 		// Start Order Products
-		ProductBean productOrderRequestOne = new ProductBean();
-		productOrderRequestOne.setProductCode("28725125");
-		productOrderRequestOne.setQuantity(1);
-
-		ProductBean productOrderRequestTwo = new ProductBean();
-		productOrderRequestTwo.setProductCode("28740013");
-		productOrderRequestTwo.setQuantity(5);
-	    List<ProcessedOrderBean> processedOrderBeans = dataCollector.doOrderProducts(Stream.of(productOrderRequestOne, productOrderRequestTwo).collect(Collectors.toList()));
-
-	    processedOrderBeans
-	    .stream()
-	    .forEach(p -> {
-	    	System.out.println("Order status for product: " + p.getProductCode() + " is " + p.getOrderFailed());
-	    	if(p.getOrderFailed()) {
-	    		System.out.println("reason for order failure " + p.getErrorCode() + " : " + p.getErrorDescription());
-	    	}
-	    });
+//		ProductBean productOrderRequestOne = new ProductBean();
+//		productOrderRequestOne.setProductCode("28725125");
+//		productOrderRequestOne.setQuantity(1);
+//
+//		ProductBean productOrderRequestTwo = new ProductBean();
+//		productOrderRequestTwo.setProductCode("28740013");
+//		productOrderRequestTwo.setQuantity(5);
+//	    List<ProcessedOrderBean> processedOrderBeans = dataCollector.doOrderProducts(Stream.of(productOrderRequestOne, productOrderRequestTwo).collect(Collectors.toList()));
+//
+//	    processedOrderBeans
+//	    .stream()
+//	    .forEach(p -> {
+//	    	System.out.println("Order status for product: " + p.getProductCode() + " is " + p.getOrderFailed());
+//	    	if(p.getOrderFailed()) {
+//	    		System.out.println("reason for order failure " + p.getErrorCode() + " : " + p.getErrorDescription());
+//	    	}
+//	    });
 		// End Order Products
 	}
 }
