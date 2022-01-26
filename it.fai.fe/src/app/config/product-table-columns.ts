@@ -66,6 +66,9 @@ export const PRODUCT_TABLE_COLUMNS: TableColumn[] = [
         name: 'Stato',
         dataKey: 'status',
         position: 'center',
-        isSortable: true
+        isSortable: true,
+        statusIcons: [{icon: 'check', color: '#01B050', key: 'status', value: 'status3'},
+            {key: 'status', value: 'PROCESSED', className: 'sand-clock'},
+            {icon: 'check', color: '#FABE06', key: 'status', value: 'status3'}]
     }
 ];

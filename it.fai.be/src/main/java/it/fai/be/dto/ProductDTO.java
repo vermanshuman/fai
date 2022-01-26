@@ -8,6 +8,7 @@ import lombok.Setter;
 public class ProductDTO extends ResponseDto{
 
     private Long idVendita;
+    private String csvFileName;
     private String minsan;
     private String productDescription;
     private Integer totalQuantity;

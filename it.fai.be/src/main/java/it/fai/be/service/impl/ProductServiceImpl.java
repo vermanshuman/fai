@@ -4,6 +4,7 @@ import fai.broker.db.SqlQueries;
 import fai.broker.models.ApprovToRiga;
 import fai.broker.models.ApprovvigionamentoFarmaco;
 import fai.broker.models.OrdineIn;
+import fai.broker.models.OrdineInCollection;
 import it.fai.be.dto.OrderDTO;
 import it.fai.be.dto.ProductDTO;
 import it.fai.be.service.ProductService;
@@ -21,7 +22,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO> findAll(Connection conn) throws Exception {
         log.debug("Find All products");
-        return null;
+        List<ApprovvigionamentoFarmaco> approvvigionamentoFarmacos =
+                SqlQueries.getAllProdottiByOrder(null, "ORDER BY ORDINE.OID", conn);
+        return approvvigionamentoFarmacos
+                .stream()
+                .map(approvvigionamentoFarmaco -> setProduct(approvvigionamentoFarmaco,conn))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -29,16 +35,16 @@ public class ProductServiceImpl implements ProductService {
         log.debug("Find All Products for order");
         if (idOrder != null) {
             List<ApprovvigionamentoFarmaco> approvvigionamentoFarmacos =
-                    SqlQueries.getAllProdottiByOrder(idOrder, conn);
+                    SqlQueries.getAllProdottiByOrder(idOrder, null, conn);
             return approvvigionamentoFarmacos
                     .stream()
-                    .map(approvvigionamentoFarmaco -> setProduct(approvvigionamentoFarmaco))
+                    .map(approvvigionamentoFarmaco -> setProduct(approvvigionamentoFarmaco, null))
                     .collect(Collectors.toList());
         }
         return null;
     }
 
-    private ProductDTO setProduct(ApprovvigionamentoFarmaco approvvigionamentoFarmaco) {
+    private ProductDTO setProduct(ApprovvigionamentoFarmaco approvvigionamentoFarmaco, Connection conn) {
 
         ProductDTO productDTO = new ProductDTO();
         productDTO.setIdVendita(approvvigionamentoFarmaco.getIdVendita());
@@ -54,6 +60,17 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setSupplierQuantity(approvvigionamentoFarmaco.getQuantita());
         }else {
             productDTO.setMissingQuantity(approvvigionamentoFarmaco.getQuantita());
+        }
+        if(approvvigionamentoFarmaco.getIdOrdine() != null && conn != null){
+            try {
+                List<OrdineInCollection> ordineInCollections =
+                        SqlQueries.findOrdineInCollectionByOrder(
+                                Long.parseLong(approvvigionamentoFarmaco.getIdOrdine()), conn);
+                if(ordineInCollections != null && !ordineInCollections.isEmpty()){
+                    productDTO.setCsvFileName(ordineInCollections.get(0).getInputResource());
+                }
+            } catch (Exception e) {
+            }
         }
         productDTO.setTotalQuantity(qt);
         return productDTO;

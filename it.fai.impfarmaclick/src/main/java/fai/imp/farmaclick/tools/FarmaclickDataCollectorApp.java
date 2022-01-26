@@ -55,26 +55,26 @@ public class FarmaclickDataCollectorApp {
     conn.setAutoCommit(false);
     FaiImportConfig config = SqlQueries.getFaiImportConfig("FARMACLICK", conn);
     FarmaclickDataCollector dataCollector = new FarmaclickDataCollector(config, conn);
-    //dataCollector.doCollectData();
-
-  ProductBean productOrderRequestBean = new ProductBean();
-  productOrderRequestBean.setProductCode("012745028");
-  productOrderRequestBean.setQuantity(1);
-  ProductBean productOrderRequestBeanTwo = new ProductBean();
-  productOrderRequestBeanTwo.setProductCode("029401027");
-  productOrderRequestBeanTwo.setQuantity(1);
-
-  List<ProductBean> productBeans = dataCollector.doGetAvailiblityData(Stream.of(productOrderRequestBean, productOrderRequestBeanTwo).collect(Collectors.toList()));
-
-  productBeans
-          .stream()
-          .forEach(p -> {
-            System.out.println(p.getProductCode() + " " + p.getQuantity() + " " + p.getAvailibility());
-          });
-    
-    productOrderRequestBean = new ProductBean();
-    productOrderRequestBean.setProductCode("012745028");
-    productOrderRequestBean.setQuantity(10);
+    dataCollector.doCollectData();
+//
+//  ProductBean productOrderRequestBean = new ProductBean();
+//  productOrderRequestBean.setProductCode("012745028");
+//  productOrderRequestBean.setQuantity(1);
+//  ProductBean productOrderRequestBeanTwo = new ProductBean();
+//  productOrderRequestBeanTwo.setProductCode("029401027");
+//  productOrderRequestBeanTwo.setQuantity(1);
+//
+//  List<ProductBean> productBeans = dataCollector.doGetAvailiblityData(Stream.of(productOrderRequestBean, productOrderRequestBeanTwo).collect(Collectors.toList()));
+//
+//  productBeans
+//          .stream()
+//          .forEach(p -> {
+//            System.out.println(p.getProductCode() + " " + p.getQuantity() + " " + p.getAvailibility());
+//          });
+//
+//    productOrderRequestBean = new ProductBean();
+//    productOrderRequestBean.setProductCode("012745028");
+//    productOrderRequestBean.setQuantity(10);
 //    List<ProcessedOrderBean> processedOrderBeans =  dataCollector.doOrderProducts(Stream.of(productOrderRequestBean).collect(Collectors.toList()));
 //
 //    	    processedOrderBeans

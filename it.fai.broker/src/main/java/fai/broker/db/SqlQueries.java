@@ -2527,7 +2527,7 @@ public class SqlQueries {
 
 	}
 
-	public static List<ApprovvigionamentoFarmaco> getAllProdottiByOrder(Long oidOrdineIn, Connection conn)
+	public static List<ApprovvigionamentoFarmaco> getAllProdottiByOrder(Long oidOrdineIn, String orderBy, Connection conn)
 			throws Exception {
 		final String METH_NAME = new Object() {
 		}.getClass().getEnclosingMethod().getName();
@@ -2539,6 +2539,12 @@ public class SqlQueries {
 			params.setProperty("WHERECONDITION", "WHERE OID_ORDINEIN=" + oidOrdineIn);
 		else
 			params.setProperty("WHERECONDITION", "WHERE 1=1");
+
+		if(StringUtils.isNotBlank(orderBy)){
+			params.setProperty("ORDERBY", orderBy);
+		}else {
+			params.setProperty("ORDERBY", "ORDER BY APPROV.OID, RIGA.OID");
+		}
 
 	 	sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllProdottiByOrder.sql", params);
 		Statement stmt = null;
@@ -2690,4 +2696,39 @@ public class SqlQueries {
 		}
 		return approv;
 	}
+
+	public static List<OrdineInCollection> findOrdineInCollectionByOrder(Long  idOrdine, Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		String sql;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<OrdineInCollection> list = new ArrayList<>();
+		try {
+			String wc = "WHERE ORDINE.OID=" + idOrdine;
+			Properties params = new Properties();
+			params.setProperty("whereCondition", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getOrdineInCollectionByOrder.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				OrdineInCollection ordineInCollection = new OrdineInCollection();
+				ordineInCollection.setOid(rs.getLong("OID"));
+				ordineInCollection.setInputResource(rs.getString("INPUT_RESOURCE"));
+				list.add(ordineInCollection);
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage() + "� nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+
+	}
+
 }

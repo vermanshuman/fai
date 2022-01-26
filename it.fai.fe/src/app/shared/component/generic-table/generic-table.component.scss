@@ -185,8 +185,8 @@ td.mat-cell:not(.mat-column-expandedDetails) {
 }
 
 .mat-header-row th {
-  background-color: #A8A8A8;
-  color: #000;
+  background: -webkit-linear-gradient(top, #5ba4a4 0%, #4e8c8a 100%);
+  color: #fff;
   font-weight: 500;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -410,4 +410,9 @@ td.mat-cell:not(.mat-column-expandedDetails) {
 .sand-clock {
   background-image: url('../../../../assets/img/sand-clock.png');
   background-repeat: no-repeat;
+}
+
+::ng-deep app-generic-table th:not(:last-child) .mat-sort-header-container.mat-focus-indicator {
+  border-right: 1px solid;
+  height: 33px;
 }
