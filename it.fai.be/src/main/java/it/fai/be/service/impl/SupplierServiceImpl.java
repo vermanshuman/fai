@@ -2,6 +2,7 @@ package it.fai.be.service.impl;
 
 import fai.broker.db.SqlQueries;
 import fai.broker.models.Fornitore;
+import it.fai.be.dto.SupplierCalendarDTO;
 import it.fai.be.dto.SupplierDTO;
 import it.fai.be.service.SupplierService;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +24,12 @@ public class SupplierServiceImpl implements SupplierService {
                 .stream()
                 .map(fornitore -> setSupplier(fornitore))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void configureCalendar(List<SupplierCalendarDTO> calendarDTOS, Connection conn) throws Exception {
+        log.debug("Configure supplier calendar");
+
     }
 
     private SupplierDTO setSupplier(Fornitore fornitore) {

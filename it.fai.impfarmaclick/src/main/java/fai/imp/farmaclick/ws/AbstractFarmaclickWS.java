@@ -10,6 +10,8 @@ public abstract class AbstractFarmaclickWS {
   static Logger logger = Logger.getLogger(AbstractFarmaclickWS.class);
 
   protected String endpointAddress  = null;
+
+  protected String serviceAPILevel  = null;
   
 
   private boolean logRequestAsXml = false; 
@@ -23,7 +25,15 @@ public abstract class AbstractFarmaclickWS {
   public void setEndpointAddress(String endpointAddress) {
     this.endpointAddress = endpointAddress;
   }
-  
+
+  public String getServiceAPILevel() {
+    return serviceAPILevel;
+  }
+
+  public void setServiceAPILevel(String serviceAPILevel) {
+    this.serviceAPILevel = serviceAPILevel;
+  }
+
   protected void logEsitoServizio(String logPrefix, Object o) throws Exception {
     Integer esitoServizioCodice = EsitoServizioUtil.getCodice(o);
     String descr = EsitoServizioUtil.getDescrizione(esitoServizioCodice);

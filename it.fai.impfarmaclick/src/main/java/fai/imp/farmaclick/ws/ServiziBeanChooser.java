@@ -48,12 +48,11 @@ class ServiziBeanChooser {
     return this;
   }
   
-  public ServiziBean getServiziBean(String serviceName) throws Exception {
+  public ServiziBean getServiziBean(String serviceName, String serviceApiLevel ) throws Exception {
     final String METH_NAME = new Object() {}.getClass().getEnclosingMethod().getName();
     final String LOG_PREFIX = METH_NAME+": ";
     ServiziBean [] servizi = fornitore.getArrayServizi();
     ServiziBean selezionato = null;
-    String serviceApiLevel = PropertiesLoader.getApplicationProperties().getProperty("service_api_level");
     for (int i = 0; i < servizi.length; i++) {
       if (passed(servizi[i], serviceName) && (serviceApiLevel == null || servizi[i].getLivelloAPI().equalsIgnoreCase(serviceApiLevel))) {
         if (selezionato == null || servizi[i].getLivelloAPI().compareTo(selezionato.getLivelloAPI()) > 0) {

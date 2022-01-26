@@ -24,5 +24,7 @@ public class MappingConstants {
     public static final String PRODUCT_MAPPING = "/api/products";
     public static final String PRODUCT_ORDER_MAPPING = "/byOrder/{orderId}";
 
+    public static final String SUPPLIER_CALENDAR_MAPPING = "/api/supplier/calendar";
+
 
 }

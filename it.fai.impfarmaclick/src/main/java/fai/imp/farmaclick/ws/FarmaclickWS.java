@@ -259,7 +259,7 @@ public class FarmaclickWS extends AbstractFarmaclickWS {
       String fornitoreLivelloAPI = fornitore.getLivelloAPI();
       logger.info(LOG_PREFIX+"livello API "+fornitoreLivelloAPI+" ...");
       String serviceName = "FCKDownloadListino";
-      ServiziBean servizio = (new ServiziBeanChooser().setFornitoreBean(fornitore)).getServiziBean(serviceName);
+      ServiziBean servizio = (new ServiziBeanChooser().setFornitoreBean(fornitore)).getServiziBean(serviceName, getServiceAPILevel());
       if (servizio == null) {
         logger.error(LOG_PREFIX+"servizio "+serviceName+" non disponibile, impossibile procedere con l'interrogazione");
         return null;
@@ -370,7 +370,7 @@ public class FarmaclickWS extends AbstractFarmaclickWS {
       String fornitoreLivelloAPI = fornitore.getLivelloAPI();
       logger.info(LOG_PREFIX+"livello API "+fornitoreLivelloAPI+" ...");
       String serviceName = "FCKDisponibilita";
-      ServiziBean servizio = (new ServiziBeanChooser().setFornitoreBean(fornitore)).getServiziBean(serviceName);
+      ServiziBean servizio = (new ServiziBeanChooser().setFornitoreBean(fornitore)).getServiziBean(serviceName, getServiceAPILevel());
       if (servizio == null) {
         logger.error(LOG_PREFIX+"servizio "+serviceName+" non disponibile, impossibile procedere con l'interrogazione");
         return null;
@@ -468,7 +468,7 @@ public class FarmaclickWS extends AbstractFarmaclickWS {
       String fornitoreLivelloAPI = fornitore.getLivelloAPI();
       logger.info(LOG_PREFIX+"livello API "+fornitoreLivelloAPI+" ...");
       String serviceName = "FCKOrdine";
-      ServiziBean servizio = (new ServiziBeanChooser().setFornitoreBean(fornitore)).getServiziBean(serviceName);
+      ServiziBean servizio = (new ServiziBeanChooser().setFornitoreBean(fornitore)).getServiziBean(serviceName, getServiceAPILevel());
       if (servizio == null) {
         logger.error(LOG_PREFIX+"servizio "+serviceName+" non disponibile, impossibile procedere con l'interrogazione");
         return null;

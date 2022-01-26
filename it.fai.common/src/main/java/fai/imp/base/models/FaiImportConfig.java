@@ -23,6 +23,7 @@ public class FaiImportConfig extends AbstractModel {
   public static int LAST_RUN_DONE;
   public static int LAST_RUN_DESCR;
   public static int SERVICE_PASS_SECOND_LEVEL;
+  public static int SERVICE_API_LEVEL;
 
   public static final Attribute[] attributes = buildAttributes(FaiImportConfig.class, new Attribute[] { //@formatter:off
     new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -42,7 +43,8 @@ public class FaiImportConfig extends AbstractModel {
     new Attribute("lastRunType", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("lastRunDone", null, Boolean.class, Boolean.FALSE, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("lastRunDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-    new Attribute("servicePassSecondLevel", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("serviceApiLevel", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION), new Attribute("servicePassSecondLevel", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+
   }); //@formatter:on
 
 
@@ -241,7 +243,18 @@ public class FaiImportConfig extends AbstractModel {
     return getString(SERVICE_PASS_SECOND_LEVEL);
   }
 
- //@formatter:on
+
+  /** SERVICE_API_LEVEL **/
+  public boolean setServiceApiLevel(String serviceAPiLevel) {
+    return setString(SERVICE_API_LEVEL, serviceAPiLevel);
+  }
+
+  public String getServiceApiLevel() {
+    return getString(SERVICE_API_LEVEL);
+  }
+
+
+  //@formatter:on
 
 
  //@formatter:on

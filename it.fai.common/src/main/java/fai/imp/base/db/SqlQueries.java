@@ -155,6 +155,7 @@ public class SqlQueries {
         cfg.setLastRunDone("S".equals(rs.getString("LAST_RUN_DONE")));
         cfg.setLastRunDescr(rs.getString("LAST_RUN_DESCR"));
         cfg.setServicePassSecondLevel(rs.getString("SERVICE_PASS_SECOND_LEVEL"));
+        cfg.setServiceApiLevel(rs.getString("SERVICE_API_LEVEL"));
         list.add(cfg);
       }
     }
