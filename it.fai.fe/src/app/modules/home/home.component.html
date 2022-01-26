@@ -175,7 +175,7 @@
 <!--configure modal (file ordini tab)-->
 <div bsModal #ftpConfigureModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel" aria-hidden="true" [config]="{ backdrop: 'static' }">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">{{'home.ftpconfig' | translate}}</h4>
@@ -342,7 +342,7 @@
                     </ng-multiselect-dropdown>
                   </div>
                 </div>
-                <div class="d-flex w-100">
+                <div class="d-flex ml-3">
                   <div class="form-group">
                     <input [(ngModel)]="calendarStartDate" class="form-control br-light-gray pl-2" label="hh:mm"
                            matInput type="time">
@@ -351,7 +351,7 @@
                     <input  [(ngModel)]="calendarEndDate" class="form-control br-light-gray pl-2" label="hh:mm"
                             matInput type="time">
                   </div>
-                  <div class="ml-4">
+                  <div class="ml-4 min-w-115px">
                     <button (click)="addCalendarRecord()" [disabled]="!selectedSupplier || selectedDays.length == 0
                     || !calendarStartDate || !calendarEndDate"
                             class="btn primary-btn-with-icon"
