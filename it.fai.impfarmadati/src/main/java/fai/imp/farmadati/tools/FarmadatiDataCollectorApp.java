@@ -1,22 +1,11 @@
 package fai.imp.farmadati.tools;
 
-import static org.junit.Assert.fail;
-
-import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import org.apache.commons.logging.Log;
 import org.apache.log4j.Logger;
-import org.junit.Test;
-
-import fai.imp.base.db.SqlQueries;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.farmadati.task.FarmadatiDataCollector;
-
-import java.util.Properties;
-
-
 
 /**
  * Concepita per essere lanciata a riga di comando

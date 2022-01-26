@@ -6,5 +6,28 @@
     "/fai/api/warehouse": {
         "target": "http://localhost:3000",
         "secure": false
+    },
+    "/fai/api/supplier": {
+        "target": "http://localhost:3000",
+        "secure": false
+    },
+    "/fai/api/upload": {
+        "target": "http://localhost:3000",
+        "secure": false,
+        "pathRewrite": {"upload/^.*": "/upload"}
+    },
+    "/fai/api/config/byAcronym": {
+        "target": "http://localhost:3000",
+        "secure": false,
+        "pathRewrite": {"^.*/config/byAcronym/^.*": "/byAcronym"}
+    },
+    "/fai/api/config": {
+        "target": "http://localhost:3000",
+        "secure": false,
+        "pathRewrite": {"config/^.*": "/config"}
+    },
+    "/fai/api/products": {
+        "target": "http://localhost:3000",
+        "secure": false
     }
 }

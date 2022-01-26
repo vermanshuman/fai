@@ -29,6 +29,8 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
     public static int STATUS;
     public static int MAGAZZINO_ACRONYM;
     public static int APPROV_RIGA_DETT;
+    public static int ID_VENDITA;
+    public static int TOTALE_QUANTITA;
 
     public static final Attribute[] attributes = buildAttributes(ApprovvigionamentoFarmaco.class, new Attribute[]{ //@formatter:off
             new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -51,6 +53,8 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
             new Attribute("status", null, StatusInfo.class, null, false, Attribute.DETAIL, true, Attribute.NO_OPTION),
             new Attribute("magazzinoAcronym", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("approvRigaDett", null, ApprovToRiga[].class, null, false, Attribute.DETAIL, true, Attribute.NO_OPTION),
+            new Attribute("idVendita", null, Long.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+            new Attribute("totaleQuantita", null, Integer.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     }); //@formatter:on
 
 
@@ -378,10 +382,30 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
 
     }
 
-    //@formatter:on
+    /**
+     * ID_VENDITA
+     **/
+    public boolean setIdVendita(Long idVendita) {
+        return setLong(ID_VENDITA, idVendita);
+    }
+
+    public Long getIdVendita() {
+        return getLong(ID_VENDITA);
+    }
 
 
-    //@formatter:on
+
+    /**
+     * TOTALE_QUANTITA
+     **/
+    public boolean setTotaleQuantita(Integer totalQuantity) {
+        return setInt(TOTALE_QUANTITA, totalQuantity);
+    }
+
+    public Integer getTotaleQuantita() {
+        return getInt(TOTALE_QUANTITA);
+    }
+
 
 
     //@formatter:on

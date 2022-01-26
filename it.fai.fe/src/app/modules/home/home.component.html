@@ -8,13 +8,13 @@
             <div class="col-md-3 pb-2 pr-0">
               <div class="">
                 <label class="form-label mb-0" for="daInputDate">{{'home.from' | translate | uppercase}}</label>
-                <input class="form-control" type="text" placeholder="da" aria-label="default input example" type="date" id="daInputDate">
+                <input class="form-control" placeholder="da" aria-label="default input example" type="date" id="daInputDate">
               </div>
             </div>
             <div class="col-md-3 pr-0">
               <div class="">
                 <label class="form-label mb-0" for="aInputDate">{{'home.to' | translate | uppercase}}</label>
-                <input class="form-control" type="text" placeholder="a" aria-label="default input example" type="date" id="aInputDate">
+                <input class="form-control" placeholder="a" aria-label="default input example" type="date" id="aInputDate">
               </div>
             </div>
             <div class="col-md-1 pb-2">
@@ -28,13 +28,13 @@
             <div class="col-md-2 pb-2 pr-0">
               <div class="">
                 <label class="form-label mb-0" for="fileOrdiniInputSearch">{{'home.ordersFile' | translate}}</label>
-                <input class="form-control" type="text" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
+                <input class="form-control" placeholder="file ordini" aria-label="default input example" type="search" id="fileOrdiniInputSearch">
               </div>
             </div>
             <div class="col-md-2 pb-2">
               <div class="">
                 <label class="form-label mb-0" for="idVenditaInputSearch">{{'home.idSale' | translate}}</label>
-                <input class="form-control" type="text" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
+                <input class="form-control" placeholder="id Vendita" aria-label="default input example" type="search" id="idVenditaInputSearch">
               </div>
             </div>
           </div>
@@ -101,8 +101,8 @@
                               <div class="form-group">
                                 <select class="form-control" name="magazzino" formControlName="magazzino" required>
                                   <option value="">--SELEZIONA  MAGAZZINO--</option>
-                                  <option value="UPS">UPS di Formello</option>
-                                  <option value="LORETO">Magazzino Loreto</option>
+                                  <option [value]="warehouse.acronym" *ngFor="let warehouse of allWarehouseList">
+                                    {{warehouse.description}}</option>
                                 </select>
                                 <div class="error-text" *ngIf="fileUploadForm?.get('magazzino')?.errors?.required &&
                                         fileUploadForm?.get('magazzino')?.dirty">Magazinno is required</div>
@@ -137,7 +137,7 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'home.orders' | translate" class="fade-in" (selectionchange)="loadOrders(undefined)" (selectTab)="loadOrders(uploadTask)">
+        <tab [heading]="'home.orders' | translate" class="fade-in" (selectionchange)="loadOrders(undefined)" (selectTab)="loadOrders(undefined)">
           <div class="row">
             <div class="col-md-12">
               <app-generic-table
@@ -153,8 +153,19 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'home.products' | translate" class="fade-in">
-          3. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <tab [heading]="'home.products' | translate" class="fade-in"  (selectionchange)="loadProducts(undefined)" (selectTab)="onSelectProductsTab();loadProducts(undefined)">
+          <div class="row">
+            <div class="col-md-12 products-table">
+              <app-generic-table
+                      [tableData]="products$"
+                      [tableColumns]="productTableColumns"
+                      [noSearchPanel]="true"
+                      [isPageable]="true"
+                      [paginationSizes]="[10, 15, 20]"
+                      [defaultPageSize]="10">
+              </app-generic-table>
+            </div>
+          </div>
         </tab>
       </tabset>
     </div><!--/.col-->
@@ -231,8 +242,7 @@
                             <div class="col-md-8">
                               <select class="form-control" id="ccmonth" placeholder="" formControlName="magazinno">
                                 <option value="">--SELEZIONA  MAGAZZINO--</option>
-                                <option value="UPS">UPS di Formello</option>
-                                <option value="LORETO">Magazzino Loreto</option>
+                                <option [value]="warehouse.acronym" *ngFor="let warehouse of allWarehouseList">{{warehouse.description}}</option>
                               </select>
                               <div class="error-text" *ngIf="ftpConfigForm?.get('magazinno')?.errors?.required &&
                       ftpConfigForm?.get('magazinno')?.dirty">Magazinno is required</div>
@@ -312,28 +322,44 @@
           <tab [heading]="'Calendar'" class="fade-in">
             <ng-container *ngIf="!isEdit">
               <div class="calendar-box">
-                <div class="form-group w-30">
-                  <select class="form-control" name="calendarMagazzino" [(ngModel)]="selectedWarehouse">
-                    <option [value]="warehouse.value" *ngFor="let warehouse of warehouseList">{{warehouse.label}}</option>
-                  </select>
+                <div class="d-flex w-100">
+                  <div class="form-group w-30">
+                    <select [(ngModel)]="selectedSupplier" class="form-control" name="calendarMagazzino">
+                      <option value="">--SELEZIONA FORNITORE--</option>
+                      <option *ngFor="let supplier of suppliers"
+                              [value]="supplier.codice">{{supplier.codice}}</option>
+                    </select>
+                  </div>
+                  <div class="form-group w-70 ml-3">
+                    <ng-multiselect-dropdown
+                            [placeholder]="'Weekdays'"
+                            [settings]="weekdayDropdownSettings"
+                            [data]="weekdays"
+                            [(ngModel)]="selectedDays"
+                            (onSelect)="onDaySelect($event)"
+                            (onSelectAll)="onSelectAllDays($event)"
+                    >
+                    </ng-multiselect-dropdown>
+                  </div>
                 </div>
-                <div class="form-group w-50">
-                  <ng-multiselect-dropdown
-                          [placeholder]="'Weekdays'"
-                          [settings]="weekdayDropdownSettings"
-                          [data]="weekdays"
-                          [(ngModel)]="selectedDays"
-                          (onSelect)="onDaySelect($event)"
-                          (onSelectAll)="onSelectAllDays($event)"
-                  >
-                  </ng-multiselect-dropdown>
-                </div>
-                <div class="">
-                  <button type="button" class="btn primary-btn-with-icon" (click)="addCalendarRecord()"
-                          [disabled]="!selectedWarehouse || selectedDays.length == 0">
-                    <i class="fa fa-plus"></i>
-                    <span>Agguingi</span>
-                  </button>
+                <div class="d-flex w-100">
+                  <div class="form-group">
+                    <input [(ngModel)]="calendarStartDate" class="form-control br-light-gray pl-2" label="hh:mm"
+                           matInput type="time">
+                  </div>
+                  <div class="form-group ml-4">
+                    <input  [(ngModel)]="calendarEndDate" class="form-control br-light-gray pl-2" label="hh:mm"
+                            matInput type="time">
+                  </div>
+                  <div class="ml-4">
+                    <button (click)="addCalendarRecord()" [disabled]="!selectedSupplier || selectedDays.length == 0
+                    || !calendarStartDate || !calendarEndDate"
+                            class="btn primary-btn-with-icon"
+                            type="button">
+                      <i class="fa fa-plus"></i>
+                      <span>Agguingi</span>
+                    </button>
+                  </div>
                 </div>
               </div>
               <div class="">
@@ -357,8 +383,9 @@
               </div>
               <div class="calendar-box">
                 <div class="form-group w-30">
-                  <select class="form-control" name="calendarMagazzino" [(ngModel)]="selectedWarehouse">
-                    <option [value]="warehouse.value" *ngFor="let warehouse of allWarehouseList">{{warehouse.label}}</option>
+                  <select class="form-control" name="calendarMagazzino" [(ngModel)]="selectedSupplier">
+                    <option value="">--SELEZIONA FORNITORE--</option>
+                    <option [value]="supplier.codice" *ngFor="let supplier of allSuppliers">{{supplier.codice}}</option>
                   </select>
                 </div>
                 <div class="form-group w-40">
@@ -373,7 +400,7 @@
                 </div>
                 <div class="">
                   <button type="button" class="btn success-btn-with-icon" (click)="updateCalendarRecord()"
-                          [disabled]="!selectedWarehouse || selectedDays.length == 0">
+                          [disabled]="!selectedSupplier || selectedDays.length == 0">
                     <i class="fa fa-check-circle" aria-hidden="true"></i>
                     <span>{{'home.save' | translate}}</span>
                   </button>

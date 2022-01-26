@@ -73,8 +73,8 @@ public class SqlQueries {
 				throw new IllegalStateException("inammissibile, attesi 0 oppure 1 record; trovati: " + recordCount);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -117,8 +117,8 @@ public class SqlQueries {
 			SqlUtilities.setString(stmt, ++col, oic.getMagazzinoAcronym());
 			stmt.executeUpdate();
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -193,8 +193,8 @@ public class SqlQueries {
 						+ fai.common.util.CollectionsTool.asCSV(errors, ", ");
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -284,8 +284,8 @@ public class SqlQueries {
 			//
 			statusInfo = StatusInfo.newInstance(ItemStatus.getByOid(oidStatusToAssign), statusDescr, statusTechDescr);
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -415,8 +415,8 @@ public class SqlQueries {
 			//
 			stmt.executeUpdate();
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -462,8 +462,8 @@ public class SqlQueries {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -503,8 +503,8 @@ public class SqlQueries {
 			}
 			logger.info(LOG_PREFIX + recordCount + " record complessivamente caricati");
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -582,8 +582,8 @@ public class SqlQueries {
 			//
 			attachProperties(list, conn);
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -652,8 +652,8 @@ public class SqlQueries {
 			//
 			//attachProperties(list, conn);
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -693,8 +693,8 @@ public class SqlQueries {
 				magazzino.addProperty(property);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -749,8 +749,8 @@ public class SqlQueries {
 				f.addProperty(property);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -888,8 +888,8 @@ public class SqlQueries {
 				currApprov.addApprovRigaDett(a2r);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -949,8 +949,8 @@ public class SqlQueries {
 				list.add(riga);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1006,8 +1006,8 @@ public class SqlQueries {
 				insertApprovToRiga(approv.getOid(), a2r[i], conn);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1058,8 +1058,8 @@ public class SqlQueries {
 				}
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1085,8 +1085,8 @@ public class SqlQueries {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1119,8 +1119,8 @@ public class SqlQueries {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1240,8 +1240,8 @@ public class SqlQueries {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1289,8 +1289,8 @@ public class SqlQueries {
 			//
 			return status;
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1362,8 +1362,8 @@ public class SqlQueries {
 				count = rs.getInt(1);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1399,8 +1399,8 @@ public class SqlQueries {
 			logger.info(LOG_PREFIX + recordCount + " record inseriti");
 			return recordCount;
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1447,8 +1447,8 @@ public class SqlQueries {
 				list.add(o);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1498,8 +1498,8 @@ public class SqlQueries {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1530,8 +1530,8 @@ public class SqlQueries {
 			updatedRecordCount = stmt.executeUpdate(sql);
 			return updatedRecordCount;
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1597,8 +1597,8 @@ public class SqlQueries {
 				approv.addApprovRigaDett(a2r);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1615,7 +1615,7 @@ public class SqlQueries {
 
 	/**
 	 * ATTENZIONE! <br/>
-	 * Solo i campi connessi con la "richiesta di disponibilità" dell'istanza
+	 * Solo i campi connessi con la "richiesta di disponibilitï¿½" dell'istanza
 	 * {@link DisponibilitaTemp} saranno effettivamente presi in considerazione
 	 *
 	 * @param dispTemp
@@ -1668,8 +1668,8 @@ public class SqlQueries {
 			//
 			stmt.executeUpdate();
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1707,8 +1707,8 @@ public class SqlQueries {
 				stmt = null;
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1723,7 +1723,7 @@ public class SqlQueries {
 
 	/**
 	 * ATTENZIONE! <br/>
-	 * Solo i campi connessi con la "risposta" alla "richiesta di disponibilità"
+	 * Solo i campi connessi con la "risposta" alla "richiesta di disponibilitï¿½"
 	 * dell'istanza {@link DisponibilitaTemp} saranno presi in considerazione
 	 *
 	 *
@@ -1762,8 +1762,8 @@ public class SqlQueries {
 			//
 			stmt.executeUpdate();
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1801,8 +1801,8 @@ public class SqlQueries {
 			}
 
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1845,8 +1845,8 @@ public class SqlQueries {
 				list.add(f);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1888,7 +1888,7 @@ public class SqlQueries {
 			}
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME;
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -1937,8 +1937,8 @@ public class SqlQueries {
 			SqlUtilities.setString(stmt, ++col, uploadTaskConfig.getRunDescr());
 			stmt.executeUpdate();
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -1975,8 +1975,8 @@ public class SqlQueries {
 				list.add(uploadTaskConfig);
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -2023,7 +2023,7 @@ public class SqlQueries {
 			}
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME;
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2053,7 +2053,7 @@ public class SqlQueries {
 			stmt.executeUpdate(sql);
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2081,7 +2081,7 @@ public class SqlQueries {
 			stmt.executeUpdate();
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2128,7 +2128,7 @@ public class SqlQueries {
 			}
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME;
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2159,8 +2159,8 @@ public class SqlQueries {
 			totalOrders = rs.getInt(1);
 
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -2193,7 +2193,7 @@ public class SqlQueries {
 			stmt.executeUpdate(sql);
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2228,8 +2228,8 @@ public class SqlQueries {
 			SqlUtilities.setCalendar(stmt, ++col, Calendar.getInstance());
 			stmt.executeUpdate();
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -2259,7 +2259,7 @@ public class SqlQueries {
 			stmt.executeUpdate(sql);
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2340,8 +2340,8 @@ public class SqlQueries {
 			e.printStackTrace();
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -2390,8 +2390,8 @@ public class SqlQueries {
 			//
 			stmt.executeUpdate();
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -2426,7 +2426,7 @@ public class SqlQueries {
 			}
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME;
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2437,7 +2437,7 @@ public class SqlQueries {
 		return approv;
 	}
 
-	public static List<OrdineIn> getAllOrdine(Long collectionOID, Connection conn) throws Exception {
+	public static List<OrdineIn> getAllOrdine(String whereCondition, Connection conn) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		logger.debug("method: " + METH_NAME);
 		String sql;
@@ -2447,11 +2447,15 @@ public class SqlQueries {
 		try {
 			String wc = "";
 
-			if(collectionOID != null && collectionOID > 0){
-				wc = "WHERE ordine.OID_ORDINEINCOLLECTION=" + collectionOID;
-			}else {
+			if(StringUtils.isNotBlank(whereCondition))
+				wc = whereCondition;
+			else
 				wc = "WHERE 1=1";
-			}
+//			if(collectionOID != null && collectionOID > 0){
+//				wc = "WHERE ordine.OID_ORDINEINCOLLECTION=" + collectionOID;
+//			}else {
+//				wc = "WHERE 1=1";
+//			}
 			Properties params = new Properties();
 			params.setProperty("whereCondition", wc);
 			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllOrdine.sql", params);
@@ -2473,7 +2477,7 @@ public class SqlQueries {
 			}
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME;
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2507,8 +2511,8 @@ public class SqlQueries {
 				missingCount = rs.getInt("RECORDS_COUNT");
 			}
 		} catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage()
-					+ "» nell'esecuzione del metodo " + METH_NAME
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
 					+ (sql != null
 					? "; sql:" + System.getProperty("line.separator") + sql
 					+ System.getProperty("line.separator")
@@ -2520,6 +2524,210 @@ public class SqlQueries {
 			SqlUtilities.closeWithNoException(rs);
 		}
 		return missingCount;
+
+	}
+
+	public static List<ApprovvigionamentoFarmaco> getAllProdottiByOrder(Long oidOrdineIn, String orderBy, Connection conn)
+			throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = "";
+		Properties params = new Properties();
+		if(oidOrdineIn != null)
+			params.setProperty("WHERECONDITION", "WHERE OID_ORDINEIN=" + oidOrdineIn);
+		else
+			params.setProperty("WHERECONDITION", "WHERE 1=1");
+
+		if(StringUtils.isNotBlank(orderBy)){
+			params.setProperty("ORDERBY", orderBy);
+		}else {
+			params.setProperty("ORDERBY", "ORDER BY APPROV.OID, RIGA.OID");
+		}
+
+	 	sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllProdottiByOrder.sql", params);
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<ApprovvigionamentoFarmaco> list = new LinkedList<>();
+		Hashtable<Long, Magazzino> magazzini = getAllMagazzinoAsHashtableByOid(null, conn);
+		Hashtable<Long, Fornitore> fornitori = getAllFornitoreAsHashtableByOid(conn);
+		List<Long> approvtoRigaOids = new ArrayList<>();
+		try {
+			long approvOidBak = -1;
+			ApprovvigionamentoFarmaco currApprov = null;
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				long approvOid = rs.getLong("OID");
+				if (approvOid != approvOidBak) {
+					currApprov = new ApprovvigionamentoFarmaco();
+					currApprov.setOid(approvOid);
+					currApprov.setCodiceMinSan(rs.getString("CODICE_MINSAN"));
+					currApprov.setCodiceEan(rs.getString("CODICE_EAN"));
+					currApprov.setQuantita(rs.getInt("QUANTITA"));
+					currApprov
+							.setDisponibilitaRichiestaReq(SqlUtilities.getCalendar(rs, "DISPONIBILITA_RICHIESTA_REQ"));
+					currApprov
+							.setDisponibilitaRichiestaRes(SqlUtilities.getCalendar(rs, "DISPONIBILITA_RICHIESTA_RES"));
+					currApprov.setDisponibilitaConfermataReq(
+							SqlUtilities.getCalendar(rs, "DISPONIBILITA_CONFERMATA_REQ"));
+					currApprov.setDisponibilitaConfermataRes(
+							SqlUtilities.getCalendar(rs, "DISPONIBILITA_CONFERMATA_RES"));
+					currApprov.setIdOrdine(rs.getString("RIGA_OID_ORDINEIN"));
+					currApprov.setIdRicevuta(rs.getString("ID_RICEVUTA"));
+					currApprov.setStatus(asStatusInfo(rs, ""));
+					currApprov.setPrezzoUnitario(SqlUtilities.getDouble(rs, "PREZZO_UNITARIO"));
+					currApprov.setPrezzoTotale(SqlUtilities.getDouble(rs, "PREZZO_TOTALE"));
+					currApprov.setAliquotaIva(SqlUtilities.getDouble(rs, "ALIQUOTA_IVA"));
+					currApprov.setAliquotaIvaInclusa(SqlUtilities.asBoolean(rs.getString("ALIQUOTA_IVA_INCLUSA")));
+					currApprov.setMagazzinoAcronym(rs.getString("MAGAZZINO_ACRONYM"));
+					currApprov.setIdVendita(rs.getLong("ID_VENDITA"));
+					currApprov.setTotaleQuantita(rs.getInt("ORDINE_QUANTITA"));
+					Long oidOrdineOut = SqlUtilities.getLong(rs, "OID_ORDINEOUT");
+					if (oidOrdineOut != null) {
+						currApprov.setOrdineOut(new OrdineOut());
+						currApprov.getOrdineOut().setOid(oidOrdineOut);
+					}
+					Long oidMagazzino = SqlUtilities.getLong(rs, "OID_MAGAZZINO");
+					if (oidMagazzino != null) {
+						Magazzino m = magazzini.get(oidMagazzino);
+						if (m == null)
+							throw new IllegalStateException("inammissibile, nessun " + Magazzino.class.getName()
+									+ " per l'OID " + oidMagazzino);
+						currApprov.setMagazzino(m);
+					}
+					Long oidFornitore = SqlUtilities.getLong(rs, "OID_FORNITORE");
+					if (oidFornitore != null) {
+						Fornitore m = fornitori.get(oidFornitore);
+						if (m == null)
+							throw new IllegalStateException("inammissibile, nessun " + Fornitore.class.getName()
+									+ " per l'OID " + oidFornitore);
+
+						currApprov.setFornitore(m);
+					}
+					list.add(currApprov);
+				}
+				approvOidBak = approvOid;
+				//
+				ApprovToRiga a2r = new ApprovToRiga();
+				a2r.setOid(rs.getLong("APPROV2RIGA_OID"));
+				a2r.setQuantita(rs.getInt("APPROV2RIGA_QUANTITA"));
+				OrdineInRigaDett riga = new OrdineInRigaDett();
+				riga.setOid(rs.getLong("RIGA_OID"));
+				riga.setCodiceMinSan(rs.getString("RIGA_CODICE_MINSAN"));
+				riga.setCodiceEan(rs.getString("RIGA_CODICE_EAN"));
+				riga.setQuantita(rs.getInt("RIGA_QUANTITA"));
+				a2r.setRigaDett(riga);
+				//
+				// controllo di congruenza
+				if (!riga.getCodiceMinSan()
+						.equals(currApprov.getCodiceMinSan()) /* AbstractModel --> non possono essere null */) {
+					throw new IllegalStateException(
+							"inammissibile, il record di Approvvigionamento Farmaci per Gruppo di Ordini (FAI_APPROVVIGIONAMENTO_FARMACO) identificato dall'OID  "
+									+ currApprov.getOid() + " ha un Codice MinSan (" + currApprov.getCodiceMinSan()
+									+ ") differente dal Codice MinSan (" + riga.getCodiceMinSan()
+									+ ") della Riga dell'Ordine in Ingresso (FAI_ORDINE_IN_RIGA_DETTAGLIO) di OID "
+									+ riga.getOid() + " cui si riferisce");
+				}
+				if (!riga.getCodiceEan()
+						.equals(currApprov.getCodiceEan()) /* AbstractModel --> non possono essere null */) {
+					throw new IllegalStateException(
+							"inammissibile, il record di Approvvigionamento Farmaci per Gruppo di Ordini (FAI_APPROVVIGIONAMENTO_FARMACO) identificato dall'OID  "
+									+ currApprov.getOid() + " ha un Codice EAN (" + currApprov.getCodiceEan()
+									+ ") differente dal Codice EAN (" + riga.getCodiceEan()
+									+ ") della Riga dell'Ordine in Ingresso (FAI_ORDINE_IN_RIGA_DETTAGLIO) di OID "
+									+ riga.getOid() + " cui si riferisce");
+				}
+				//
+				if(!approvtoRigaOids.contains(a2r.getOid())){
+					currApprov.addApprovRigaDett(a2r);
+					approvtoRigaOids.add(a2r.getOid());
+				}
+			}
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+	}
+
+	public static ApprovvigionamentoFarmaco getOrdineInDataLinkedToMissingOnes(Long oidOrdine, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		ApprovvigionamentoFarmaco approv = null;
+		try {
+			Properties params = new Properties();
+			params.setProperty("oidOrdine", "" + oidOrdine);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getOrdineInDataLinkedToMissingOnes.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				approv = new ApprovvigionamentoFarmaco();
+				approv.setOid(rs.getLong("OID"));
+				approv.setQuantita(rs.getInt("QUANTITA"));
+			}
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return approv;
+	}
+
+	public static List<OrdineInCollection> findOrdineInCollectionByOrder(Long  idOrdine, Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		String sql;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<OrdineInCollection> list = new ArrayList<>();
+		try {
+			String wc = "WHERE ORDINE.OID=" + idOrdine;
+			Properties params = new Properties();
+			params.setProperty("whereCondition", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getOrdineInCollectionByOrder.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				OrdineInCollection ordineInCollection = new OrdineInCollection();
+				ordineInCollection.setOid(rs.getLong("OID"));
+				ordineInCollection.setInputResource(rs.getString("INPUT_RESOURCE"));
+				list.add(ordineInCollection);
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
 
 	}
 

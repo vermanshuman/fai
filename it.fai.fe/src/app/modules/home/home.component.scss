@@ -85,21 +85,43 @@
   .w-30 {
     width: 30%;
   }
+
+  .w-35 {
+    width: 35%;
+  }
+
   .w-40 {
     width: 40%;
   }
   .w-50 {
     width: 50%;
   }
+  .w-70 {
+    width: 70%;
+  }
+
+  .w-80 {
+    width: 80%;
+  }
 }
 
-::ng-deep #calendarTable {
-  table {
-    th:last-child {
-      min-width: 275px;
+::ng-deep {
+  #calendarTable {
+    table {
+      th:last-child {
+        min-width: 275px;
+      }
+      td:last-child {
+        padding-right: 0;
+      }
     }
-    td:last-child {
-      padding-right: 0;
+  }
+  .products-table {
+    .cdk-column-File-Name {
+      min-width: 240px;
+    }
+    .cdk-column-Minsan {
+      min-width: 100px;
     }
   }
 }

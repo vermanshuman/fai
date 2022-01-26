@@ -1,7 +1,15 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {GenericTaskService} from '../../core/http';
-import {CsvFile, GenericTask, GenericTaskProperty, Order, Orders, UploadTask} from '../../core/models';
+import {
+    CsvFile,
+    GenericTask,
+    GenericTaskProperty,
+    Order,
+    Supplier,
+    UploadTask,
+    Warehouse
+} from '../../core/models';
 import {NotificationService} from '../../services/notification.service';
 import {UploadTaskService} from '../../core/http/upload-task/upload-task.service';
 import {TableColumn} from '../../shared/component/generic-table/generic-table.component';
@@ -13,21 +21,9 @@ import {FILE_UPLOAD_TABLE_COLUMNS} from '../../config/file-upload-table-columns'
 import {CALENDAR_TABLE_COLUMNS} from '../../config/calendar-table-columns';
 import {ORDER_TABLE_COLUMNS} from '../../config/order-table-columns';
 import {WarehouseService} from '../../core/http/warehouses/warehouse.service';
-
-
-const WARE_HOUSE_LIST  = [
-    {
-        value: '',
-        label: '--SELEZIONA  MAGAZZINO--'
-    }, {
-        value: 'UPS',
-        label: 'UPS di Formello'
-    },
-    {
-        value: 'LORETO',
-        label: 'Magazzino Loreto'
-    },
-];
+import {SupplierService} from '../../core/http/supplier/supplier.service';
+import {PRODUCT_TABLE_COLUMNS} from '../../config/product-table-columns';
+import {ProductService} from '../../core/http/product/product.service';
 
 @Component({
     selector: 'app-home',
@@ -55,18 +51,27 @@ export class HomeComponent implements OnInit {
     weekdayDropdownSettings = WEEK_DAYS_DD_CONFIG;
     calendarRecords$: Observable<any[]> = of([]);
     calendarTableColumns = CALENDAR_TABLE_COLUMNS;
-    allWarehouseList = WARE_HOUSE_LIST;
-    warehouseList = JSON.parse(JSON.stringify(WARE_HOUSE_LIST));
-    selectedWarehouse = '';
+    allWarehouseList: Warehouse[] = [];
+    warehouseList: Warehouse[] = JSON.parse(JSON.stringify([]));
+    allSuppliers: Supplier[] = [];
+    suppliers: Supplier[] = [];
+    selectedSupplier = '';
+    previousSelectedSupplier = '';
     isEdit = false;
     editCalendarRecordIndex = null;
     activeTab = 1;
+    calendarStartDate = '';
+    calendarEndDate = '';
+    products$: Observable<any[]> | undefined;
+    productTableColumns: TableColumn[] = PRODUCT_TABLE_COLUMNS;
 
     constructor(private formBuilder: FormBuilder,
                 private genericTaskService: GenericTaskService,
                 private uploadTaskService: UploadTaskService,
                 private ordersService: OrdersService,
                 private warehouseService: WarehouseService,
+                private supplierService: SupplierService,
+                private productService: ProductService,
                 private notifyService: NotificationService) {
     }
 
@@ -82,9 +87,11 @@ export class HomeComponent implements OnInit {
             console.log('IMP_ORDINE_IN data: ', data);
             this.genericTask = data;
         });
-        this.warehouseService.findAll().subscribe(data => {
-            console.log('Warehouse data: ', data);
+        this.warehouseService.findAll().subscribe((data: any) => {
+            console.log('Warehouse data: ', data.warehouses);
+            this.allWarehouseList = this.warehouseList =  data.warehouses;
         });
+
     }
 
     initFileUploadForm(): void {
@@ -96,10 +103,11 @@ export class HomeComponent implements OnInit {
 
     initFtpConfigForm(): void {
         this.calendarRecords$ = of([]);
-        this.warehouseList = JSON.parse(JSON.stringify(WARE_HOUSE_LIST));
-        this.selectedWarehouse = '';
-        this.isEdit = false;
-        this.editCalendarRecordIndex = null;
+        this.warehouseList = JSON.parse(JSON.stringify(this.allWarehouseList));
+        this.supplierService.findAll().subscribe((data: any) => {
+            this.allSuppliers = this.suppliers = data.suppliers;
+        });
+        this.resetFtpConfigData();
         const timeArray = [];
         if (this.genericTask?.scheduleTimes) {
             this.hoursList = this.genericTask?.scheduleTimes.split(',');
@@ -131,13 +139,13 @@ export class HomeComponent implements OnInit {
             this.ftpConfigForm.controls['password'].setValidators([Validators.required]);
         }
         if (this.genericTask?.scheduledDays) {
-            this.ftpConfigForm.get('sunday')?.setValue(true);
-            this.ftpConfigForm.get('monday')?.setValue(true);
-            this.ftpConfigForm.get('tuesday')?.setValue(true);
-            this.ftpConfigForm.get('wednesday')?.setValue(true);
-            this.ftpConfigForm.get('thursday')?.setValue(true);
-            this.ftpConfigForm.get('friday')?.setValue(true);
-            this.ftpConfigForm.get('saturday')?.setValue(true);
+            this.ftpConfigForm.get('sunday')?.setValue(this.genericTask?.scheduledDays.charAt(0) === 'X');
+            this.ftpConfigForm.get('monday')?.setValue(this.genericTask?.scheduledDays.charAt(1) === 'X');
+            this.ftpConfigForm.get('tuesday')?.setValue(this.genericTask?.scheduledDays.charAt(2) === 'X');
+            this.ftpConfigForm.get('wednesday')?.setValue(this.genericTask?.scheduledDays.charAt(3) === 'X');
+            this.ftpConfigForm.get('thursday')?.setValue(this.genericTask?.scheduledDays.charAt(4) === 'X');
+            this.ftpConfigForm.get('friday')?.setValue(this.genericTask?.scheduledDays.charAt(5) === 'X');
+            this.ftpConfigForm.get('saturday')?.setValue(this.genericTask?.scheduledDays.charAt(6) === 'X');
         }
         this.ftpConfigForm?.get('magazinno')?.setValue(this.genericTask?.richProperties?.magazzino_acronym);
 
@@ -155,44 +163,62 @@ export class HomeComponent implements OnInit {
     }
 
     onFTPFormSave(): void {
-        this.ftpConfigForm.get('ftp_url').markAsDirty({onlySelf: true});
-        this.ftpConfigForm.get('username').markAsDirty({onlySelf: true});
-        this.ftpConfigForm.get('password').markAsDirty({onlySelf: true});
-        this.ftpConfigForm.get('file_name').markAsDirty({onlySelf: true});
-        this.ftpConfigForm.get('magazinno').markAsDirty({onlySelf: true});
-        const weekdayString = this.prepareWeekdays(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday',
-            'saturday']);
+        // ftp tab(first tab)
+        if (this.ftpModalTabset.tabs[0].active) {
+            this.ftpConfigForm.get('ftp_url').markAsDirty({onlySelf: true});
+            this.ftpConfigForm.get('username').markAsDirty({onlySelf: true});
+            this.ftpConfigForm.get('password').markAsDirty({onlySelf: true});
+            this.ftpConfigForm.get('file_name').markAsDirty({onlySelf: true});
+            this.ftpConfigForm.get('magazinno').markAsDirty({onlySelf: true});
+            const weekdayString = this.prepareWeekdays(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday',
+                'saturday']);
 
-        console.log(this.ftpConfigForm);
-        if (this.ftpConfigForm?.valid) {
-            let genericTask: GenericTask | undefined;
-            let genericTaskProperty: GenericTaskProperty | undefined;
-            genericTask = {...this.genericTask};
+            console.log(this.ftpConfigForm);
+            if (this.ftpConfigForm?.valid) {
+                let genericTask: GenericTask | undefined;
+                let genericTaskProperty: GenericTaskProperty | undefined;
+                genericTask = {...this.genericTask};
 
-            genericTask.scheduleTimes = this.hoursList.join(',');
-            genericTask.scheduledDays = weekdayString;
-            if (genericTask.richProperties) {
-                genericTaskProperty = {...genericTask.richProperties};
+                genericTask.scheduleTimes = this.hoursList.join(',');
+                genericTask.scheduledDays = weekdayString;
+                if (genericTask.richProperties) {
+                    genericTaskProperty = {...genericTask.richProperties};
+                }
+                genericTaskProperty.host = this.ftpConfigForm.get('ftp_url')?.value;
+                genericTaskProperty.login = this.ftpConfigForm.get('username')?.value;
+                if (this.ftpConfigForm.get('password').value) {
+                    genericTaskProperty.password = this.ftpConfigForm.get('password')?.value;
+                }
+                genericTaskProperty.csvInFileName = this.ftpConfigForm.get('file_name')?.value;
+                genericTaskProperty.magazzino_acronym = this.ftpConfigForm.get('magazinno')?.value;
+                genericTask.richProperties = genericTaskProperty;
+                if (genericTask.oid) {
+                    console.log('Updating Generic Task ', genericTask);
+                    this.genericTaskService.updateGenericTask(genericTask).subscribe(data => {
+                        console.log('Returned data after update: ', data);
+                        this.notifyService.showSuccess('Data updated successfully');
+                        this.genericTask = data;
+                        this.ftpConfigureModal?.hide();
+                    }, (error: any) => {
+                        this.notifyService.showError('Something went wrong, data not saved');
+                    });
+                }
             }
-            genericTaskProperty.host = this.ftpConfigForm.get('ftp_url')?.value;
-            genericTaskProperty.login = this.ftpConfigForm.get('username')?.value;
-            if (this.ftpConfigForm.get('password').value) {
-                genericTaskProperty.password = this.ftpConfigForm.get('password')?.value;
-            }
-            genericTaskProperty.csvInFileName = this.ftpConfigForm.get('file_name')?.value;
-            genericTaskProperty.magazzino_acronym = this.ftpConfigForm.get('magazinno')?.value;
-            genericTask.richProperties = genericTaskProperty;
-            if (genericTask.oid) {
-                console.log('Updating Generic Task ', genericTask);
-                this.genericTaskService.updateGenericTask(genericTask).subscribe(data => {
-                    console.log('Returned data after update: ', data);
-                    this.notifyService.showSuccess('Data updated successfully');
-                    this.genericTask = data;
-                    this.ftpConfigureModal?.hide();
-                }, (error: any) => {
-                    this.notifyService.showError('Something went wrong, data not saved');
+        } else if (this.ftpModalTabset.tabs[1].active) {  // calendar tab(second tab)
+            let calendarRecords = [];
+            this.calendarRecords$.subscribe((records: any) => {
+                calendarRecords = records;
+                console.log('calendarRecords' , calendarRecords);
+                const usedSuppliers = [];
+                calendarRecords.forEach((rec: any) => {
+                    this.allSuppliers.forEach((s: any) => {
+                        if (s.codice === rec.supplier) {
+                            usedSuppliers.push(s);
+                        }
+                    });
                 });
-            }
+                console.log('usedSuppliers' , usedSuppliers);
+            });
         }
     }
 
@@ -260,7 +286,7 @@ export class HomeComponent implements OnInit {
     }
 
     resetFileUploadForm(): void {
-        this.fileUploadForm.reset();
+        this.initFileUploadForm();
         this.fileUploader.nativeElement.value = null;
     }
 
@@ -296,6 +322,8 @@ export class HomeComponent implements OnInit {
                     console.log('Orders ', data);
                     if (data && data.orders) {
                         this.orders$ = of(data.orders);
+                    } else {
+                        this.orders$ = of([]);
                     }
                 },
                 (error: any) => {
@@ -329,43 +357,57 @@ export class HomeComponent implements OnInit {
     }
 
     addCalendarRecord(): void {
-        this.warehouseList = this.warehouseList.filter(w => w.value !== this.selectedWarehouse);
-        const record = {
-            warehouse: this.selectedWarehouse,
-            weekdays: (this.selectedDays.map(this._getObjectKeyValue('item_text')))?.toString()?.replace(/,[s]*/g, ', ')
-        };
         let calendarRecords = [];
         this.calendarRecords$.subscribe((records: any) => {
             calendarRecords = records;
         });
-        if (this.editCalendarRecordIndex === null) {
-            calendarRecords.push(record);
-        } else {
-            calendarRecords.splice(this.editCalendarRecordIndex, 1, record);
+
+        const duplicateIndex = calendarRecords.findIndex(w => w.supplier === this.selectedSupplier);
+
+        if (duplicateIndex >= 0 && this.selectedSupplier !== this.previousSelectedSupplier) {
+            alert('already added this supplier');
+        }  else {
+            this.suppliers = this.suppliers.filter(w => w.codice !== this.selectedSupplier);
+            const record = {
+                supplier: this.selectedSupplier,
+                weekdays: (this.selectedDays.map(this._getObjectKeyValue('item_text')))?.toString()?.replace(/,[s]*/g, ', '),
+                start_hour: this.calendarStartDate,
+                end_hour: this.calendarEndDate
+            };
+            calendarRecords = [];
+            this.calendarRecords$.subscribe((records: any) => {
+                calendarRecords = records;
+            });
+            if (this.editCalendarRecordIndex === null) {
+                calendarRecords.push(record);
+            } else {
+                calendarRecords.splice(this.editCalendarRecordIndex, 1, record);
+            }
+
+            this.calendarRecords$ = of(calendarRecords);
+            setTimeout(() => {
+                this.resetFtpConfigData();
+            });
         }
-        this.calendarRecords$ = of(calendarRecords);
-        this.selectedDays = [];
-        this.selectedWarehouse = '';
     }
 
     onCalendarDeleteClick(event: any): void {
-        console.log('event', event);
-        const removedWarehouse = WARE_HOUSE_LIST.filter(w => w.value === event.warehouse);
-        if (removedWarehouse.length > 0) {
-            this.warehouseList.unshift(removedWarehouse[0]);
+        const removedSupplier = this.allSuppliers.filter(w => w.codice === event.suppllier);
+        if (removedSupplier.length > 0) {
+            this.suppliers.unshift(removedSupplier[0]);
         }
         let calendarRecords = [];
         this.calendarRecords$.subscribe((records: any) => {
             calendarRecords = records;
         });
-        const index = calendarRecords.findIndex(w => w.warehouse === event.warehouse);
+        const index = calendarRecords.findIndex(w => w.supplier === event.supplier);
         if (index >= 0) {
             calendarRecords.splice(index, 1);
             this.calendarRecords$ = of(calendarRecords);
         }
     }
     onCalendarEditClick(event: any): void {
-        this.selectedWarehouse = event.warehouse;
+        this.selectedSupplier = this.previousSelectedSupplier = event.supplier;
         this.selectedDays = [];
         event.weekdays.split(', ').forEach((day: any) => {
             const obj = {
@@ -376,9 +418,9 @@ export class HomeComponent implements OnInit {
         });
         this.selectedDays = this.selectedDays.slice();
         this.isEdit = true;
-        const selRec = WARE_HOUSE_LIST.filter(w => w.value === event.warehouse);
+        const selRec = this.allSuppliers.filter(s => s.codice === event.supplier);
         if (selRec.length > 0) {
-            this.warehouseList.push(selRec[0]);
+            this.suppliers.push(selRec[0]);
         }
 
         let calendarRecords = [];
@@ -392,15 +434,20 @@ export class HomeComponent implements OnInit {
         if (this.editCalendarRecordIndex >= 0 ) {
             this.addCalendarRecord();
         }
-        setTimeout(() => {
-            this.onCancelEditCalendar();
-        });
     }
 
     onCancelEditCalendar(): void {
+        this.resetFtpConfigData();
+    }
+
+    private resetFtpConfigData(): void {
         this.isEdit = false;
-        this.selectedWarehouse = '';
+        this.selectedSupplier = '';
+        this.previousSelectedSupplier = '';
         this.selectedDays = [];
+        this.editCalendarRecordIndex = null;
+        this.calendarStartDate = '';
+        this.calendarEndDate = '';
     }
 
     onFileRowSelected(uploadTask: UploadTask): void {
@@ -415,14 +462,52 @@ export class HomeComponent implements OnInit {
         this.loadOrders(uploadTask);
     }
 
-    onOrderRowSelected(uploadTask: UploadTask): void {
-        console.log('row selected: ', uploadTask);
-        this.activeProductTab();
+    onOrderRowSelected(order: Order): void {
+        console.log('row selected: ', order);
+        this.activeProductTab(order);
     }
 
-    activeProductTab(): void {
-        console.log('active Prodotti Tab');
+    activeProductTab(order: Order): void {
+        console.log('active Prodotti Tab' , order);
         this.navTabset.tabs[1]._active = false;
         this.navTabset.tabs[2]._active = true;
+        this.productTableColumns[0].isHidden = false;
+        this.productTableColumns[1].isHidden = true;
+        this.loadProducts(order);
+    }
+
+    onSelectProductsTab(): void {
+        this.productTableColumns[0].isHidden = true;
+        this.productTableColumns[1].isHidden = false;
+    }
+
+    loadProducts(order: Order): void {
+        if (order) {
+            this.productService.findProductsByOrder(order.oid).subscribe(data => {
+                    console.log('Products for order ', data);
+                    if (data && data.products) {
+                        this.products$ = of(data.products);
+                    } else {
+                        this.products$ = of([]);
+                    }
+                },
+                (error: any) => {
+                    console.log('error', error);
+                    this.notifyService.showError('Error in loading products for order');
+                });
+        } else {
+            this.productService.findAll().subscribe(data => {
+                    console.log('Products ', data);
+                    if (data && data.products) {
+                        this.products$ = of(data.products);
+                    } else {
+                        this.products$ = of([]);
+                    }
+                },
+                (error: any) => {
+                    console.log('error', error);
+                    this.notifyService.showError('Error in loading products');
+                });
+        }
     }
 }

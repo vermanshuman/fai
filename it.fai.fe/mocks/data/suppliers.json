@@ -1,0 +1,22 @@
+{
+  "supplier": {
+    "message": null,
+    "errorCode": null,
+    "errorDescription": null,
+    "success": false,
+    "suppliers": [
+      {
+        "oid": 9,
+        "codice": "DEMO03"
+      },
+      {
+        "oid": 11,
+        "codice": "182560"
+      },
+      {
+        "oid": 12,
+        "codice": "FaiRnd0002"
+      }
+    ]
+  }
+}

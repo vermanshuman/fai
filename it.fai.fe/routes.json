@@ -1,3 +1,10 @@
 {
-    "/fai/api/warehouse": "/warehouse"
+    "/fai/api/warehouse": "/warehouse",
+    "/fai/api/supplier": "/supplier",
+    "/fai/api/upload": "/upload",
+    "/fai/api/config/byAcronym\\?acronym=IMP_ORDINE_IN": "/byAcronym",
+    "/fai/api/config": "/config",
+    "/fai/api/products": "/products"
+
+
 }

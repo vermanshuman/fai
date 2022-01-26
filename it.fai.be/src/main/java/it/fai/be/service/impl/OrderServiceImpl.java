@@ -36,7 +36,9 @@ public class OrderServiceImpl implements OrderService {
                 List<OrdineInCollection> ordineInCollections =
                         fai.broker.db.SqlQueries.findOrdineInCollectionByInputResource(uploadTask.getCsvFileName(), conn);
                 if (ordineInCollections != null && ordineInCollections.size() > 0) {
-                    List<OrdineIn> orders = fai.broker.db.SqlQueries.getAllOrdine(ordineInCollections.get(0).getOid(), conn);
+                    List<OrdineIn> orders =
+                            fai.broker.db.SqlQueries.getAllOrdine(
+                                    "WHERE ordine.OID_ORDINEINCOLLECTION=" + ordineInCollections.get(0).getOid(), conn);
                     return orders
                             .stream()
                             .map(order -> setOrder(order, conn))
@@ -49,6 +51,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDTO setOrder(OrdineIn ordineIn, Connection conn) {
         OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setOid(ordineIn.getOid());
         orderDTO.setIdVendita(ordineIn.getIdVendita());
         orderDTO.setUserName(ordineIn.getNomeCompletoAcquirente());
         orderDTO.setEmail(ordineIn.getEmailAcquirente());
