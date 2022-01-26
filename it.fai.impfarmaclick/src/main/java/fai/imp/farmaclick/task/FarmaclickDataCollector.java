@@ -334,9 +334,10 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		// --- creazione istanza WebService ---
 		//
 		ws = new FarmaclickWS();
-		ws.setEndpointAddress(PropertiesLoader.getApplicationProperties().getProperty("service_login_url"));
+		ws.setEndpointAddress(config.getServiceQueryUrl());
 		ws.setLogRequestAsXml(true);
 		ws.setLogReponsesAsXml(true);
+		ws.setServiceAPILevel(config.getServiceApiLevel());
 		//
 		// --- preparazione dell'istanza di Http per il download dei listino ---
 		//
@@ -404,26 +405,25 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 	}
 
 	private void loginWebService() {
-		String login = PropertiesLoader.getApplicationProperties().getProperty("service_login");
+		String login = config.getServiceLogin();
 		if (login != null && login.trim().equals("")) login = null;
-		String pass = PropertiesLoader.getApplicationProperties().getProperty("service_password");
-		String isPasswordEncrypted = PropertiesLoader.getApplicationProperties().getProperty("service_password_encrypted");
+		String pass = config.getServicePass();
+		Boolean isPasswordEncrypted = config.getServicePassEncr();
 		if (pass != null) {
 			if (pass.trim().equals("")) { 
 				pass = null;
 			}
 			else {
-				if (isPasswordEncrypted != null && Boolean.parseBoolean(isPasswordEncrypted)) {
+				if (isPasswordEncrypted != null && isPasswordEncrypted) {
 					logger.info("decrittazione password del WebService ...");
 					pass = Decryptor.decrypt(pass);
 				}
 			}
 		}
-		String terminalName = PropertiesLoader.getApplicationProperties().getProperty("service_terminal_name");
 		//
 		// --- Fornitori: download e registrazione in banca dati  ---
 		//
-		ws.login(login, pass, terminalName, "");
+		ws.login(login, pass, "SERVER", "");
 	}
 
 
@@ -453,7 +453,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			for (FornitoreBean fornitoreBean : fornitoreBeanList) {
 				String codiceFornitore = fornitoreBean.getCodice();
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
-				String serviceApiLevel = PropertiesLoader.getApplicationProperties().getProperty("service_api_level");
+				String serviceApiLevel = config.getServiceApiLevel();
 				// && serviceApiLevel.equalsIgnoreCase("2005.001")
 				List<ArticoloInputBean> articles = null;
 				if(serviceApiLevel != null){

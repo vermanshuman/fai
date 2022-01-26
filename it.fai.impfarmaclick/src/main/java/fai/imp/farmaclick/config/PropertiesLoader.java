@@ -12,7 +12,7 @@ public class PropertiesLoader {
 
     static Logger logger = Logger.getLogger(PropertiesLoader.class);
 
-    public static Properties getApplicationProperties() {
+    public static Properties getApplicationProperties_delete() {
         Properties projectProperties = new Properties();
         try {
             InputStream is = PropertiesLoader.class
