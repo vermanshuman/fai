@@ -1,9 +1,12 @@
 package fai.imp.farmaclick.csv;
 
+import org.apache.log4j.Logger;
+
 import fai.common.csv.CsvException;
 import fai.common.util.CollectionsTool;
 
 public class CsvRecordFarmaclickV extends CsvFarmaclickCommons {
+  static Logger logger = Logger.getLogger(CsvRecordFarmaclickL.class);
   
   public static final String TIPO_RECORD = "V"; // Raggruppamenti Condizioni
 
@@ -36,7 +39,8 @@ public class CsvRecordFarmaclickV extends CsvFarmaclickCommons {
     String [] allowedValue = new String [] { DESTINAZIONE_ADDEBITO_DDT_O_FATTURA_ACCOMPAGNATORIA, DESTINAZIONE_ADDEBITO_FATTURA };
     String value = getString(true, 1, 1, true, "Azione");
     if (CollectionsTool.contains(value, allowedValue) == false) {
-      throw new CsvException("trovata Destinazione addebito "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      //throw new CsvException("trovata Destinazione addebito "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      logger.warn("trovata Destinazione addebito "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
     }
     return value;
   }
@@ -45,30 +49,47 @@ public class CsvRecordFarmaclickV extends CsvFarmaclickCommons {
     String [] allowedValue = new String [] { PERIODICITA_FATTURAZIONE_ACCOMPAGNATORIA, PERIODICITA_FATTURAZIONE_SETTIMANALE, PERIODICITA_FATTURAZIONE_QUINDICINALE, PERIODICITA_FATTURAZIONE_MENSILE };
     String value = getString(false, 42, 1);
     if (CollectionsTool.contains(value, allowedValue) == false) {
-      throw new CsvException("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      //throw new CsvException("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      logger.warn("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
     }
     return value;
   }
   
   public Double getImportoMassimoDaAddebitare() {
-    return getDouble(43, 53-44+1, nf4, true, "Importo massimo da addebitare. Oltre tale importo non viene più applicato l'addebito");
+	try {
+      return getDouble(43, 53-44+1, nf4, true, "Importo massimo da addebitare. Oltre tale importo non viene più applicato l'addebito");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getImportoMassimoDaAddebitare");
+	  return new Double(0);
+	}
   }
 
   public Integer getNumeroMassimiAddebiti() {
     Integer value = getInteger(53, 57-54+1, false);
     String destinazioneAddebito = getDestinazioneAddebito();
     if (value == null && DESTINAZIONE_ADDEBITO_FATTURA.equals(destinazioneAddebito)) {
-      throw new CsvException("trovata Numero massimi addebiti null non ammesso con Destinazione addebito "+destinazioneAddebito+" (riga: "+getLine()+")");
+      //throw new CsvException("trovata Numero massimi addebiti null non ammesso con Destinazione addebito "+destinazioneAddebito+" (riga: "+getLine()+")");
+      logger.warn("trovata Numero massimi addebiti null non ammesso con Destinazione addebito "+destinazioneAddebito+" (riga: "+getLine()+")");
     }
     return value;
   }
 
   public Double getImportoDaAddebitare() {
-    return getDouble(57, 68-58+1, nf4, true, "Importo da addebitare (Deve essere addebitato ad ogni documento)");
+	try {
+      return getDouble(57, 68-58+1, nf4, true, "Importo da addebitare (Deve essere addebitato ad ogni documento)");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getImportoDaAddebitare");
+	  return new Double(0);
+	}
   }
 
   public Double getPercentualeDiAddebitoSuImponibile() {
-    return getDouble(68, 72-69+1, nf2, true, "Percentuale di addebito su imponibile");
+	try {
+      return getDouble(68, 72-69+1, nf2, true, "Percentuale di addebito su imponibile");
+	}catch (Exception ex) {
+	  logger.warn("problema con parsing getPercentualeDiAddebitoSuImponibile");
+	  return new Double(0);
+	}
   }
 
   public String getFiller() {
