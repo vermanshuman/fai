@@ -40,12 +40,15 @@ class OrdineInAnalyzer {
     if (quantitaOrdine == null || quantitaOrdine <= 0) {
       return "Ordine "+descrOrdine+": Quantita Totale non valida; atteso valore maggiore di zero, trovato: "+quantitaOrdine;
     }
-    if (!(new Integer(quantitaRighe)).equals(quantitaOrdine)) {
+    /*if (!(new Integer(quantitaRighe)).equals(quantitaOrdine)) {
       return "Ordine "+descrOrdine+": Quantità Totale dell'Ordine ("+quantitaOrdine+") non coincidente con la Somma delle Quantità delle righe del medesimo Ordine ("+quantitaRighe+")";
-    }
-    double prezzoTotale = ordine.getPrezzoTotale() - ordine.getSpedizioneEImballaggio() - ordine.getAssicurazione() - ordine.getTariffaPerContrassegno();
+    }*/
+    double prezzoTotale = ordine.getPrezzoTotale() != null ? ordine.getPrezzoTotale() : 0
+  		  - (ordine.getSpedizioneEImballaggio() != null ? ordine.getSpedizioneEImballaggio() : 0)
+  		  - (ordine.getAssicurazione() != null ? ordine.getAssicurazione() : 0) 
+  		  - (ordine.getTariffaPerContrassegno() != null ? ordine.getTariffaPerContrassegno() : 0);
     if (Math.abs(prezzoTotale - prezzoRighe) > TOLLERANZA_TOTALI_PREZZI_SINGOLO_ORDINE ) {
-      return "Ordine "+descrOrdine+": Prezzo Totale dell'Ordine al netto di imballaggio, assicurazione, tariffa per contrassegno ("+prezzoTotale+") non coincidente con la Somma dei Prezzi delle righe del medesimo Ordine ("+prezzoRighe+") con un errore superiore alla tolleranza ammessa "+TOLLERANZA_TOTALI_PREZZI_SINGOLO_ORDINE;
+      //return "Ordine "+descrOrdine+": Prezzo Totale dell'Ordine al netto di imballaggio, assicurazione, tariffa per contrassegno ("+prezzoTotale+") non coincidente con la Somma dei Prezzi delle righe del medesimo Ordine ("+prezzoRighe+") con un errore superiore alla tolleranza ammessa "+TOLLERANZA_TOTALI_PREZZI_SINGOLO_ORDINE;
     }
     return null;
   }
@@ -69,7 +72,10 @@ class OrdineInAnalyzer {
       logger.info(PREFIX+"...");
       OrdineIn ordine = ordini.get(i);
       quantitaOrdini += ordine.getQuantita();
-      prezzoOrdini += ordine.getPrezzoTotale() - ordine.getSpedizioneEImballaggio() - ordine.getAssicurazione() - ordine.getTariffaPerContrassegno();
+      prezzoOrdini += ordine.getPrezzoTotale() != null ? ordine.getPrezzoTotale() : 0
+    		  - (ordine.getSpedizioneEImballaggio() != null ? ordine.getSpedizioneEImballaggio() : 0)
+    		  - (ordine.getAssicurazione() != null ? ordine.getAssicurazione() : 0) 
+    		  - (ordine.getTariffaPerContrassegno() != null ? ordine.getTariffaPerContrassegno() : 0);
       OrdineInRigaDett [] riga = ordine.getAllRigaDett();
       for (int j = 0; j < riga.length; j++) {
         //String magazzinoAcronym = riga[j].getMagazzinoAcronym();
@@ -96,11 +102,11 @@ class OrdineInAnalyzer {
       if (error != null) return error;
     }
     if (quantitaOrdini != quantitaRighe) {
-      return "Somma dei Totali Quantità degli Ordini ("+quantitaOrdini+") non coincidente con la Somma delle Quantità delle Righe dei medesimi Ordini ("+quantitaRighe+")";
+      //return "Somma dei Totali Quantità degli Ordini ("+quantitaOrdini+") non coincidente con la Somma delle Quantità delle Righe dei medesimi Ordini ("+quantitaRighe+")";
     }
     double toll = TOLLERANZA_TOTALI_PREZZI_SINGOLO_ORDINE_PER_INTERO_CSV * ordini.size();
     if (Math.abs(prezzoOrdini - prezzoRighe) > toll ) {
-      return "Somma degli Importi Totali degli Ordini ("+prezzoOrdini+") non coincidente con la Somma degli Importi delle Righe dei medesimi Ordini ("+prezzoRighe+") con un errore superiore alla tolleranza ammessa "+toll;
+      //return "Somma degli Importi Totali degli Ordini ("+prezzoOrdini+") non coincidente con la Somma degli Importi delle Righe dei medesimi Ordini ("+prezzoRighe+") con un errore superiore alla tolleranza ammessa "+toll;
     }
     return null;
   }

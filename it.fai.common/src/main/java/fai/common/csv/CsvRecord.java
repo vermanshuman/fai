@@ -266,6 +266,15 @@ public class CsvRecord {
   public boolean hasValues() {
       return csvLineParser.hasTokenList();
   }
+  
+  public void parseValuesData(String recordAsText) throws Exception {
+	    values = parseRecordData(recordAsText);
+	  }
+  
+  private List<String> parseRecordData(String recordAsText) throws Exception {
+      csvLineParser.parseData(recordAsText);
+      return csvLineParser.getAllTokens();
+  }
    
   
 
