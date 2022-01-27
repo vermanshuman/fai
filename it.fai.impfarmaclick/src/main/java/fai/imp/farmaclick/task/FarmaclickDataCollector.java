@@ -109,7 +109,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				if (errors.size() == 0)
 					logger.info(LOG_PREFIX + " "+fornitore.getCodice()+" download e registrazione dati in banca dati completata");
 				else
-					logger.error(LOG_PREFIX + " "+fornitore.getCodice()+" download e registrazione dati in banca dati non riuscita");
+					logger.warn(LOG_PREFIX + " "+fornitore.getCodice()+" download e registrazione dati in banca dati completata con errori");
 			}
 			catch (Throwable th) {
 				String msg = LOG_PREFIX + " "+fornitore.getCodice()+" download e registrazione dati in banca dati non riuscita causa eccezione "+th.getClass().getName()+" «"+th.getMessage()+"»; l'attività proseguirà col prossimo fornitore da processare";
@@ -192,8 +192,8 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		logger.info(LOG_PREFIX + "preparsing del csv alla ricerca di errori ...");
 		errors = doCollect_fornitore_csv2database(fornitore, true);
 		if (errors.size() > 0) {
-			logger.error(LOG_PREFIX + errors.size()+" errori di parsing del CSV riscontrati per questo fornitore; nessuna variazione alla banca dati");
-			return errors;
+			logger.warn(LOG_PREFIX + errors.size()+" errori di parsing del CSV riscontrati per questo fornitore");
+			//return errors;
 		}
 		//
 		doCollect_fornitore_csv2database(fornitore, false);

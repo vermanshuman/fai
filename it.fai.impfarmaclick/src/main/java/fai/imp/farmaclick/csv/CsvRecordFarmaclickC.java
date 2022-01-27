@@ -150,7 +150,7 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
   
   public String getAllineamentoScadenza() {
-    String [] allowedValue = new String [] { ALLINEAMENTO_SCADENZA_DATA_FATTURA, ALLINEAMENTO_SCADENZA_FINE_MESE, null };
+    String [] allowedValue = new String [] { ALLINEAMENTO_SCADENZA_DATA_FATTURA, ALLINEAMENTO_SCADENZA_FINE_MESE, " ", null };
     String value = on0LengthStringNull(getString(true, 210, 1));
     if (CollectionsTool.contains(value, allowedValue) == false) {
       //throw new CsvException("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
