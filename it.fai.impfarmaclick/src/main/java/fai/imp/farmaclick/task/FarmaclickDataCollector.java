@@ -234,6 +234,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			Timeout timeout = new Timeout(5000, false);
 			int recordsCount = 0;
 			while ((line = reader.readLine()) != null) {
+				boolean lineParserError = false;
 				//
 				// --- parsing del record ---
 				//
@@ -248,7 +249,9 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 						logger.error(LOG_PREFIX+e.getMessage());
 					}
 					else {
-						throw e;
+						//throw e;
+						logger.error(LOG_PREFIX+e.getMessage());
+						lineParserError = true;
 					}
 				}
 				//
@@ -261,7 +264,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				//
 				// --- altrimenti, se non in modalità parsing/verifica, registrazione in banca dati ---
 				//
-				else {
+				else if (!lineParserError){
 					Long oidFornitore = fornitore.getOid();
 					if (record instanceof CsvRecordFarmaclickA) {
 						CsvRecordFarmaclickA rec = (CsvRecordFarmaclickA)record;
@@ -291,8 +294,10 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 						CsvRecordFarmaclickZ rec = (CsvRecordFarmaclickZ)record;
 						SqlQueries.store(rec, oidFornitore, conn);
 					}
-					else
-						throw new IllegalStateException(LOG_PREFIX + "tipo di record non gestito " + record.getClass().getName());
+					else {
+						logger.error(LOG_PREFIX + "tipo di record non gestito " + record.getClass().getName());
+						//throw new IllegalStateException(LOG_PREFIX + "tipo di record non gestito " + record.getClass().getName());
+					}
 				}
 				recordsCount++;
 				if (timeout.isExpired()) logger.info(LOG_PREFIX+recordsCount+" record "+(preparseOnly ? "verificati" : "inseriti oppure aggiornati")+" ...");
