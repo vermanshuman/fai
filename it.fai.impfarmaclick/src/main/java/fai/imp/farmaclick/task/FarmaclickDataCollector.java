@@ -88,7 +88,9 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
 				DownloadListinoOutputBean dlob = ws.callDownloadListino(fornitoreBean, onlyVariationQueryType, config.isServiceQureyZippedContent());
 				if (dlob != null) {
-					SqlQueries.storeFornitore(fornitoreBean, false, cleanUrl(dlob.getUrlDownload()), cleanUrl(dlob.getUrlConfermaDownload()), conn);
+					SqlQueries.storeFornitore(
+							fornitoreBean, false, cleanUrl(dlob.getUrlDownload()),
+								cleanUrl(dlob.getUrlConfermaDownload()),config.getOid(), conn);
 				}
 				else {
 					logger.warn(LOG_PREFIX + " "+codiceFornitore+"; listino non trovato");
@@ -163,7 +165,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			downloadAt = Calendar.getInstance();
 			SqlQueries.setFornitoreCsvDownloadTimestamps(fornitore.getCodice(), downloadAt, downloadConfirmedAt, conn);
 			logger.info(LOG_PREFIX + "registrazione dell' "+InputStream.class.getName()+" in banca dati ...");
-			SqlQueries.setFornitoreCsvData(fornitore.getCodice(), is, config.isServiceQureyZippedContent(), conn);
+			SqlQueries.setFornitoreCsvData(fornitore.getCodice(), is, config.isServiceQureyZippedContent(), config.getOid(), conn);
 			fornitore.setLastCsvZipped(config.isServiceQureyZippedContent());
 			//
 			//  --- notifica completamento alla controparte --- 
@@ -217,13 +219,6 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				unzippedInputStream = SqlQueries.getFornitoreCsvData(fornitore.getCodice(), conn);
 			}
 			//
-			// --- se non in modalità parsing/verifica, cancellazione del Tipo Record "D"  ---
-			//     (Reset Campagne e Listino, "Se il grossista vuole effettuare un "reset" del listino, invia un tipo record "D" [...]") 
-			//
-			if (preparseOnly == false) {
-				SqlQueries.deleteAllCsvRecordFarmaclickD(fornitore.getOid(), conn);        
-			}
-			//
 			// --- parsing del csv ---
 			//
 			BufferedReader reader = new BufferedReader(new InputStreamReader(unzippedInputStream));
@@ -232,6 +227,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			Timeout timeout = new Timeout(5000, false);
 			int recordsCount = 0;
 			while ((line = reader.readLine()) != null) {
+				boolean lineParserError = false;
 				//
 				// --- parsing del record ---
 				//
@@ -246,7 +242,8 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 						logger.error(LOG_PREFIX+e.getMessage());
 					}
 					else {
-						throw e;
+						logger.error(LOG_PREFIX+e.getMessage());
+						lineParserError = true;
 					}
 				}
 				//
@@ -259,7 +256,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				//
 				// --- altrimenti, se non in modalità parsing/verifica, registrazione in banca dati ---
 				//
-				else {
+				else if (!lineParserError){
 					Long oidFornitore = fornitore.getOid();
 					if (record instanceof CsvRecordFarmaclickA) {
 						CsvRecordFarmaclickA rec = (CsvRecordFarmaclickA)record;
@@ -289,8 +286,10 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 						CsvRecordFarmaclickZ rec = (CsvRecordFarmaclickZ)record;
 						SqlQueries.store(rec, oidFornitore, conn);
 					}
-					else
-						throw new IllegalStateException(LOG_PREFIX + "tipo di record non gestito " + record.getClass().getName());
+					else {
+						logger.error(LOG_PREFIX + "tipo di record non gestito " + record.getClass().getName());
+						//throw new IllegalStateException(LOG_PREFIX + "tipo di record non gestito " + record.getClass().getName());
+					}
 				}
 				recordsCount++;
 				if (timeout.isExpired()) logger.info(LOG_PREFIX+recordsCount+" record "+(preparseOnly ? "verificati" : "inseriti oppure aggiornati")+" ...");

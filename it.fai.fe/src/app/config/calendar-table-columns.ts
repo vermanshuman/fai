@@ -1,25 +1,25 @@
 export const CALENDAR_TABLE_COLUMNS = [
     {
         name: 'Fornitore',
-        dataKey: 'supplier',
+        dataKey: 'oidSupplier',
         position: 'center',
         isSortable: true,
     },
     {
         name: 'Weekdays',
-        dataKey: 'weekdays',
+        dataKey: 'dayOfWeek',
         position: 'center',
         isSortable: true,
     },
     {
         name: 'Start time',
-        dataKey: 'start_hour',
+        dataKey: 'startHour',
         position: 'center',
         isSortable: true,
     },
     {
         name: 'End time',
-        dataKey: 'end_hour',
+        dataKey: 'endHour',
         position: 'center',
         isSortable: true,
     },

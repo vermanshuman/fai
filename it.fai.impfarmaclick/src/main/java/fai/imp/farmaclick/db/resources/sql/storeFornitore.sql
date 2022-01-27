@@ -34,7 +34,8 @@ WHEN
        ,LAST_CSV_CONFIRM_URL     
        ,LAST_CSV_CONFIRMED_AT_TS 
        ,NO_LONGER_EXISTS_TS      
-       ,ALL_DATA_STORED_TS       
+       ,ALL_DATA_STORED_TS
+       ,OID_CONFIG
     )
 	VALUES (
 	    OID.NEXTVAL
@@ -49,5 +50,6 @@ WHEN
        ,?LAST_CSV_CONFIRM_URL?     
        ,NULL 
        ,NULL      
-       ,NULL       
+       ,NULL
+      ,?OID_CONFIG?
     )

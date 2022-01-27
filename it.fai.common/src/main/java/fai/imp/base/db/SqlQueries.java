@@ -110,7 +110,7 @@ public class SqlQueries {
     return findFaiImportConfig(null, null, conn);
   }
 
-  private static List<FaiImportConfig> findFaiImportConfig(String acronym, Long oidConfig, Connection conn) throws Exception {
+  public static List<FaiImportConfig> findFaiImportConfig(String acronym, Long oidConfig, Connection conn) throws Exception {
     return findFaiImportConfig(acronym, oidConfig, null, conn);
   }
 
