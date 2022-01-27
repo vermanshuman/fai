@@ -54,6 +54,8 @@ public class FarmaclickDataCollectorApp {
     conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPass);
     conn.setAutoCommit(false);
     FaiImportConfig config = SqlQueries.getFaiImportConfig("FARMACLICK", conn);
+
+    System.out.println(config.getServiceApiLevel());
     FarmaclickDataCollector dataCollector = new FarmaclickDataCollector(config, conn);
     dataCollector.doCollectData();
 //

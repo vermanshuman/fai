@@ -88,7 +88,9 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
 				DownloadListinoOutputBean dlob = ws.callDownloadListino(fornitoreBean, onlyVariationQueryType, config.isServiceQureyZippedContent());
 				if (dlob != null) {
-					SqlQueries.storeFornitore(fornitoreBean, false, cleanUrl(dlob.getUrlDownload()), cleanUrl(dlob.getUrlConfermaDownload()), conn);
+					SqlQueries.storeFornitore(
+							fornitoreBean, false, cleanUrl(dlob.getUrlDownload()),
+								cleanUrl(dlob.getUrlConfermaDownload()),config.getOid(), conn);
 				}
 				else {
 					logger.warn(LOG_PREFIX + " "+codiceFornitore+"; listino non trovato");
@@ -163,7 +165,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			downloadAt = Calendar.getInstance();
 			SqlQueries.setFornitoreCsvDownloadTimestamps(fornitore.getCodice(), downloadAt, downloadConfirmedAt, conn);
 			logger.info(LOG_PREFIX + "registrazione dell' "+InputStream.class.getName()+" in banca dati ...");
-			SqlQueries.setFornitoreCsvData(fornitore.getCodice(), is, config.isServiceQureyZippedContent(), conn);
+			SqlQueries.setFornitoreCsvData(fornitore.getCodice(), is, config.isServiceQureyZippedContent(), config.getOid(), conn);
 			fornitore.setLastCsvZipped(config.isServiceQureyZippedContent());
 			//
 			//  --- notifica completamento alla controparte --- 

@@ -64,6 +64,30 @@ export class HomeComponent implements OnInit {
     calendarEndDate = '';
     products$: Observable<any[]> | undefined;
     productTableColumns: TableColumn[] = PRODUCT_TABLE_COLUMNS;
+    usedSuppliers = [
+        {
+            codice: 'DEMO03',
+            oid: 9
+        },
+        {
+            codice: '182560',
+            oid: 11
+        }
+    ];
+    savedCalendarRecords: any[] = [
+        {
+            dayOfWeek:  [1, 2, 3, 4, 5, 6, 7],
+            endHour: '13:15',
+            oidSupplier: 'DEMO03',
+            startHour: '12:16'
+        },
+        {
+            dayOfWeek:  [1, 2, ],
+            endHour: '14:16',
+            oidSupplier: '182560',
+            startHour: '12:16'
+        }
+    ];
 
     constructor(private formBuilder: FormBuilder,
                 private genericTaskService: GenericTaskService,
@@ -103,11 +127,13 @@ export class HomeComponent implements OnInit {
 
     initFtpConfigForm(): void {
         this.calendarRecords$ = of([]);
+        this.resetFtpConfigData();
         this.warehouseList = JSON.parse(JSON.stringify(this.allWarehouseList));
         this.supplierService.findAll().subscribe((data: any) => {
-            this.allSuppliers = this.suppliers = data.suppliers;
+            this.allSuppliers = data.suppliers;
+            this._prepareSuppliers();
+            this._prepareCalendarRecords();
         });
-        this.resetFtpConfigData();
         const timeArray = [];
         if (this.genericTask?.scheduleTimes) {
             this.hoursList = this.genericTask?.scheduleTimes.split(',');
@@ -149,6 +175,46 @@ export class HomeComponent implements OnInit {
         }
         this.ftpConfigForm?.get('magazinno')?.setValue(this.genericTask?.richProperties?.magazzino_acronym);
 
+    }
+
+    private _prepareCalendarRecords(): void {
+        const savedCalendarRecords = JSON.parse(JSON.stringify(this.savedCalendarRecords));
+        savedCalendarRecords?.forEach((cr: any) => {
+            const dayStrArr = [];
+            cr?.dayOfWeek?.forEach((dayNo: number) => {
+                console.log('dayNo', dayNo);
+                if (dayNo === 1) {
+                    dayStrArr.push('Sunday');
+                } else if (dayNo === 2) {
+                    dayStrArr.push('Monday');
+                } else if (dayNo === 3) {
+                    dayStrArr.push('Tuesday');
+                } else if (dayNo === 4) {
+                    dayStrArr.push('Wednesday');
+                } else if (dayNo === 5) {
+                    dayStrArr.push('Thursday');
+                } else if (dayNo === 6) {
+                    dayStrArr.push('Friday');
+                } else if (dayNo === 7) {
+                    dayStrArr.push('Saturday');
+                }
+            });
+            cr.dayOfWeek = dayStrArr?.toString()?.replace(/,[s]*/g, ', ');
+        });
+        this.calendarRecords$ = of(savedCalendarRecords);
+    }
+
+    private _prepareSuppliers(): void {
+        this.suppliers = [];
+        const allSuppliers = JSON.parse(JSON.stringify(this.allSuppliers));
+        this.usedSuppliers.forEach((su: Supplier) => {
+            allSuppliers.forEach((as: Supplier, index) => {
+                if (as.oid === su.oid) {
+                    allSuppliers.splice(index, 1);
+                }
+            });
+        });
+        this.suppliers = allSuppliers;
     }
 
     addTime(): void {
@@ -206,18 +272,38 @@ export class HomeComponent implements OnInit {
             }
         } else if (this.ftpModalTabset.tabs[1].active) {  // calendar tab(second tab)
             let calendarRecords = [];
-            this.calendarRecords$.subscribe((records: any) => {
-                calendarRecords = records;
-                console.log('calendarRecords' , calendarRecords);
-                const usedSuppliers = [];
-                calendarRecords.forEach((rec: any) => {
+            const usedSuppliers = [];
+            this.calendarRecords$.subscribe((calRecords: any) => {
+                const records = JSON.parse(JSON.stringify(calRecords));
+                records.forEach((rec: any) => {
                     this.allSuppliers.forEach((s: any) => {
-                        if (s.codice === rec.supplier) {
+                        if (s.codice === rec.oidSupplier) {
                             usedSuppliers.push(s);
                         }
                     });
+                    const dayArr = [];
+                    rec?.dayOfWeek.split(', ')?.forEach((day) => {
+                        if (day.includes('Sunday')) {
+                            dayArr.push(1);
+                        } else if (day.includes('Monday')) {
+                            dayArr.push(2);
+                        }  else if (day.includes('Tuesday')) {
+                            dayArr.push(3);
+                        }  else if (day.includes('Wednesday')) {
+                            dayArr.push(4);
+                        }  else if (day.includes('Thursday')) {
+                            dayArr.push(5);
+                        }  else if (day.includes('Friday')) {
+                            dayArr.push(6);
+                        }  else if (day.includes('Saturday')) {
+                            dayArr.push(7);
+                        }
+                    });
+                    rec.dayOfWeek = dayArr;
                 });
+                calendarRecords = JSON.parse(JSON.stringify(records));
                 console.log('usedSuppliers' , usedSuppliers);
+                console.log('calendarRecords' , calendarRecords);
             });
         }
     }
@@ -347,6 +433,7 @@ export class HomeComponent implements OnInit {
     onDaySelect(item: any): void {
         console.log(item);
     }
+
     onSelectAllDays(items: any): void {
         console.log(items);
     }
@@ -362,17 +449,17 @@ export class HomeComponent implements OnInit {
             calendarRecords = records;
         });
 
-        const duplicateIndex = calendarRecords.findIndex(w => w.supplier === this.selectedSupplier);
+        const duplicateIndex = calendarRecords.findIndex(w => w.oidSupplier === this.selectedSupplier);
 
         if (duplicateIndex >= 0 && this.selectedSupplier !== this.previousSelectedSupplier) {
             alert('already added this supplier');
         }  else {
             this.suppliers = this.suppliers.filter(w => w.codice !== this.selectedSupplier);
             const record = {
-                supplier: this.selectedSupplier,
-                weekdays: (this.selectedDays.map(this._getObjectKeyValue('item_text')))?.toString()?.replace(/,[s]*/g, ', '),
-                start_hour: this.calendarStartDate,
-                end_hour: this.calendarEndDate
+                oidSupplier: this.selectedSupplier,
+                dayOfWeek: (this.selectedDays.map(this._getObjectKeyValue('item_text')))?.toString()?.replace(/,[s]*/g, ', '),
+                startHour: this.calendarStartDate,
+                endHour: this.calendarEndDate
             };
             calendarRecords = [];
             this.calendarRecords$.subscribe((records: any) => {
@@ -392,7 +479,7 @@ export class HomeComponent implements OnInit {
     }
 
     onCalendarDeleteClick(event: any): void {
-        const removedSupplier = this.allSuppliers.filter(w => w.codice === event.suppllier);
+        const removedSupplier = this.allSuppliers.filter(w => w.codice === event.oidSupplier);
         if (removedSupplier.length > 0) {
             this.suppliers.unshift(removedSupplier[0]);
         }
@@ -400,16 +487,17 @@ export class HomeComponent implements OnInit {
         this.calendarRecords$.subscribe((records: any) => {
             calendarRecords = records;
         });
-        const index = calendarRecords.findIndex(w => w.supplier === event.supplier);
+        const index = calendarRecords.findIndex(w => w.oidSupplier === event.oidSupplier);
         if (index >= 0) {
             calendarRecords.splice(index, 1);
             this.calendarRecords$ = of(calendarRecords);
         }
     }
+
     onCalendarEditClick(event: any): void {
-        this.selectedSupplier = this.previousSelectedSupplier = event.supplier;
+        this.selectedSupplier = this.previousSelectedSupplier = event.oidSupplier;
         this.selectedDays = [];
-        event.weekdays.split(', ').forEach((day: any) => {
+        event.dayOfWeek.split(', ').forEach((day: any) => {
             const obj = {
                 item_id: day,
                 item_text: day
@@ -418,7 +506,7 @@ export class HomeComponent implements OnInit {
         });
         this.selectedDays = this.selectedDays.slice();
         this.isEdit = true;
-        const selRec = this.allSuppliers.filter(s => s.codice === event.supplier);
+        const selRec = this.allSuppliers.filter(s => s.codice === event.oidSupplier);
         if (selRec.length > 0) {
             this.suppliers.push(selRec[0]);
         }
@@ -448,6 +536,7 @@ export class HomeComponent implements OnInit {
         this.editCalendarRecordIndex = null;
         this.calendarStartDate = '';
         this.calendarEndDate = '';
+        this.calendarRecords$ = of([]);
     }
 
     onFileRowSelected(uploadTask: UploadTask): void {

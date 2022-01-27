@@ -104,7 +104,8 @@ public class SqlQueries {
   
   
   
-  public static void storeFornitore(FornitoreBean fb, boolean zippedContent, String urlDownload, String urlConferma, Connection conn) throws Exception {
+  public static void storeFornitore(FornitoreBean fb, boolean zippedContent, String urlDownload,
+                                    String urlConferma, Long oidConfig, Connection conn) throws Exception {
     final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
     logger.debug("method: " + METH_NAME);
     String sql = null;
@@ -118,6 +119,7 @@ public class SqlQueries {
       props.setProperty("LAST_CSV_DOWNLOAD_URL", SqlUtilities.getAsStringFieldValue(urlDownload));
       props.setProperty("LAST_CSV_CONFIRM_URL", SqlUtilities.getAsStringFieldValue(urlConferma));
       props.setProperty("LAST_CSV_ZIPPED", zippedContent ? "'S'" : "'N'");
+      props.setProperty("OID_CONFIG", Long.toString(oidConfig));
       sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "storeFornitore.sql", props);
       stmt = conn.createStatement();
       stmt.executeUpdate(sql);
@@ -212,7 +214,7 @@ public class SqlQueries {
   }
 
   
-  public static void setFornitoreCsvData(String codiceFornitore, InputStream data, boolean zippedData, Connection conn) throws Exception {
+  public static void setFornitoreCsvData(String codiceFornitore, InputStream data, boolean zippedData, Long oidConfig,  Connection conn) throws Exception {
     final String METH_NAME = new Object() {}.getClass().getEnclosingMethod().getName();
     final String LOG_PREFIX = METH_NAME + ": ";
     logger.info(LOG_PREFIX + "...");
@@ -223,7 +225,8 @@ public class SqlQueries {
       pstmt = conn.prepareStatement(sql);
       pstmt.setBlob(1, data);
       pstmt.setString(2, zippedData ? "S" : "N");
-      pstmt.setString(3,  codiceFornitore);
+      pstmt.setLong(3,  oidConfig);
+      pstmt.setString(4,  codiceFornitore);
       pstmt.executeUpdate();
     }
     catch (Throwable th) {
