@@ -219,13 +219,6 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				unzippedInputStream = SqlQueries.getFornitoreCsvData(fornitore.getCodice(), conn);
 			}
 			//
-			// --- se non in modalità parsing/verifica, cancellazione del Tipo Record "D"  ---
-			//     (Reset Campagne e Listino, "Se il grossista vuole effettuare un "reset" del listino, invia un tipo record "D" [...]") 
-			//
-			if (preparseOnly == false) {
-				SqlQueries.deleteAllCsvRecordFarmaclickD(fornitore.getOid(), conn);        
-			}
-			//
 			// --- parsing del csv ---
 			//
 			BufferedReader reader = new BufferedReader(new InputStreamReader(unzippedInputStream));
