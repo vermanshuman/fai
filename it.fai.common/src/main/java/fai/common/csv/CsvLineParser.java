@@ -248,11 +248,35 @@ class CsvLineParser {
     }
     
     public List<String> getAllTokens() {
-        if (hasTokenList() == false) return null;
+       // if (hasTokenList() == false) return null;
         //
         return tokens;
     }
     
+    public void parseData(String line) {
+        this.line = line;
+        //
+        if ("".equals(line) && multiline && insideString) {
+            tempToken.append("\r\n");
+            return;
+        }
+        //
+        if (multiline == false || (multiline == true && insideString == false)) {
+            tokens = new ArrayList<String>();
+            insideString  = false;
+        }
+        splitData();
+    }
     
-
+    private void splitData() {
+    	
+    	String[] data = line.split("\",");
+    	for(String value : data) {
+    		int index = value.indexOf("\"");
+    		value = value.substring(index + 1);
+    		tokens.add(value);
+    	}
+    	System.out.println(tokens);
+    }
+    
 }
