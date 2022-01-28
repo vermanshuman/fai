@@ -20,6 +20,8 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
 
     static Logger logger = Logger.getLogger(FarmaclickSupplierService.class);
 
+    private FaiImportConfig importConfig;
+    
     @Override
     public RequestMode getRequestMode() throws Exception {
         return Math.random() < 0.5 ? RequestMode.MoreProductOneRequest : RequestMode.OneProductOneRequest;
@@ -33,7 +35,24 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
 
     @Override
     protected void setupFornitore() throws Exception {
-        // TODO Auto-generated method stub
+    	if(fornitore != null){
+            try {
+                List<fai.imp.farmaclick.models.Fornitore> fornitores
+                        = SqlQueries.findAllFornitoreByCondition("WHERE CODICE = '" + fornitore.getCodice() + "'" , conn);
+                if(fornitores != null && !fornitores.isEmpty()){
+                    List<FaiImportConfig> faiImportConfigs =
+                            fai.imp.base.db.SqlQueries.findFaiImportConfig(null, fornitores.get(0).getOidConfig(), conn);
+                    if(faiImportConfigs != null && faiImportConfigs.size() > 0){
+                        setImportConfig(faiImportConfigs.get(0));
+                    }
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.info("Error in fetching fortinore");
+            }
+        }
+
 
     }
 
@@ -187,9 +206,8 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
-        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("FARMACLICK",  conn);
         AbstractDataCollector dataCollector =
-                new fai.imp.farmaclick.task.FarmaclickDataCollector(config, conn);
+                new fai.imp.farmaclick.task.FarmaclickDataCollector(this.importConfig, conn);
         return dataCollector.doGetAvailiblityData(products);
     }
 
@@ -198,9 +216,12 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
-        FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("FARMACLICK", conn);
         AbstractDataCollector dataCollector =
-                new fai.imp.farmaclick.task.FarmaclickDataCollector(config, conn);
+                new fai.imp.farmaclick.task.FarmaclickDataCollector(this.importConfig, conn);
         return dataCollector.doOrderProducts(products);
+    }
+    
+    public void setImportConfig(FaiImportConfig importConfig) {
+        this.importConfig = importConfig;
     }
 }

@@ -17,6 +17,7 @@ public class Fornitore extends AbstractModel {
   public static int LAST_CSV_CONFIRMED_AT_TS;
   public static int NO_LONGER_EXISTS_TS;
   public static int ALL_DATA_STORED_TS;
+  public static int OID_COMFIG;
 
   public static final Attribute[] attributes = buildAttributes(Fornitore.class, new Attribute[] { //@formatter:off
     new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -31,6 +32,7 @@ public class Fornitore extends AbstractModel {
     new Attribute("lastCsvConfirmedAtTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("noLongerExistsTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("allDataStoredTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("oidConfig", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
   }); //@formatter:on
 
 
@@ -160,6 +162,17 @@ public class Fornitore extends AbstractModel {
 
   public java.util.Calendar getAllDataStoredTs() {
     return getCalendar(ALL_DATA_STORED_TS);
+  }
+  
+  /**
+   * OID_CONFIG
+   **/
+  public boolean setOidConfig(Long oid) {
+    return setLong(OID_COMFIG, oid);
+  }
+
+  public Long getOidConfig() {
+    return getLong(OID_COMFIG);
   }
 
  //@formatter:on
