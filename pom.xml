@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.4.4</version>
+    <relativePath /> <!-- lookup parent from repository -->
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>it.fai</groupId>
+  <artifactId>fai-parent</artifactId>
+  <packaging>pom</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>FAI Parent</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <jdk.version>1.8</jdk.version>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>3.8.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>itswdes</groupId>
+      <artifactId>itswdes</artifactId>
+      <version>2.26.51</version>
+    </dependency>
+
+    <dependency>
+      <groupId>itswdes</groupId>
+      <artifactId>itswdesdatabase</artifactId>
+      <version>1.7.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>itswdes</groupId>
+      <artifactId>itswdesmodels</artifactId>
+      <version>2.16.42</version>
+    </dependency>
+
+    <dependency>
+      <groupId>itswdes</groupId>
+      <artifactId>itswdesdecrypt</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>itswdes</groupId>
+      <artifactId>itswdesencrypt</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>itswdes</groupId>
+      <artifactId>itswdeshttp</artifactId>
+      <version>2.7.8</version>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>3.8.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <modules>
+    <module>it.fai.common</module>
+    <module>it.fai.faiorainvmgr</module>
+    <module>it.fai.faimodels</module>
+    <module>it.fai.impcomifar</module>
+    <module>it.fai.impfarmaclick</module>
+    <module>it.fai.impfarmadati</module>
+    <module>it.fai.broker</module>
+    <module>it.fai.be</module>
+  </modules>
+
+</project>
