@@ -76,23 +76,7 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
       if(approv.getMagazzinoAcronym() != null) {
     	  magazzino = SqlQueries.getSelectedMagazzino(null, approv.getMagazzinoAcronym(), conn);
       }
-      if (CRITERIO_SELEZIONE_FARMACO == SelezionaFarmaco.PercheSupportatoDalMagazzino) {
-        //env.getAnagrafica().setProdotto(approv.getCodiceMinSan(), approv.getCodiceEan(), true);
-        if (env.getAnagrafica().isParafarmaco() == true && magazzino.isTipoFarmacoSuppported(TipoFarmaco.VALUE_PARAFARMACO)) {
-          supportedApprovToProcess.add(approv);
-        }
-        else if (env.getAnagrafica().isParafarmaco() == false && magazzino.isTipoFarmacoSuppported(TipoFarmaco.VALUE_FARMACO)) {
-          supportedApprovToProcess.add(approv);
-        }
-      //}
-      //else if (CRITERIO_SELEZIONE_FARMACO == SelezionaFarmaco.PercheMagazzinoIndicatoNellOrdine) {
-        //if (approv.getMagazzinoAcronym().equals(magazzino.getAcronym())) {
-          //supportedApprovToProcess.add(approv);
-        //}
-      }
-      else {
-        return "riscontrato problema algoritmico (\"bug\"): criterio non gestito: "+CRITERIO_SELEZIONE_FARMACO;
-      }
+      supportedApprovToProcess.add(approv);
     }
     
     SupplierService service = SupplierServiceFactory.getSupplierService(magazzino, conn);
