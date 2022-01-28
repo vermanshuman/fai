@@ -29,8 +29,8 @@ public class CsvRecordFieldsTester {
         try {
           Object o = m.invoke(record);
         }
-        catch (CsvException e) {
-          errors.add(e);
+        catch (Exception e) {
+          errors.add(new CsvException(e));
         }
         calledMethods++;
       }

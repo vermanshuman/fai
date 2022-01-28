@@ -1,9 +1,11 @@
 package fai.imp.farmaclick.csv;
 
+import org.apache.log4j.Logger;
+
 import fai.common.util.CollectionsTool;
 
 public class CsvRecordFarmaclickA extends CsvFarmaclickCommons {
-
+  static Logger logger = Logger.getLogger(CsvRecordFarmaclickA.class);
   public static final String TIPO_RECORD = "A"; // Addebito Finanziario
   
 
@@ -30,11 +32,21 @@ public class CsvRecordFarmaclickA extends CsvFarmaclickCommons {
   }
 
   public Double getPercentualeAddebitoFinanziario() {
-    return getDouble(37, 41-38+1, nf2, true, "Percentuale addebito finanziario");
+	try {
+	  return getDouble(37, 41-38+1, nf2, true, "Percentuale addebito finanziario");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getPercentualeAddebitoFinanziario");
+	  return new Double(0);
+	}
   }
 
   public Integer getNumeroGiorniAnnoCommerciale() {
-    return getInteger(41, 44-42+1, true, "Numero giorni anno commerciale");
+	try {
+      return getInteger(41, 44-42+1, true, "Numero giorni anno commerciale");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getNumeroGiorniAnnoCommerciale");
+	  return new Integer(0);
+	}
   }
 
   public String getFiller() {

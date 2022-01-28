@@ -319,7 +319,7 @@ public class SqlQueries {
 			// ID_VENDITA
 			stmt.setLong(++col, ordine.getIdVendita());
 			// ID_UTENTE
-			stmt.setLong(++col, ordine.getIdUtente());
+			stmt.setLong(++col, ordine.getIdUtente() == null ? 0 : ordine.getIdUtente());
 			// NOME_COMPLETO_ACQUIRENTE
 			SqlUtilities.setString(stmt, ++col, ordine.getNomeCompletoAcquirente());
 			// NUMERO_TELEFONO_ACQUIRENTE
@@ -343,9 +343,9 @@ public class SqlQueries {
 			// SPEDIZIONE_E_IMBALLAGGIO
 			stmt.setDouble(++col, ordine.getSpedizioneEImballaggio());
 			// ASSICURAZIONE
-			stmt.setDouble(++col, ordine.getAssicurazione());
+			stmt.setDouble(++col, ordine.getAssicurazione() == null ? 0.0 : ordine.getAssicurazione());
 			// TARIFFA_PER_CONTRASSEGNO
-			stmt.setDouble(++col, ordine.getTariffaPerContrassegno());
+			stmt.setDouble(++col, ordine.getTariffaPerContrassegno() == null ? 0.0 : ordine.getTariffaPerContrassegno());
 			// PREZZO_TOTALE
 			stmt.setDouble(++col, ordine.getPrezzoTotale());
 			// METODO_DI_PAGAMENTO

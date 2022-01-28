@@ -52,7 +52,12 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
 
   public Integer getSottosequenza() {
-    return getInteger(79, 81-80+1, true, "Sottosequenza");
+	try {
+      return getInteger(79, 81-80+1, true, "Sottosequenza");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getSottosequenza");
+	  return new Integer(0);
+	}
   }
 
   public Integer getQuantitaMassima() {
@@ -80,7 +85,12 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
 
   public Double getPrezzoDiVenditaLordoSconti() {
-    return getDouble(117, 128-118+1, nf4, true, "Prezzo di vendita lordo sconti");
+	try {
+      return getDouble(117, 128-118+1, nf4, true, "Prezzo di vendita lordo sconti");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getPrezzoDiVenditaLordoSconti");
+	  return new Double(0);
+	}
   }
 
   public String getFillerNonUtilizzato() {
@@ -100,11 +110,21 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
 
   public Integer getDilazionePagamentoInGiorni() {
-    return getInteger(193, 196-194+1, true, "Dilazione pagamento in giorni");
+	try {
+      return getInteger(193, 196-194+1, true, "Dilazione pagamento in giorni");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getDilazionePagamentoInGiorni");
+	  return new Integer(0);
+	}
   }
 
   public Integer getGiorniAbbuonoPerCalcoloAddebito() {
-    return getInteger(196, 199-197+1, true, "Giorni abbuono per il calcolo dell'addebito");
+	try {
+      return getInteger(196, 199-197+1, true, "Giorni abbuono per il calcolo dell'addebito");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getGiorniAbbuonoPerCalcoloAddebito");
+	  return new Integer(0);
+	}
   }
 
   public String getCodiceAddebito() {
@@ -112,18 +132,29 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
 
   public Double getPercentualeAddebitoAggiuntiva() {
-    return getDouble(202, 206-203+1, nf2, true, "Percentuale addebito aggiuntiva");
+	try {
+      return getDouble(202, 206-203+1, nf2, true, "Percentuale addebito aggiuntiva");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getPercentualeAddebitoAggiuntiva");
+	  return new Double(0);
+	}
   }
 
   public Double getScontoCassa() {
-    return getDouble(206, 210-207+1, nf2, true, "Sconto cassa");
+	try {
+      return getDouble(206, 210-207+1, nf2, true, "Sconto cassa");
+	}catch(Exception ex) {
+	  logger.warn("problema con parsing getScontoCassa");
+	  return new Double(0);
+	}
   }
   
   public String getAllineamentoScadenza() {
-    String [] allowedValue = new String [] { ALLINEAMENTO_SCADENZA_DATA_FATTURA, ALLINEAMENTO_SCADENZA_FINE_MESE, null };
+    String [] allowedValue = new String [] { ALLINEAMENTO_SCADENZA_DATA_FATTURA, ALLINEAMENTO_SCADENZA_FINE_MESE, " ", null };
     String value = on0LengthStringNull(getString(true, 210, 1));
     if (CollectionsTool.contains(value, allowedValue) == false) {
-      throw new CsvException("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      //throw new CsvException("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      logger.warn("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
     }
     return value;
   }
@@ -132,7 +163,8 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
     String [] allowedValue = new String [] { PERIODICITA_FATTURAZIONE_ACCOMPAGNATORIA, PERIODICITA_FATTURAZIONE_SETTIMANALE, PERIODICITA_FATTURAZIONE_QUINDICINALE, PERIODICITA_FATTURAZIONE_MENSILE };
     String value = getString(false, 211, 1);
     if (CollectionsTool.contains(value, allowedValue) == false) {
-      throw new CsvException("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      //throw new CsvException("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      logger.warn("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
     }
     return value;
   }
@@ -150,8 +182,7 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
       return getDouble(225, 233-226+1, nf6, true, "Percentuale sconto tra prezzo al pubblico e il prezzo netto unitario");
     }
     catch (CsvException e) {
-      if (WORKAROUNDS.isEnabledRecordC_getPercScontoPrezzoPubblicoVsNettoUnitario() == false) throw e;
-      logger.warn("**** ATTENZIONE! APPLICATO WORKAROUND PER METODO "+(new Object() {}.getClass().getEnclosingMethod().getName())+": QUESTO MESSAGGIO NON DEVE MAI COMPARIRE IN AMBIENTE DI PRODUZIONE!!! ****");
+      logger.warn("Problema parsing getPercScontoPrezzoPubblicoVsNettoUnitario");
       return new Double(0);
     }
 
@@ -162,8 +193,7 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
       return getDouble(233, 241-234+1, nf6, true, "Percentuale sconto tra prezzo al pubblico derivato e il prezzo netto unitario");
     }
     catch (CsvException e) {
-      if (WORKAROUNDS.isEnabledRecordC_getPercScontoPrezzoPubblicoDerivatoVsNettoUnitario() == false) throw e;
-      logger.warn("**** ATTENZIONE! APPLICATO WORKAROUND PER METODO "+(new Object() {}.getClass().getEnclosingMethod().getName())+": QUESTO MESSAGGIO NON DEVE MAI COMPARIRE IN AMBIENTE DI PRODUZIONE!!! ****");
+      logger.warn("Problema parsing getPercScontoPrezzoPubblicoDerivatoVsNettoUnitario");
       return new Double(0);
     }
     

@@ -18,16 +18,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import fai.imp.farmaclick.csv.*;
 import org.apache.log4j.Logger;
 
 import fai.common.db.SqlUtilities;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickA;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickC;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickD;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickL;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickR;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickV;
-import fai.imp.farmaclick.csv.CsvRecordFarmaclickZ;
 import fai.imp.farmaclick.models.Fornitore;
 import fai.imp.farmaclick.soap.api_2010_001.FCKLogin.FornitoreBean;
 
