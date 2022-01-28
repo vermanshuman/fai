@@ -16,15 +16,15 @@ import fai.common.csv.CsvRecord;
 import fai.common.util.ExceptionsTool;
 
 public class CsvToModels {
-  
+
 
   static Logger logger = Logger.getLogger(CsvToModels.class);
-  
-  
+
+
   public enum LineType { NONE, HEADER, ORDINE_IN, ORDINE_IN_RIGA_DETT, ORDINE_IN_PIU_RIGA_DETT };
-  
+
   private List<OrdineIn> ordini = new ArrayList<OrdineIn>();
-  
+
   private BufferedReader reader = null;
   private String line = null;
   private boolean waitingForHeader = true;
@@ -33,8 +33,8 @@ public class CsvToModels {
   private OrdineIn currLineOrdineIn = null;
   private OrdineInRigaDett currLineOrdineRigaDett = null;
   private int lineNumber = 0;
-  
-  
+
+
   public void setInputStream(InputStream is) throws Exception {
     reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1));
     csv = new CsvRecord();
@@ -42,13 +42,13 @@ public class CsvToModels {
     csv.setStringFormat('"', '"');
     csv.setDoubleNumberFormat(fai.common.util.NumberFormatFactory.newNumberFormat("####.##", ',', '\''));
     if(csv.getFieldSeparator().equals(","))
-    	csv.setDateFormat(new SimpleDateFormat("dd-MMM-yy"));
+      csv.setDateFormat(new SimpleDateFormat("dd-MMM-yy"));
     else
-    	csv.setDateFormat(new SimpleDateFormat("dd/MM/yyyy"));
+      csv.setDateFormat(new SimpleDateFormat("dd/MM/yyyy"));
     waitingForHeader = true;
     currentLineType = LineType.NONE;
   }
-  
+
   public boolean moveNextLine() throws Exception {
     line = reader.readLine();
     lineNumber++;
@@ -60,11 +60,11 @@ public class CsvToModels {
       return false;
     }
   }
-  
+
   public int getLineNumber() {
     return lineNumber;
   }
-  
+
   private Boolean asBoolean(CsvRecord csv, String fieldName, String trueValue, String falseValue) throws Exception {
     String value = csv.getString(fieldName, true, false);
     if (value == null) return null;
@@ -82,7 +82,7 @@ public class CsvToModels {
       }
       else if (falseValue.equals(value)) {
         return false;
-      } 
+      }
       else {
         throw new IllegalArgumentException("trovato valore non gestito per la determinazione del valore booleano del campo \""+fieldName+"\": "+value);
       }
@@ -91,7 +91,7 @@ public class CsvToModels {
       throw new IllegalArgumentException("condizione non ammessa per la determinazione del valore booleano del campo \""+fieldName+"\": almeno uno dei due valori indicanti la condizione true o la condizione false deve essere specificato");
     }
   }
-  
+
   private void parseLine() throws Exception {
     try {
       currentLineType = LineType.NONE;
@@ -110,28 +110,28 @@ public class CsvToModels {
       //
       Double prezzoFinale = null;
       if(csv.getFieldSeparator().equals(",")) {
-    	  csv.parseValuesData(line);
-    	  String prezzoFinaleString = csv.getString("Prezzo finale", true, false);
-    	  if(prezzoFinaleString.contains("EUR")) {
-    		  prezzoFinaleString = prezzoFinaleString.substring(4);
-    		  prezzoFinaleString = prezzoFinaleString.replace(",", ".");
-    		  prezzoFinale = Double.parseDouble(prezzoFinaleString);
-    	  }
+        csv.parseValuesData(line);
+        String prezzoFinaleString = csv.getString("Prezzo finale", true, false);
+        if(prezzoFinaleString.contains("EUR")) {
+          prezzoFinaleString = prezzoFinaleString.substring(4);
+          prezzoFinaleString = prezzoFinaleString.replace(",", ".");
+          prezzoFinale = Double.parseDouble(prezzoFinaleString);
+        }
       } else {
-    	  csv.parseValues(line);
-    	  prezzoFinale = csv.getDouble("Prezzo finale", true, false);
+        csv.parseValues(line);
+        prezzoFinale = csv.getDouble("Prezzo finale", true, false);
       }
-      
+
       Double prezzoTotale = null;
       if(csv.getFieldSeparator().equals(",")) {
-      	  String prezzoTotaleString = csv.getString("Prezzo totale", true, false);
-      	  if(prezzoTotaleString.contains("EUR")) {
-      		prezzoTotaleString = prezzoTotaleString.substring(4);
-      		prezzoTotaleString = prezzoTotaleString.replace(",", ".");
-      		prezzoTotale = Double.parseDouble(prezzoTotaleString);
-      	  }
+        String prezzoTotaleString = csv.getString("Prezzo totale", true, false);
+        if(prezzoTotaleString.contains("EUR")) {
+          prezzoTotaleString = prezzoTotaleString.substring(4);
+          prezzoTotaleString = prezzoTotaleString.replace(",", ".");
+          prezzoTotale = Double.parseDouble(prezzoTotaleString);
+        }
       } else {
-        	prezzoTotale = csv.getDouble("Prezzo totale", true, false);
+        prezzoTotale = csv.getDouble("Prezzo totale", true, false);
       }
       String nomeCompletoAcquirente = csv.getString("Nome completo dell'acquirente", true, false);
       boolean parseAsRigaTestata = (nomeCompletoAcquirente != null && !"".equals(nomeCompletoAcquirente.trim()));
@@ -153,31 +153,31 @@ public class CsvToModels {
         ordine.setCapAcquirente(csv.getString("CAP dell'acquirente", true, true));
         ordine.setPaeseAcquirente(csv.getString("Paese dell'acquirente", true, true));
         ordine.setQuantita(csv.getInteger("Quantit\u00E0", true, true));
-        
+
         if(csv.getFieldSeparator().equals(",")) {
-        	  String spedizioneString = csv.getString("Spedizione e imballaggio", true, true);
-        	  if(spedizioneString.contains("EUR")) {
-        		  spedizioneString = spedizioneString.substring(4);
-        		  spedizioneString = spedizioneString.replace(",", ".");
-        		  ordine.setSpedizioneEImballaggio(Double.parseDouble(spedizioneString));
-        	  } else {
-        		  ordine.setSpedizioneEImballaggio(Double.parseDouble(spedizioneString));
-        	  }
+          String spedizioneString = csv.getString("Spedizione e imballaggio", true, true);
+          if(spedizioneString.contains("EUR")) {
+            spedizioneString = spedizioneString.substring(4);
+            spedizioneString = spedizioneString.replace(",", ".");
+            ordine.setSpedizioneEImballaggio(Double.parseDouble(spedizioneString));
           } else {
-        	  ordine.setSpedizioneEImballaggio(csv.getDouble("Spedizione e imballaggio", true, true));
+            ordine.setSpedizioneEImballaggio(Double.parseDouble(spedizioneString));
           }
+        } else {
+          ordine.setSpedizioneEImballaggio(csv.getDouble("Spedizione e imballaggio", true, true));
+        }
         ordine.setAssicurazione(csv.getDouble("Assicurazione", true, false));
         ordine.setTariffaPerContrassegno(csv.getDouble("Tariffa per contrassegno", true, false));
-        
+
         if(csv.getFieldSeparator().equals(",")) {
-      	  String prezzoTotaleString = csv.getString("Prezzo totale", true, true);
-      	  if(prezzoTotaleString.contains("EUR")) {
-      		prezzoTotaleString = prezzoTotaleString.substring(4);
-      		prezzoTotaleString = prezzoTotaleString.replace(",", ".");
-      		ordine.setPrezzoTotale(Double.parseDouble(prezzoTotaleString));
-      	  }
+          String prezzoTotaleString = csv.getString("Prezzo totale", true, true);
+          if(prezzoTotaleString.contains("EUR")) {
+            prezzoTotaleString = prezzoTotaleString.substring(4);
+            prezzoTotaleString = prezzoTotaleString.replace(",", ".");
+            ordine.setPrezzoTotale(Double.parseDouble(prezzoTotaleString));
+          }
         } else {
-        	ordine.setPrezzoTotale(csv.getDouble("Prezzo totale", true, true));
+          ordine.setPrezzoTotale(csv.getDouble("Prezzo totale", true, true));
         }
         ordine.setMetodoDiPagamento(csv.getInteger("Metodo di pagamento", true, true));
         ordine.setDataDiVendita(csv.getDate("Data di vendita", true, true));
@@ -225,12 +225,12 @@ public class CsvToModels {
         String numeroOggetto = csv.getString("Numero oggetto", true, true);
         String etichettaPersonalizzata = csv.getString("Etichetta personalizzata", true, true);
         if(numeroOggetto != null && !numeroOggetto.isEmpty())
-        	riga.setNumeroOggetto(numeroOggetto);
+          riga.setNumeroOggetto(numeroOggetto);
         else
-        	riga.setNumeroOggetto(etichettaPersonalizzata);
+          riga.setNumeroOggetto(etichettaPersonalizzata);
         if(etichettaPersonalizzata != null && !etichettaPersonalizzata.isEmpty() && etichettaPersonalizzata.startsWith("P")) {
-        	riga.setCoupon(true);
-        	riga.setTitoloInserzione("Coupon");
+          riga.setCoupon(true);
+          riga.setTitoloInserzione("Coupon");
         }
         riga.setEtichettaPersonalizzata(etichettaPersonalizzata);
         riga.setQuantita(csv.getInteger("Quantit\u00E0", true, true));
@@ -241,15 +241,15 @@ public class CsvToModels {
         riga.setProductidvalue2(csv.getDouble("ProductIDValue-2", true, false));
         riga.setProductidvalue(csv.getDouble("ProductIDValue", true, false));
         riga.setDettagliVariazione(csv.getString("Dettagli variazione", true, false));
-        
+
         ordini.get(ordini.size()-1).addRigaDett(riga);
         currLineOrdineRigaDett = riga;
       }
-      
+
       if(!csv.getFieldSeparator().equals(",")) {
-    	  if (parseAsRigaTestata && parseAsRigaDettaglio) {
-    		  currentLineType = LineType.ORDINE_IN_PIU_RIGA_DETT;
-    	  }
+        if (parseAsRigaTestata && parseAsRigaDettaglio) {
+          currentLineType = LineType.ORDINE_IN_PIU_RIGA_DETT;
+        }
       }
     }
     catch (Throwable th) {
@@ -258,13 +258,13 @@ public class CsvToModels {
       throw new IllegalStateException(msg, th);
     }
   }
-  
+
   public LineType getLineType() {
     return currentLineType;
   }
-  
-  
-  
+
+
+
   public OrdineIn getCurrLineOrdineIn() {
     return currLineOrdineIn;
   }
@@ -276,8 +276,8 @@ public class CsvToModels {
   public List<OrdineIn> getOrdini() {
     return ordini;
   }
-  
-  
-  
+
+
+
 
 }
