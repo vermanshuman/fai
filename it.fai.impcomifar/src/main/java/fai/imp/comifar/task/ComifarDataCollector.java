@@ -370,7 +370,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 					if (!"OK".equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
 					if(disponibilita.getAvail() != null && disponibilita.getAvail().getAvailable() != null
 							&& disponibilita.getAvail().getAvailable().equalsIgnoreCase("S")) {
-						
+						/*
 						if(disponibilita.getAvail().getOffers() != null) {
 							List<Offer> offers = disponibilita.getAvail().getOffers().getOffers();
 							if(offers != null && !offers.isEmpty()) {
@@ -384,6 +384,8 @@ public class ComifarDataCollector extends AbstractDataCollector{
 									product.setAvailibility(Boolean.FALSE);
 							}
 						}
+						*/
+						product.setAvailibility(Boolean.TRUE);
 					}else {
 						product.setAvailibility(Boolean.FALSE);
 					}
