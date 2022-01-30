@@ -5,366 +5,326 @@ import it.swdes.models.*;
 public class FaiImportConfig extends AbstractModel {
 
 
-    public static int OID;
-    public static int ACRONYM;
-    public static int DESCR;
-    public static int IMPL_CLASS_NAME;
-    public static int SERVICE_LOGIN;
-    public static int SERVICE_PASS;
-    public static int SERVICE_PASS_ENCR;
-    public static int SERVICE_QUERY_TIME;
-    public static int SERVICE_QUERY_SMTWTFS;
-    public static int SERVICE_QUERY_URL;
-    public static int SERVICE_QUREY_ZIPPED_CONTENT;
-    public static int SERVICE_RESUME_PREV_SESSION;
-    public static int LAST_RUN_START_TS;
-    public static int LAST_RUN_END_TS;
-    public static int LAST_RUN_TYPE;
-    public static int LAST_RUN_DONE;
-    public static int LAST_RUN_DESCR;
-    public static int SERVICE_PASS_SECOND_LEVEL;
-    public static int SERVICE_API_LEVEL;
-
-    public static final Attribute[] attributes = buildAttributes(FaiImportConfig.class, new Attribute[]{ //@formatter:off
-            new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
-            new Attribute("acronym", null, String.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
-            new Attribute("descr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("implClassName", null, String.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
-            new Attribute("serviceLogin", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("servicePass", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("servicePassEncr", null, Boolean.class, Boolean.FALSE, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("serviceQueryTime", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("serviceQuerySMTWTFS", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("serviceQueryUrl", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("serviceQureyZippedContent", null, Boolean.class, Boolean.FALSE, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("serviceResumePrevSession", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("lastRunStartTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("lastRunEndTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("lastRunType", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("lastRunDone", null, Boolean.class, Boolean.FALSE, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("lastRunDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("serviceApiLevel", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("servicePassSecondLevel", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-
-    }); //@formatter:on
-
-
-    /**
-     * CONSTRUCTOR
-     **/
-    public FaiImportConfig() {
-    }
-
-
-    /**
-     * OID
-     **/
-    public boolean setOid(Long oid) {
-        return setLong(OID, oid);
-    }
-
-    public Long getOid() {
-        return getLong(OID);
-    }
-
-
-    /**
-     * ACRONYM
-     **/
-    public boolean setAcronym(String acronym) {
-        return setString(ACRONYM, acronym);
-    }
-
-    public String getAcronym() {
-        return getString(ACRONYM);
-    }
-
-
-    /**
-     * DESCR
-     **/
-    public boolean setDescr(String descr) {
-        return setString(DESCR, descr);
-    }
-
-    public String getDescr() {
-        return getString(DESCR);
-    }
-
-
-    /**
-     * IMPL_CLASS_NAME
-     **/
-    public boolean setImplClassName(String implClassName) {
-        return setString(IMPL_CLASS_NAME, implClassName);
-    }
-
-    public String getImplClassName() {
-        return getString(IMPL_CLASS_NAME);
-    }
-
-
-    /**
-     * SERVICE_LOGIN
-     **/
-    public boolean setServiceLogin(String serviceLogin) {
-        return setString(SERVICE_LOGIN, serviceLogin);
-    }
-
-    public String getServiceLogin() {
-        return getString(SERVICE_LOGIN);
-    }
-
-
-    /**
-     * SERVICE_PASS
-     **/
-    public boolean setServicePass(String servicePass) {
-        return setString(SERVICE_PASS, servicePass);
-    }
-
-    public String getServicePass() {
-        return getString(SERVICE_PASS);
-    }
-
-
-    /**
-     * SERVICE_PASS_ENCR
-     **/
-    public boolean setServicePassEncr(Boolean servicePassEncr) {
-        return setBoolean(SERVICE_PASS_ENCR, servicePassEncr);
-    }
-
-    public Boolean getServicePassEncr() {
-        return getBoolean(SERVICE_PASS_ENCR);
-    }
-
-    public boolean isServicePassEncr() {
-        return isBoolean(SERVICE_PASS_ENCR);
-    }
-
-
-    /**
-     * SERVICE_QUERY_TIME
-     **/
-    public boolean setServiceQueryTime(java.util.Calendar serviceQueryTime) {
-        return setCalendar(SERVICE_QUERY_TIME, serviceQueryTime);
-    }
-
-    public java.util.Calendar getServiceQueryTime() {
-        return getCalendar(SERVICE_QUERY_TIME);
-    }
-
-
-    /**
-     * SERVICE_QUERY_SMTWTFS
-     **/
-    public boolean setServiceQuerySMTWTFS(String serviceQuerySMTWTFS) {
-        return setString(SERVICE_QUERY_SMTWTFS, serviceQuerySMTWTFS);
-    }
-
-    public String getServiceQuerySMTWTFS() {
-        return getString(SERVICE_QUERY_SMTWTFS);
-    }
-
-
-    /**
-     * SERVICE_QUERY_URL
-     **/
-    public boolean setServiceQueryUrl(String serviceQueryUrl) {
-        return setString(SERVICE_QUERY_URL, serviceQueryUrl);
-    }
-
-    public String getServiceQueryUrl() {
-        return getString(SERVICE_QUERY_URL);
-    }
-
-
-    /**
-     * SERVICE_QUREY_ZIPPED_CONTENT
-     **/
-    public boolean setServiceQureyZippedContent(Boolean serviceQureyZippedContent) {
-        return setBoolean(SERVICE_QUREY_ZIPPED_CONTENT, serviceQureyZippedContent);
-    }
-
-    public Boolean getServiceQureyZippedContent() {
-        return getBoolean(SERVICE_QUREY_ZIPPED_CONTENT);
-    }
-
-    public boolean isServiceQureyZippedContent() {
-        return isBoolean(SERVICE_QUREY_ZIPPED_CONTENT);
-    }
-
-
-    /**
-     * SERVICE_RESUME_PREV_SESSION
-     **/
-    public boolean setServiceResumePrevSession(String serviceResumePrevSession) {
-        return setString(SERVICE_RESUME_PREV_SESSION, serviceResumePrevSession);
-    }
+  public static int OID;
+  public static int ACRONYM;
+  public static int DESCR;
+  public static int IMPL_CLASS_NAME;
+  public static int SERVICE_LOGIN;
+  public static int SERVICE_PASS;
+  public static int SERVICE_PASS_ENCR;
+  public static int SERVICE_QUERY_TIME;
+  public static int SERVICE_QUERY_SMTWTFS;
+  public static int SERVICE_QUERY_URL;
+  public static int SERVICE_QUREY_ZIPPED_CONTENT;
+  public static int SERVICE_RESUME_PREV_SESSION;
+  public static int LAST_RUN_START_TS;
+  public static int LAST_RUN_END_TS;
+  public static int LAST_RUN_TYPE;
+  public static int LAST_RUN_DONE;
+  public static int LAST_RUN_DESCR;
+  public static int SERVICE_PASS_SECOND_LEVEL;
+  public static int SERVICE_API_LEVEL;
+
+  public static final Attribute[] attributes = buildAttributes(FaiImportConfig.class, new Attribute[] { //@formatter:off
+    new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
+    new Attribute("acronym", null, String.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
+    new Attribute("descr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("implClassName", null, String.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
+    new Attribute("serviceLogin", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("servicePass", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("servicePassEncr", null, Boolean.class, Boolean.FALSE, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("serviceQueryTime", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("serviceQuerySMTWTFS", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("serviceQueryUrl", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("serviceQureyZippedContent", null, Boolean.class, Boolean.FALSE, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("serviceResumePrevSession", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("lastRunStartTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("lastRunEndTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("lastRunType", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("lastRunDone", null, Boolean.class, Boolean.FALSE, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("lastRunDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("serviceApiLevel", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION), new Attribute("servicePassSecondLevel", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+
+  }); //@formatter:on
+
+
+  /** CONSTRUCTOR **/
+  public FaiImportConfig() {
+  }
+
+
+  /** OID **/
+  public boolean setOid(Long oid) {
+    return setLong(OID, oid);
+  }
+
+  public Long getOid() {
+    return getLong(OID);
+  }
+
+
+  /** ACRONYM **/
+  public boolean setAcronym(String acronym) {
+    return setString(ACRONYM, acronym);
+  }
+
+  public String getAcronym() {
+    return getString(ACRONYM);
+  }
+
+
+  /** DESCR **/
+  public boolean setDescr(String descr) {
+    return setString(DESCR, descr);
+  }
+
+  public String getDescr() {
+    return getString(DESCR);
+  }
 
-    public String getServiceResumePrevSession() {
-        return getString(SERVICE_RESUME_PREV_SESSION);
-    }
+
+  /** IMPL_CLASS_NAME **/
+  public boolean setImplClassName(String implClassName) {
+    return setString(IMPL_CLASS_NAME, implClassName);
+  }
+
+  public String getImplClassName() {
+    return getString(IMPL_CLASS_NAME);
+  }
 
 
-    /**
-     * LAST_RUN_START_TS
-     **/
-    public boolean setLastRunStartTs(java.util.Calendar lastRunStartTs) {
-        return setCalendar(LAST_RUN_START_TS, lastRunStartTs);
-    }
+  /** SERVICE_LOGIN **/
+  public boolean setServiceLogin(String serviceLogin) {
+    return setString(SERVICE_LOGIN, serviceLogin);
+  }
 
-    public java.util.Calendar getLastRunStartTs() {
-        return getCalendar(LAST_RUN_START_TS);
-    }
+  public String getServiceLogin() {
+    return getString(SERVICE_LOGIN);
+  }
 
 
-    /**
-     * LAST_RUN_END_TS
-     **/
-    public boolean setLastRunEndTs(java.util.Calendar lastRunEndTs) {
-        return setCalendar(LAST_RUN_END_TS, lastRunEndTs);
-    }
+  /** SERVICE_PASS **/
+  public boolean setServicePass(String servicePass) {
+    return setString(SERVICE_PASS, servicePass);
+  }
 
-    public java.util.Calendar getLastRunEndTs() {
-        return getCalendar(LAST_RUN_END_TS);
-    }
+  public String getServicePass() {
+    return getString(SERVICE_PASS);
+  }
 
 
-    /**
-     * LAST_RUN_TYPE
-     **/
-    public boolean setLastRunType(String lastRunType) {
-        return setString(LAST_RUN_TYPE, lastRunType);
-    }
+  /** SERVICE_PASS_ENCR **/
+  public boolean setServicePassEncr(Boolean servicePassEncr) {
+    return setBoolean(SERVICE_PASS_ENCR, servicePassEncr);
+  }
 
-    public String getLastRunType() {
-        return getString(LAST_RUN_TYPE);
-    }
+  public Boolean getServicePassEncr() {
+    return getBoolean(SERVICE_PASS_ENCR);
+  }
 
+  public boolean isServicePassEncr() {
+    return isBoolean(SERVICE_PASS_ENCR);
+  }
 
-    /**
-     * LAST_RUN_DONE
-     **/
-    public boolean setLastRunDone(Boolean lastRunDone) {
-        return setBoolean(LAST_RUN_DONE, lastRunDone);
-    }
 
-    public Boolean getLastRunDone() {
-        return getBoolean(LAST_RUN_DONE);
-    }
+  /** SERVICE_QUERY_TIME **/
+  public boolean setServiceQueryTime(java.util.Calendar serviceQueryTime) {
+    return setCalendar(SERVICE_QUERY_TIME, serviceQueryTime);
+  }
 
-    public boolean isLastRunDone() {
-        return isBoolean(LAST_RUN_DONE);
-    }
+  public java.util.Calendar getServiceQueryTime() {
+    return getCalendar(SERVICE_QUERY_TIME);
+  }
 
 
-    /**
-     * LAST_RUN_DESCR
-     **/
-    public boolean setLastRunDescr(String lastRunDescr) {
-        return setString(LAST_RUN_DESCR, lastRunDescr);
-    }
+  /** SERVICE_QUERY_SMTWTFS **/
+  public boolean setServiceQuerySMTWTFS(String serviceQuerySMTWTFS) {
+    return setString(SERVICE_QUERY_SMTWTFS, serviceQuerySMTWTFS);
+  }
 
-    public String getLastRunDescr() {
-        return getString(LAST_RUN_DESCR);
-    }
+  public String getServiceQuerySMTWTFS() {
+    return getString(SERVICE_QUERY_SMTWTFS);
+  }
 
-    /**
-     * SERVICE_PASS_SECOND_LEVEL
-     **/
-    public boolean setServicePassSecondLevel(String servicePassSecondLevel) {
-        return setString(SERVICE_PASS_SECOND_LEVEL, servicePassSecondLevel);
-    }
 
-    public String getServicePassSecondLevel() {
-        return getString(SERVICE_PASS_SECOND_LEVEL);
-    }
+  /** SERVICE_QUERY_URL **/
+  public boolean setServiceQueryUrl(String serviceQueryUrl) {
+    return setString(SERVICE_QUERY_URL, serviceQueryUrl);
+  }
 
+  public String getServiceQueryUrl() {
+    return getString(SERVICE_QUERY_URL);
+  }
 
-    /**
-     * SERVICE_API_LEVEL
-     **/
-    public boolean setServiceApiLevel(String serviceAPiLevel) {
-        return setString(SERVICE_API_LEVEL, serviceAPiLevel);
-    }
 
-    public String getServiceApiLevel() {
-        return getString(SERVICE_API_LEVEL);
-    }
+  /** SERVICE_QUREY_ZIPPED_CONTENT **/
+  public boolean setServiceQureyZippedContent(Boolean serviceQureyZippedContent) {
+    return setBoolean(SERVICE_QUREY_ZIPPED_CONTENT, serviceQureyZippedContent);
+  }
 
+  public Boolean getServiceQureyZippedContent() {
+    return getBoolean(SERVICE_QUREY_ZIPPED_CONTENT);
+  }
 
-    //@formatter:on
+  public boolean isServiceQureyZippedContent() {
+    return isBoolean(SERVICE_QUREY_ZIPPED_CONTENT);
+  }
 
 
-    //@formatter:on
+  /** SERVICE_RESUME_PREV_SESSION **/
+  public boolean setServiceResumePrevSession(String serviceResumePrevSession) {
+    return setString(SERVICE_RESUME_PREV_SESSION, serviceResumePrevSession);
+  }
 
+  public String getServiceResumePrevSession() {
+    return getString(SERVICE_RESUME_PREV_SESSION);
+  }
 
-    //@formatter:on
 
+  /** LAST_RUN_START_TS **/
+  public boolean setLastRunStartTs(java.util.Calendar lastRunStartTs) {
+    return setCalendar(LAST_RUN_START_TS, lastRunStartTs);
+  }
 
-    //@formatter:on
+  public java.util.Calendar getLastRunStartTs() {
+    return getCalendar(LAST_RUN_START_TS);
+  }
 
 
-    //@formatter:on
+  /** LAST_RUN_END_TS **/
+  public boolean setLastRunEndTs(java.util.Calendar lastRunEndTs) {
+    return setCalendar(LAST_RUN_END_TS, lastRunEndTs);
+  }
 
+  public java.util.Calendar getLastRunEndTs() {
+    return getCalendar(LAST_RUN_END_TS);
+  }
 
-    //@formatter:on
 
+  /** LAST_RUN_TYPE **/
+  public boolean setLastRunType(String lastRunType) {
+    return setString(LAST_RUN_TYPE, lastRunType);
+  }
 
-    //@formatter:on
+  public String getLastRunType() {
+    return getString(LAST_RUN_TYPE);
+  }
 
 
-    //@formatter:on
+  /** LAST_RUN_DONE **/
+  public boolean setLastRunDone(Boolean lastRunDone) {
+    return setBoolean(LAST_RUN_DONE, lastRunDone);
+  }
 
+  public Boolean getLastRunDone() {
+    return getBoolean(LAST_RUN_DONE);
+  }
 
-    //@formatter:on
+  public boolean isLastRunDone() {
+    return isBoolean(LAST_RUN_DONE);
+  }
 
 
-    //@formatter:on
+  /** LAST_RUN_DESCR **/
+  public boolean setLastRunDescr(String lastRunDescr) {
+    return setString(LAST_RUN_DESCR, lastRunDescr);
+  }
 
+  public String getLastRunDescr() {
+    return getString(LAST_RUN_DESCR);
+  }
+  
+  /** SERVICE_PASS_SECOND_LEVEL **/
+  public boolean setServicePassSecondLevel(String servicePassSecondLevel) {
+    return setString(SERVICE_PASS_SECOND_LEVEL, servicePassSecondLevel);
+  }
 
-    //@formatter:on
+  public String getServicePassSecondLevel() {
+    return getString(SERVICE_PASS_SECOND_LEVEL);
+  }
 
 
-    //@formatter:on
+  /** SERVICE_API_LEVEL **/
+  public boolean setServiceApiLevel(String serviceAPiLevel) {
+    return setString(SERVICE_API_LEVEL, serviceAPiLevel);
+  }
 
+  public String getServiceApiLevel() {
+    return getString(SERVICE_API_LEVEL);
+  }
 
-    //@formatter:on
 
+  //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
 
+ //@formatter:on
 
-    //@formatter:on
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
+
+ //@formatter:on
+
 
 
 }

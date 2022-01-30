@@ -1,14 +1,14 @@
 MERGE INTO FAI_FARMACLICK_FORNITORE
-    USING (
-        SELECT ?CODICE? CODICE
-        FROM DUAL
-    ) IDENTIFIER
-    ON
-        (FAI_FARMACLICK_FORNITORE.CODICE = IDENTIFIER.CODICE)
-    WHEN
-        MATCHED THEN
-        UPDATE SET
-            CODICE_SITO_LOGISTICO = ?CODICE_SITO_LOGISTICO?
+USING (
+	SELECT ?CODICE? CODICE FROM DUAL
+
+) IDENTIFIER
+ON 
+    (FAI_FARMACLICK_FORNITORE.CODICE = IDENTIFIER.CODICE)
+WHEN 
+    MATCHED THEN
+	UPDATE SET
+        CODICE_SITO_LOGISTICO    = ?CODICE_SITO_LOGISTICO? 
        ,DESCRIZIONE_BREVE        = ?DESCRIZIONE_BREVE? 
        ,LAST_CSV                 = NULL
        ,LAST_CSV_ZIPPED          = ?LAST_CSV_ZIPPED?
@@ -39,17 +39,17 @@ WHEN
     )
 	VALUES (
 	    OID.NEXTVAL
-	   ,?CODICE?
-       ,?CODICE_SITO_LOGISTICO?
-       ,?DESCRIZIONE_BREVE?
-       ,NULL
+	   ,?CODICE?                   
+       ,?CODICE_SITO_LOGISTICO?    
+       ,?DESCRIZIONE_BREVE?   
+       ,NULL       
        ,?LAST_CSV_ZIPPED?
-       ,NULL
-       ,?LAST_CSV_DOWNLOAD_URL?
-       ,NULL
-       ,?LAST_CSV_CONFIRM_URL?
-       ,NULL
-       ,NULL
+       ,NULL        
+       ,?LAST_CSV_DOWNLOAD_URL?    
+       ,NULL  
+       ,?LAST_CSV_CONFIRM_URL?     
+       ,NULL 
+       ,NULL      
        ,NULL
       ,?OID_CONFIG?
     )

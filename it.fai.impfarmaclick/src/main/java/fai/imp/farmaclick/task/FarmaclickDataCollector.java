@@ -193,7 +193,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		errors = doCollect_fornitore_csv2database(fornitore, true);
 		if (errors.size() > 0) {
 			logger.warn(LOG_PREFIX + errors.size()+" errori di parsing del CSV riscontrati per questo fornitore");
-			// return errors;
+			//return errors;
 		}
 		//
 		doCollect_fornitore_csv2database(fornitore, false);
@@ -242,6 +242,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 						logger.error(LOG_PREFIX+e.getMessage());
 					}
 					else {
+						//throw e;
 						logger.error(LOG_PREFIX+e.getMessage());
 						lineParserError = true;
 					}
