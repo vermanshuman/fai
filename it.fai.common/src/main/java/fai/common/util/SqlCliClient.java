@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.logging.Log;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 
@@ -77,7 +78,7 @@ public class SqlCliClient {
       rs = stmt.executeQuery(sql);
     }
     catch (SQLException e) {
-      System.out.println(e.getClass().getName()+", «"+e.getMessage()+"»");
+      System.out.println(e.getClass().getName()+", ï¿½"+e.getMessage()+"ï¿½");
       stmt.close();
       if (rs != null) rs.close();
       return;
@@ -215,7 +216,7 @@ public class SqlCliClient {
   }
   
   public void execute(String sql) throws Exception {
-    execute(sql, org.apache.log4j.Level.DEBUG);
+    execute(sql, Level.DEBUG);
   }
   
   public void execute(String sql, org.apache.log4j.Level toLog) throws Exception {

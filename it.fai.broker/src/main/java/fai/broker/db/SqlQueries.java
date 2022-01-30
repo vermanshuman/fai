@@ -2730,7 +2730,7 @@ public class SqlQueries {
 		return list;
 
 	}
-	
+
 	public static List<fai.imp.farmaclick.models.Fornitore> findAllFornitoreByCondition(String whereCondition, Connection conn) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
@@ -2764,7 +2764,7 @@ public class SqlQueries {
 			}
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			String msg = "Eccezione " + th.getClass().getName() + ", Â«" + th.getMessage() + "Â» nell'esecuzione del metodo " + METH_NAME;
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2775,6 +2775,5 @@ public class SqlQueries {
 		return list;
 
 	}
-
 
 }
