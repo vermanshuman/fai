@@ -34,7 +34,8 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
 
     @Override
     protected void setupFornitore() throws Exception {
-    	if(fornitore != null){
+        // TODO Auto-generated method stub
+        if(fornitore != null){
             try {
                 List<fai.imp.farmaclick.models.Fornitore> fornitores
                         = SqlQueries.findAllFornitoreByCondition("WHERE CODICE = '" + fornitore.getCodice() + "'" , conn);
@@ -44,14 +45,6 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                     if(faiImportConfigs != null && faiImportConfigs.size() > 0){
                         setImportConfig(faiImportConfigs.get(0));
                     }
-
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.info("Error in fetching fortinore");
-            }
-        }
-
 
                 }
             } catch (Exception e) {
@@ -225,7 +218,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                 new fai.imp.farmaclick.task.FarmaclickDataCollector(this.importConfig, conn);
         return dataCollector.doOrderProducts(products);
     }
-    
+
     public void setImportConfig(FaiImportConfig importConfig) {
         this.importConfig = importConfig;
     }
