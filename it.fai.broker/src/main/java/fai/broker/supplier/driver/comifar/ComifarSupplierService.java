@@ -21,7 +21,8 @@ public class ComifarSupplierService extends AbstractSupplierService {
 
     @Override
     public RequestMode getRequestMode() throws Exception {
-        return Math.random() < 0.5 ? RequestMode.MoreProductOneRequest : RequestMode.OneProductOneRequest;
+        //return RequestMode.MoreProductOneRequest;
+        return RequestMode.OneProductOneRequest;
     }
 
     @Override

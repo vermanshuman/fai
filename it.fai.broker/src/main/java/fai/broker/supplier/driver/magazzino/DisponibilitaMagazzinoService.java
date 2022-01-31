@@ -187,9 +187,8 @@ public class DisponibilitaMagazzinoService extends AbstractSupplierService {
     }
 
     public RequestMode getRequestMode() throws Exception {
-        //
-        // random... così le provo entrambe!
-        return Math.random() < 0.5 ? RequestMode.MoreProductOneRequest : RequestMode.OneProductOneRequest;
+        //return RequestMode.MoreProductOneRequest;
+        return RequestMode.OneProductOneRequest;
     }
 
     @Override

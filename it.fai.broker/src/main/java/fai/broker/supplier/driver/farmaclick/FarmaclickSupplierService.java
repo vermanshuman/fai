@@ -14,16 +14,18 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FarmaclickSupplierService extends AbstractSupplierService {
 
     static Logger logger = Logger.getLogger(FarmaclickSupplierService.class);
 
     private FaiImportConfig importConfig;
-
+    
     @Override
     public RequestMode getRequestMode() throws Exception {
-        return Math.random() < 0.5 ? RequestMode.MoreProductOneRequest : RequestMode.OneProductOneRequest;
+        return RequestMode.MoreProductOneRequest;
+        //return RequestMode.OneProductOneRequest;
     }
 
     @Override
@@ -34,8 +36,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
 
     @Override
     protected void setupFornitore() throws Exception {
-        // TODO Auto-generated method stub
-        if(fornitore != null){
+    	if(fornitore != null){
             try {
                 List<fai.imp.farmaclick.models.Fornitore> fornitores
                         = SqlQueries.findAllFornitoreByCondition("WHERE CODICE = '" + fornitore.getCodice() + "'" , conn);
@@ -52,6 +53,8 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                 logger.info("Error in fetching fortinore");
             }
         }
+
+
     }
 
     @Override
@@ -84,8 +87,8 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
             DisponibilitaReqTemp[] req = fabb.getAllReq();
 
             List<ProductBean> products = getProductAvailability(Arrays.stream(req)
-                    .map(r -> new ProductBean(r.getCodiceMinSan(), r.getQuantitaRichiesta()))
-                    .collect(Collectors.toList()));
+                            .map(r -> new ProductBean(r.getCodiceMinSan(), r.getQuantitaRichiesta()))
+                            .collect(Collectors.toList()));
 
             for (int i = 0; i < req.length; i++) {
                 int quantitaDisponibile = 0;
@@ -131,15 +134,15 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
         logger.info(LOG_PREFIX + "...");
 
         List<ProcessedOrderBean> processedOrders = orderProducts(approvvigionamento
-                .stream()
-                .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
-                .collect(Collectors.toList()));
+                        .stream()
+                        .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
+                        .collect(Collectors.toList()));
 
         OrdineOut ordineOut = new OrdineOut();
         ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
-        if (approvvigionamento != null && approvvigionamento.size() > 0)
+        if(approvvigionamento != null && approvvigionamento.size() > 0)
             ordineOut.setFornitore(approvvigionamento.get(0).getFornitore());
-        if (processedOrders != null && !processedOrders.isEmpty()) {
+        if(processedOrders != null && !processedOrders.isEmpty()){
             ordineOut.setIdOrdine(processedOrders.get(0).getNumeroOrdineFornitore());
             ordineOut.setIdRicevuta(processedOrders.get(0).getIdVendita());
         }
@@ -163,13 +166,13 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                 if (matchedProduct.get().getMissingQuantity() != null &&
                         matchedProduct.get().getMissingQuantity() > 0) {
                     ApprovvigionamentoFarmaco approvvigionamentoFarmaco = SqlQueries.checkMissingApprovvigionamentoFarmaco(codiceMinsan, conn);
-                    if (approvvigionamentoFarmaco == null) {
+                    if(approvvigionamentoFarmaco == null){
                         approvvigionamentoFarmaco.setQuantita(matchedProduct.get().getMissingQuantity());
                         approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
                         approvvigionamentoFarmaco.setStatus(StatusInfo.newToProcessInstance(null, null));
                         approvvigionamentoFarmaco.setMagazzinoAcronym(appr.getMagazzinoAcronym());
                         SqlQueries.insertApprovvigionamentoFarmaco(approvvigionamentoFarmaco, conn);
-                    } else {
+                    }else {
                         Integer updatedQuantity = approvvigionamentoFarmaco.getQuantita() + matchedProduct.get().getMissingQuantity();
                         approvvigionamentoFarmaco.setQuantita(updatedQuantity);
                         approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
@@ -218,7 +221,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                 new fai.imp.farmaclick.task.FarmaclickDataCollector(this.importConfig, conn);
         return dataCollector.doOrderProducts(products);
     }
-
+    
     public void setImportConfig(FaiImportConfig importConfig) {
         this.importConfig = importConfig;
     }

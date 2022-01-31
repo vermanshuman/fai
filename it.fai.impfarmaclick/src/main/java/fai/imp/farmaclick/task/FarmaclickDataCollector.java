@@ -37,7 +37,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 
 	static Logger logger = Logger.getLogger(FarmaclickDataCollector.class);
 
-	static final boolean DEBUG_DO_NOT_CONFIRM_DOWNLOAD = true; // perché sennò otterrò sempre zero differenze se scarico le variazioni 
+	static final boolean DEBUG_DO_NOT_CONFIRM_DOWNLOAD = false; // perché sennò otterrò sempre zero differenze se scarico le variazioni 
 
 	private Http http = null;
 	private FarmaclickWS ws = null;
@@ -101,7 +101,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		//
 		// --- Fornitori: recupero dei fornitori per i quali va scaricato il listino ---
 		//
-		List<Fornitore> fornitori = SqlQueries.findAllFornitoreWithoutDataAlreadyStored(conn);
+		List<Fornitore> fornitori = SqlQueries.findAllFornitoreFromConfig(conn,config.getOid());
 		for (Fornitore fornitore : fornitori) {
 			try {
 				logger.info(LOG_PREFIX + " "+fornitore.getCodice()+" download e registrazione dati in banca dati ...");
@@ -177,7 +177,10 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				logger.info(LOG_PREFIX + "notifica acquisizione dell'"+InputStream.class.getName()+" completata all'apposito url di conferma ...");
 				is = http.getInputStreamGET(urConfirmation);
 				if (is != null) is.close(); // lo chiudo subito, perché non mi serve
-				if (http.getLastHttpResult() != 200) throw new IllegalStateException(LOG_PREFIX+"download non riuscito, errore HTTP "+http.getLastHttpResult());
+				if (http.getLastHttpResult() != 200) {
+					//throw new IllegalStateException(LOG_PREFIX+"download non riuscito, errore HTTP "+http.getLastHttpResult());
+					logger.warn(LOG_PREFIX+"conferma downaload listino non riuscita, errore HTTP "+http.getLastHttpResult());
+				}
 			}
 			downloadConfirmedAt = Calendar.getInstance();
 			SqlQueries.setFornitoreCsvDownloadTimestamps(fornitore.getCodice(), downloadAt, downloadConfirmedAt, conn);
@@ -193,7 +196,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		errors = doCollect_fornitore_csv2database(fornitore, true);
 		if (errors.size() > 0) {
 			logger.warn(LOG_PREFIX + errors.size()+" errori di parsing del CSV riscontrati per questo fornitore");
-			// return errors;
+			//return errors;
 		}
 		//
 		doCollect_fornitore_csv2database(fornitore, false);
@@ -242,6 +245,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 						logger.error(LOG_PREFIX+e.getMessage());
 					}
 					else {
+						//throw e;
 						logger.error(LOG_PREFIX+e.getMessage());
 						lineParserError = true;
 					}
@@ -391,7 +395,11 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 					for(int a = 0; a < daob.getArrayArticoli().length; a++) {
 						ArticoloOutputBean articoloOutputBean = daob.getArrayArticoli()[a];
 						ProductBean productBean = new ProductBean();
-						productBean.setProductCode(articoloOutputBean.getCodiceProdotto());
+						if (articoloOutputBean.getCodiceProdottoSostituito()!=null) {
+							productBean.setProductCode(articoloOutputBean.getCodiceProdottoSostituito());
+						}else {
+							productBean.setProductCode(articoloOutputBean.getCodiceProdotto());
+						}
 						productBean.setAvailibility(articoloOutputBean.getQuantitaConsegnata() > 0 ? 
 								Boolean.TRUE : Boolean.FALSE);
 						productBean.setQuantity(articoloOutputBean.getQuantitaConsegnata());

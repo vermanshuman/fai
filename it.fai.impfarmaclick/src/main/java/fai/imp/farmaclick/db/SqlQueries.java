@@ -18,10 +18,17 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import fai.imp.farmaclick.csv.*;
 import org.apache.log4j.Logger;
 
 import fai.common.db.SqlUtilities;
+import fai.imp.farmaclick.csv.CsvFarmaclickCommons;
+import fai.imp.farmaclick.csv.CsvRecordFarmaclickA;
+import fai.imp.farmaclick.csv.CsvRecordFarmaclickC;
+import fai.imp.farmaclick.csv.CsvRecordFarmaclickD;
+import fai.imp.farmaclick.csv.CsvRecordFarmaclickL;
+import fai.imp.farmaclick.csv.CsvRecordFarmaclickR;
+import fai.imp.farmaclick.csv.CsvRecordFarmaclickV;
+import fai.imp.farmaclick.csv.CsvRecordFarmaclickZ;
 import fai.imp.farmaclick.models.Fornitore;
 import fai.imp.farmaclick.soap.api_2010_001.FCKLogin.FornitoreBean;
 
@@ -159,8 +166,8 @@ public class SqlQueries {
   }
 
 
-  public static List<Fornitore> findAllFornitoreWithoutDataAlreadyStored(Connection conn) throws Exception {
-    return findAllFornitoreByCondition("WHERE ALL_DATA_STORED_TS IS NULL", conn);
+  public static List<Fornitore> findAllFornitoreFromConfig(Connection conn, long configOid) throws Exception {
+    return findAllFornitoreByCondition("WHERE OID_CONFIG=" + configOid, conn);
   }
 
   private static List<Fornitore> findAllFornitoreByCondition(String whereCondition, Connection conn) throws Exception {
@@ -337,12 +344,12 @@ public class SqlQueries {
       params.setProperty("PERC_ADDEBITO_FINANZ", ""+record.getPercentualeAddebitoFinanziario());
       params.setProperty("NUM_GIORNI_ANNO_COMM", ""+record.getNumeroGiorniAnnoCommerciale());
       switch (record.getAzione()) {
-        case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
-          sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickA.sql", params);
-          break;
-        default:
-          sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateCsvRecordFarmaclickA.sql", params);
-          break;
+      	case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
+            sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickA.sql", params);
+      		break;
+      	default:
+            sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateCsvRecordFarmaclickA.sql", params);
+      		break;
       }
       stmt = conn.createStatement();
       stmt.executeUpdate(sql);
@@ -350,7 +357,7 @@ public class SqlQueries {
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
-//      throw new Exception(msg, th);
+      //throw new Exception(msg, th);
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
@@ -396,12 +403,12 @@ public class SqlQueries {
       params.setProperty("SEQUENZA", SqlUtilities.getAsStringFieldValue(item.getSequenza()));
       params.setProperty("SOTTOSEQUENZA", ""+item.getSottosequenza());
       switch (item.getAzione()) {
-        case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
+    	case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
           sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickC.sql", params);
-          break;
-        default:
+    		break;
+    	default:
           sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateCsvRecordFarmaclickC.sql", params);
-          break;
+    		break;
       }
       stmt = conn.createStatement();
       stmt.executeUpdate(sql);
@@ -409,7 +416,7 @@ public class SqlQueries {
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
-      // throw new Exception(msg, th);
+      //throw new Exception(msg, th);
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
@@ -427,8 +434,14 @@ public class SqlQueries {
       params.setProperty("OID_FORNITORE", ""+oidFornitore);
       params.setProperty("CODICE_CLIENTE", SqlUtilities.getAsStringFieldValue(item.getCodiceCliente()));
       sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickD.sql", params);
+      String lines[] = sql.split("\\r?\\n");
       stmt = conn.createStatement();
-      stmt.executeUpdate(sql);
+      //stmt.executeUpdate(sql);
+      for (int j=0;j<lines.length;j++) {
+        if (lines[j].length()>0)
+    	  stmt.addBatch(lines[j]);
+      }
+      stmt.executeBatch();
     }
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
@@ -476,22 +489,22 @@ public class SqlQueries {
       params.setProperty("SCONTO_2", ""+item.getSconto2());
       params.setProperty("SCONTO_CASSA", ""+item.getScontoCassa());
       params.setProperty("SOMMA_SCONTO_1_2", ""+item.getSommaSconto1ESconto2());
-      switch (item.getAzione()) {
-        case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
-          sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickL.sql", params);
-          break;
-        default:
-          sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateCsvRecordFarmaclickL.sql", params);
-          break;
-      }
 
+      switch (item.getAzione()) {
+    	case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
+          sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickL.sql", params);
+    		break;
+    	default:
+          sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateCsvRecordFarmaclickL.sql", params);
+    		break;
+      }
       stmt = conn.createStatement();
       stmt.executeUpdate(sql);
     }
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
-//      throw new Exception(msg, th);
+      //throw new Exception(msg, th);
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
@@ -514,12 +527,12 @@ public class SqlQueries {
       params.setProperty("DESCR_REGGRUPP_CONDIZ", SqlUtilities.getAsStringFieldValue(item.getDescrizioneRaggruppamentoCondizione()));
       params.setProperty("RIGA", SqlUtilities.getAsStringFieldValue(item.getRiga()));
       switch (item.getAzione()) {
-        case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
+    	case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
           sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickR.sql", params);
-          break;
-        default:
+    		break;
+    	default:
           sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateCsvRecordFarmaclickR.sql", params);
-          break;
+    		break;
       }
       stmt = conn.createStatement();
       stmt.executeUpdate(sql);
@@ -527,7 +540,7 @@ public class SqlQueries {
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
-      // throw new Exception(msg, th);
+      //throw new Exception(msg, th);
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
@@ -554,12 +567,12 @@ public class SqlQueries {
       params.setProperty("PERC_ADDEB_SU_IMPONIBILE", ""+item.getPercentualeDiAddebitoSuImponibile());
       params.setProperty("PERIODICITA_FATTURAZ", item.getPeriodicitaFartturazione());
       switch (item.getAzione()) {
-        case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
+    	case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
           sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickV.sql", params);
-          break;
-        default:
+    		break;
+    	default:
           sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateCsvRecordFarmaclickV.sql", params);
-          break;
+    		break;
       }
       stmt = conn.createStatement();
       stmt.executeUpdate(sql);
@@ -567,7 +580,7 @@ public class SqlQueries {
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
-      // throw new Exception(msg, th);
+      //throw new Exception(msg, th);
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
@@ -587,12 +600,12 @@ public class SqlQueries {
       params.setProperty("CODICE_CLIENTE", SqlUtilities.getAsStringFieldValue(item.getCodiceCliente()));
       params.setProperty("DATA_ORA_GENERAZ", SqlUtilities.calendarToOracleToDate(item.getDataOraGenerazione()));
       switch (item.getAzione()) {
-        case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
+    	case CsvFarmaclickCommons.AZIONE_INSERIMENTO:
           sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickZ.sql", params);
-          break;
-        default:
+    		break;
+    	default:
           sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateCsvRecordFarmaclickZ.sql", params);
-          break;
+    		break;
       }
       stmt = conn.createStatement();
       stmt.executeUpdate(sql);
@@ -600,7 +613,7 @@ public class SqlQueries {
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
-      // throw new Exception(msg, th);
+      //throw new Exception(msg, th);
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
