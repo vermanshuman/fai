@@ -74,7 +74,7 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
     logger.info("approvvigionamentoToProcess size :: "+approvvigionamentoToProcess.size());
     for (ApprovvigionamentoFarmaco approv : approvvigionamentoToProcess) {
       if(approv.getMagazzinoAcronym() != null) {
-        magazzino = SqlQueries.getSelectedMagazzino(null, approv.getMagazzinoAcronym(), conn);
+    	  magazzino = SqlQueries.getSelectedMagazzino(null, approv.getMagazzinoAcronym(), conn);
       }
       supportedApprovToProcess.add(approv);
     }

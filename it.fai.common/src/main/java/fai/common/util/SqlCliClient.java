@@ -216,7 +216,7 @@ public class SqlCliClient {
   }
   
   public void execute(String sql) throws Exception {
-    execute(sql, Level.DEBUG);
+    execute(sql, org.apache.log4j.Level.DEBUG);
   }
   
   public void execute(String sql, org.apache.log4j.Level toLog) throws Exception {

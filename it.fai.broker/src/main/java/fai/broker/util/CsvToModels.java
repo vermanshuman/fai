@@ -47,7 +47,7 @@ public class CsvToModels {
     csv.setStringFormat('"', '"');
     csv.setDoubleNumberFormat(fai.common.util.NumberFormatFactory.newNumberFormat("####.##", ',', '\''));
     if(csv.getFieldSeparator().equals(","))
-      csv.setDateFormat(new SimpleDateFormat("dd-MMM-yy", new Locale("en")));
+    	csv.setDateFormat(new SimpleDateFormat("dd-MMM-yy", new Locale("en")));
     else
       csv.setDateFormat(new SimpleDateFormat("dd/MM/yyyy"));
     waitingForHeader = true;
@@ -185,49 +185,49 @@ public class CsvToModels {
           ordine.setPrezzoTotale(csv.getDouble("Prezzo totale", true, true));
         }
         ordine.setMetodoDiPagamento(csv.getInteger("Metodo di pagamento", true, true));
-
+        
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yy", new Locale("en"));
         try {
-          String dataDiVenditaString = csv.getString("Data di vendita", true, true);
-          if(dataDiVenditaString != null && !dataDiVenditaString.isEmpty()) {
-            Date date = formatter.parse(dataDiVenditaString);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            ordine.setDataDiVendita(calendar);
-          }
-          String DataDelModuloDiPagamentoString = csv.getString("Data del Modulo di pagamento", true, false);
-          if(DataDelModuloDiPagamentoString != null && !DataDelModuloDiPagamentoString.isEmpty()) {
-            Date date = formatter.parse(DataDelModuloDiPagamentoString);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            ordine.setDataDelModuloDiPagamento(calendar);
-          }
-          String dataPagamentoString = csv.getString("Data pagamento", true, false);
-          if(dataPagamentoString != null && !dataPagamentoString.isEmpty()) {
-            Date date = formatter.parse(dataPagamentoString);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            ordine.setDataPagamento(calendar);
-          }
-          String dataSpedizioneString = csv.getString("Data spedizione", true, false);
-          if(dataSpedizioneString != null && !dataSpedizioneString.isEmpty()) {
-            Date date = formatter.parse(dataSpedizioneString);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            ordine.setDataSpedizione(calendar);
-          }
-          String dataDellaFatturaString = csv.getString("Data della fattura", true, false);
-          if(dataDellaFatturaString != null && !dataDellaFatturaString.isEmpty()) {
-            Date date = formatter.parse(dataDellaFatturaString);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            ordine.setDataFattura(calendar);
-          }
+        	String dataDiVenditaString = csv.getString("Data di vendita", true, true);
+            if(dataDiVenditaString != null && !dataDiVenditaString.isEmpty()) {
+            	Date date = formatter.parse(dataDiVenditaString);
+            	Calendar calendar = Calendar.getInstance();
+            	calendar.setTime(date);
+            	ordine.setDataDiVendita(calendar);
+            }
+            String DataDelModuloDiPagamentoString = csv.getString("Data del Modulo di pagamento", true, false);
+            if(DataDelModuloDiPagamentoString != null && !DataDelModuloDiPagamentoString.isEmpty()) {
+            	Date date = formatter.parse(DataDelModuloDiPagamentoString);
+            	Calendar calendar = Calendar.getInstance();
+            	calendar.setTime(date);
+            	ordine.setDataDelModuloDiPagamento(calendar);
+            }
+            String dataPagamentoString = csv.getString("Data pagamento", true, false);
+            if(dataPagamentoString != null && !dataPagamentoString.isEmpty()) {
+            	Date date = formatter.parse(dataPagamentoString);
+            	Calendar calendar = Calendar.getInstance();
+            	calendar.setTime(date);
+            	ordine.setDataPagamento(calendar);
+            }
+            String dataSpedizioneString = csv.getString("Data spedizione", true, false);
+            if(dataSpedizioneString != null && !dataSpedizioneString.isEmpty()) {
+            	Date date = formatter.parse(dataSpedizioneString);
+            	Calendar calendar = Calendar.getInstance();
+            	calendar.setTime(date);
+            	ordine.setDataSpedizione(calendar);
+            }
+            String dataDellaFatturaString = csv.getString("Data della fattura", true, false);
+            if(dataDellaFatturaString != null && !dataDellaFatturaString.isEmpty()) {
+            	Date date = formatter.parse(dataDellaFatturaString);
+            	Calendar calendar = Calendar.getInstance();
+            	calendar.setTime(date);
+            	ordine.setDataFattura(calendar);
+            }
         } catch (ParseException e) {
           e.printStackTrace();
         }
-
-
+        
+        
         ordine.setNumeroFattura(csv.getString("Numero della fattura", true, false));
         ordine.setFeedbackLasciato(asBoolean(csv,"Feedback lasciato", null, "No"));
         ordine.setFeedbackRicevuto(asBoolean(csv,"Feedback ricevuto", null, "No"));
