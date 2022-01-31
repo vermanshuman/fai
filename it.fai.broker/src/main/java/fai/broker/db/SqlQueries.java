@@ -2764,7 +2764,7 @@ public class SqlQueries {
 			}
 		}
 		catch (Throwable th) {
-			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage() + "ï¿½ nell'esecuzione del metodo " + METH_NAME;
 			logger.error(msg, th);
 			throw new Exception(msg, th);
 		}
@@ -2775,6 +2775,5 @@ public class SqlQueries {
 		return list;
 
 	}
-
 
 }

@@ -3,6 +3,7 @@ package fai.broker.supplier;
 import fai.broker.db.SqlQueries;
 import fai.broker.models.*;
 import fai.common.util.ExceptionsTool;
+import fai.imp.base.models.FaiImportConfig;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
