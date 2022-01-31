@@ -2777,4 +2777,49 @@ public class SqlQueries {
 	}
 
 
+	public static List<fai.imp.farmaclick.models.Fornitore> findAllFornitoreByCondition(String whereCondition, Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<fai.imp.farmaclick.models.Fornitore> list = new LinkedList<>();
+		try {
+			Properties params = new Properties();
+			params.setProperty("whereCondition", whereCondition);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "findAllFornitoreByCondition.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				fai.imp.farmaclick.models.Fornitore f = new fai.imp.farmaclick.models.Fornitore();
+				f.setOid(rs.getLong("OID"));
+				f.setCodice(rs.getString("CODICE"));
+				f.setCodiceSitoLogistico(rs.getString("CODICE_SITO_LOGISTICO"));
+				f.setDescrizioneBreve(rs.getString("DESCRIZIONE_BREVE"));
+				f.setLastCsvFilename(rs.getString("LAST_CSV_FILENAME"));
+				f.setLastCsvZipped("S".equals(rs.getString("LAST_CSV_ZIPPED")));
+				f.setLastCsvDownloadUrl(rs.getString("LAST_CSV_DOWNLOAD_URL"));
+				f.setLastCsvDownloadAtTs(SqlUtilities.getCalendar(rs, "LAST_CSV_DOWNLOAD_AT_TS"));
+				f.setLastCsvConfirmUrl(rs.getString("LAST_CSV_CONFIRM_URL"));
+				f.setLastCsvConfirmedAtTs(SqlUtilities.getCalendar(rs, "LAST_CSV_CONFIRMED_AT_TS"));
+				f.setNoLongerExistsTs(SqlUtilities.getCalendar(rs, "NO_LONGER_EXISTS_TS"));
+				f.setAllDataStoredTs(SqlUtilities.getCalendar(rs, "ALL_DATA_STORED_TS"));
+				f.setOidConfig(rs.getLong("OID_CONFIG"));
+				list.add(f);
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+
+	}
+
 }
