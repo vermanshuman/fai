@@ -129,8 +129,8 @@ public class ComifarSupplierService extends AbstractSupplierService {
             ordineOut.setIdOrdine(processedOrders.get(0).getNumeroOrdineFornitore());
             ordineOut.setIdRicevuta(processedOrders.get(0).getIdVendita());
         }
-//        ordineOut.setRequestXml(processedOrdersBean.getRequestXML());
-//        ordineOut.setResponseXml(processedOrdersBean.getResponseXMl());
+        ordineOut.setRequestXml(processedOrdersBean.getRequestXML());
+        ordineOut.setResponseXml(processedOrdersBean.getResponseXMl());
 
         ordineOut.setFornitore(approvvigionamento != null && approvvigionamento.size() > 0 ? approvvigionamento.get(0).getFornitore() : null);
 
