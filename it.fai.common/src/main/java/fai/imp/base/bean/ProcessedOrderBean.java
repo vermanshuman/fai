@@ -3,6 +3,8 @@ package fai.imp.base.bean;
 public class ProcessedOrderBean {
 	
 	private String productCode;
+
+	private String susbituteMinsan;
 	
 	private Integer orderedQuantity;
 
@@ -39,9 +41,23 @@ public class ProcessedOrderBean {
 		this.idVendita = idVendita;
 	}
 
+
 	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
 							  String errorDescription, String numeroOrdineFornitore,String idVendita) {
 		this.productCode = productCode;
+		this.orderedQuantity = orderedQuantity;
+		this.missingQuantity = missingQuantity;
+		this.orderFailed = orderStatus;
+		this.errorCode = errorCode;
+		this.errorDescription = errorDescription;
+		this.numeroOrdineFornitore = numeroOrdineFornitore;
+		this.idVendita = idVendita;
+	}
+
+	public ProcessedOrderBean(String productCode, String substituteMinsan, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
+							  String errorDescription, String idVendita) {
+		this.productCode = productCode;
+		this.susbituteMinsan = substituteMinsan;
 		this.orderedQuantity = orderedQuantity;
 		this.missingQuantity = missingQuantity;
 		this.orderFailed = orderStatus;
@@ -120,5 +136,13 @@ public class ProcessedOrderBean {
 
 	public void setIdVendita(String idVendita) {
 		this.idVendita = idVendita;
+	}
+
+	public String getSusbituteMinsan() {
+		return susbituteMinsan;
+	}
+
+	public void setSusbituteMinsan(String susbituteMinsan) {
+		this.susbituteMinsan = susbituteMinsan;
 	}
 }

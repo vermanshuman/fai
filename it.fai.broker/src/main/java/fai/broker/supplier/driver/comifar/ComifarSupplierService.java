@@ -7,6 +7,7 @@ import fai.imp.base.bean.ProcessedOrderBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
@@ -168,6 +169,8 @@ public class ComifarSupplierService extends AbstractSupplierService {
                     appr.setQuantita(matchedProduct.get().getOrderedQuantity());
                     appr.setStatus(StatusInfo.newProcessedInstance(null, null));
                     appr.setDisponibilitaConfermataReq(Calendar.getInstance());
+                    if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()))
+                        appr.setCodiceSostituitoMinsan(matchedProduct.get().getSusbituteMinsan());
                     appr.setOrdineOut(ordineOut);
                     SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
                 }

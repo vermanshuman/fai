@@ -1,6 +1,7 @@
 UPDATE FAI_APPROVVIGIONAMENTO_FARMACO
-SET  OID_ORDINEOUT 		= ?
-  	,QUANTITA          	= ?
-    ,OID_STATUS 		= ? 
-    ,DISPONIBILITA_CONFERMATA_REQ = ?
- WHERE OID = ?
+SET OID_ORDINEOUT                = ?
+  , QUANTITA                     = ?
+  , OID_STATUS                   = ?
+  , DISPONIBILITA_CONFERMATA_REQ = ?
+  , CODICE_SOSTITUITO_MINSAN     = ?
+WHERE OID = ?

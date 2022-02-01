@@ -18,6 +18,9 @@ public class OrderItem {
 	
 	@XmlElement(name="descr_esito")
 	private String outcomeDescription;
+
+	@XmlElement(name="sostituito")
+	private String substituteMinsan;
 	
 	public OrderItem(String productCode, Integer quantity) {
 		super();
@@ -58,5 +61,13 @@ public class OrderItem {
 
 	public void setOutcomeDescription(String outcomeDescription) {
 		this.outcomeDescription = outcomeDescription;
+	}
+
+	public String getSubstituteMinsan() {
+		return substituteMinsan;
+	}
+
+	public void setSubstituteMinsan(String substituteMinsan) {
+		this.substituteMinsan = substituteMinsan;
 	}
 }

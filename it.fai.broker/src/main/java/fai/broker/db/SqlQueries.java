@@ -2385,6 +2385,8 @@ public class SqlQueries {
 			stmt.setLong(++col, approv.getStatus().getStatus().getOid());
 			//DISPONIBILITA_CONFERMATA_REQ
 			stmt.setDate(++col, approv.getDisponibilitaConfermataReq() == null ? null : new java.sql.Date(approv.getDisponibilitaConfermataReq().getTimeInMillis()));
+			//CODICE_SOSTITUITO_MINSAN
+			stmt.setString(++col, approv.getCodiceSostituitoMinsan());
 			// OID
 			stmt.setLong(++col, approv.getOid());
 			//

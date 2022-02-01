@@ -367,7 +367,10 @@ public class ComifarDataCollector extends AbstractDataCollector{
 					if(disponibilita != null && disponibilita.getOutcome() != null){
 						actualResponse = disponibilita.getOutcome().getOutcome();
 					}
-					if (!"OK".equalsIgnoreCase(actualResponse)) throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
+					if (!"OK".equalsIgnoreCase(actualResponse)){
+						logger.error("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
+						// throw new IllegalStateException("inammissibile, codice esito "+actualResponse+" NON ammesso in questo punto");
+					}
 					if(disponibilita.getAvail() != null && disponibilita.getAvail().getAvailable() != null
 							&& disponibilita.getAvail().getAvailable().equalsIgnoreCase("S")) {
 						/*
@@ -437,7 +440,6 @@ public class ComifarDataCollector extends AbstractDataCollector{
 				String orderXML = prepareOrderXML(myxml);
 
 				String orderResponse = ws.orderProducts(orderXML);
-				
 				OrderResponse response = parseComifarOrdine(orderResponse);
 				
 				if(response != null && response.getHead() != null && response.getHead().getEsito() != null &&
@@ -460,7 +462,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 							processedOrders.addAll(orderResponseBody.getProcessedOrder().getItems()
 							.stream()
 							.map(item ->
-									new ProcessedOrderBean(item.getProductCode(), item.getQuantity(), null,
+									new ProcessedOrderBean(item.getProductCode(), item.getSubstituteMinsan(), item.getQuantity(), null,
 											Boolean.FALSE, item.getOutcome(), item.getOutcomeDescription(), head.getOrderReference()))
 							.collect(Collectors.toList()));
 						}

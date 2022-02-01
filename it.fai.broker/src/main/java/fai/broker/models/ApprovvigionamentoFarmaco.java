@@ -31,6 +31,7 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
     public static int APPROV_RIGA_DETT;
     public static int ID_VENDITA;
     public static int TOTALE_QUANTITA;
+    public static int CODICE_SOSTITUITO_MINSAN;
 
     public static final Attribute[] attributes = buildAttributes(ApprovvigionamentoFarmaco.class, new Attribute[]{ //@formatter:off
             new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -55,6 +56,7 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
             new Attribute("approvRigaDett", null, ApprovToRiga[].class, null, false, Attribute.DETAIL, true, Attribute.NO_OPTION),
             new Attribute("idVendita", null, Long.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("totaleQuantita", null, Integer.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+            new Attribute("codiceSostituitoMinsan", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     }); //@formatter:on
 
 
@@ -111,7 +113,6 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
     public String getCodiceMinSan() {
         return getString(CODICE_MIN_SAN);
     }
-
 
     /**
      * CODICE_EAN
@@ -407,9 +408,16 @@ public class ApprovvigionamentoFarmaco extends AbstractModel {
     }
 
 
+    /**
+     * CODICE_SOSTITUITO_MINSAN
+     **/
+    public boolean setCodiceSostituitoMinsan(String codiceMinSan) {
+        return setString(CODICE_SOSTITUITO_MINSAN, codiceMinSan);
+    }
 
-    //@formatter:on
-
+    public String getCodiceSostituitoMinsan() {
+        return getString(CODICE_SOSTITUITO_MINSAN);
+    }
 
     //@formatter:on
 
