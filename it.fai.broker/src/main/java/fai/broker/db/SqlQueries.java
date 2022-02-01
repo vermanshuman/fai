@@ -2224,6 +2224,10 @@ public class SqlQueries {
 			stmt.setLong(++col, ordineOut.getFornitore().getOid());
 			// OID_STATUS
 			stmt.setLong(++col, ordineOut.getStatus().getOid());
+			// REQUEST_XML
+			SqlUtilities.setStringAsClob(stmt, ++col, ordineOut.getRequestXml());
+			// RESPONSE_XML
+			SqlUtilities.setStringAsClob(stmt, ++col, ordineOut.getResponseXml());
 			// CREATION_TS
 			SqlUtilities.setCalendar(stmt, ++col, Calendar.getInstance());
 			stmt.executeUpdate();

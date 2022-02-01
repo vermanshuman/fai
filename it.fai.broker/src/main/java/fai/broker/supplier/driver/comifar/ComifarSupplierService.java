@@ -4,6 +4,7 @@ import fai.broker.db.SqlQueries;
 import fai.broker.models.*;
 import fai.broker.supplier.AbstractSupplierService;
 import fai.imp.base.bean.ProcessedOrderBean;
+import fai.imp.base.bean.ProcessedOrdersBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
@@ -112,12 +113,15 @@ public class ComifarSupplierService extends AbstractSupplierService {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
-        List<ProcessedOrderBean> processedOrders = orderProducts(approvvigionamento
-                        .stream()
-                        .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
-                        .collect(Collectors.toList()));
 
+        ProcessedOrdersBean processedOrdersBean =  orderProducts(approvvigionamento
+                .stream()
+                .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
+                .collect(Collectors.toList()));
+
+        List<ProcessedOrderBean> processedOrders = processedOrdersBean.getProcessedOrders();
         OrdineOut ordineOut = new OrdineOut();
+
         ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
         if(approvvigionamento != null && approvvigionamento.size() > 0)
             ordineOut.setFornitore(approvvigionamento.get(0).getFornitore());
@@ -125,6 +129,8 @@ public class ComifarSupplierService extends AbstractSupplierService {
             ordineOut.setIdOrdine(processedOrders.get(0).getNumeroOrdineFornitore());
             ordineOut.setIdRicevuta(processedOrders.get(0).getIdVendita());
         }
+//        ordineOut.setRequestXml(processedOrdersBean.getRequestXML());
+//        ordineOut.setResponseXml(processedOrdersBean.getResponseXMl());
 
         ordineOut.setFornitore(approvvigionamento != null && approvvigionamento.size() > 0 ? approvvigionamento.get(0).getFornitore() : null);
 
@@ -198,7 +204,7 @@ public class ComifarSupplierService extends AbstractSupplierService {
         return dataCollector.doGetAvailiblityData(products);
     }
 
-    private List<ProcessedOrderBean> orderProducts(List<ProductBean> products) throws Exception {
+    private ProcessedOrdersBean orderProducts(List<ProductBean> products) throws Exception {
         final String METH_NAME = new Object() {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";

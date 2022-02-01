@@ -27,6 +27,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import fai.imp.base.bean.ProcessedOrdersBean;
 import org.apache.log4j.Logger;
 
 import fai.common.db.SqlUtilities;
@@ -407,14 +408,14 @@ public class ComifarDataCollector extends AbstractDataCollector{
 	}
 
 	@Override
-	protected List<ProcessedOrderBean> do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception {
+	protected ProcessedOrdersBean do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
 		String serviceID = ComifarSoapWSMethFormatter.formatOrderProduct();
 		logger.info("recupero dati "+serviceID+", invocazione WebService ...");
+		ProcessedOrdersBean processedOrdersBean = new ProcessedOrdersBean();
 
-		List<ProcessedOrderBean> processedOrders = new ArrayList<>();
 		if(productOrderRequests != null && !productOrderRequests.isEmpty()) {
 			
 			List<OrderItem> items = productOrderRequests
@@ -440,10 +441,15 @@ public class ComifarDataCollector extends AbstractDataCollector{
 				String orderXML = prepareOrderXML(myxml);
 
 				String orderResponse = ws.orderProducts(orderXML);
+
+				processedOrdersBean.setRequestXML(orderXML);
+				processedOrdersBean.setResponseXMl(orderXML);
+
 				OrderResponse response = parseComifarOrdine(orderResponse);
-				
+				List<ProcessedOrderBean> processedOrders = new ArrayList<>();
 				if(response != null && response.getHead() != null && response.getHead().getEsito() != null &&
-						response.getHead().getEsito().getOutcome() != null && "OK".equalsIgnoreCase(response.getHead().getEsito().getOutcome())) {
+						response.getHead().getEsito().getOutcome() != null
+						&& "OK".equalsIgnoreCase(response.getHead().getEsito().getOutcome())) {
 					OrderResponseBody orderResponseBody = response.getBody();
 					if(orderResponseBody != null) {
 						if(orderResponseBody.getOrderMissing() != null && orderResponseBody.getOrderMissing().getItems() != null
@@ -452,7 +458,8 @@ public class ComifarDataCollector extends AbstractDataCollector{
 							.stream()
 							.map(item -> 
 							new ProcessedOrderBean(item.getProductCode(),null , item.getQuantity(),
-									Boolean.TRUE, item.getOutcome(), item.getOutcomeDescription(), head.getNumord(), head.getOrderReference()))
+									Boolean.TRUE, item.getOutcome(), item.getOutcomeDescription(), head.getNumord(), head.getOrderReference(),
+									orderXML, orderResponse))
 							.collect(Collectors.toList()));
 							
 						}
@@ -463,16 +470,16 @@ public class ComifarDataCollector extends AbstractDataCollector{
 							.stream()
 							.map(item ->
 									new ProcessedOrderBean(item.getProductCode(), item.getSubstituteMinsan(), item.getQuantity(), null,
-											Boolean.FALSE, item.getOutcome(), item.getOutcomeDescription(), head.getOrderReference()))
+											Boolean.FALSE, item.getOutcome(), item.getOutcomeDescription(), head.getOrderReference(), orderXML, orderResponse))
 							.collect(Collectors.toList()));
 						}
 					}
 				}
+				processedOrdersBean.setProcessedOrders(processedOrders);
 				
 			}
 		}
-
-		return processedOrders;
+		return processedOrdersBean;
 	}
 	
 	private static String prepareOrderXML(MyXML myXML) throws Exception {

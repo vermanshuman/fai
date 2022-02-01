@@ -19,7 +19,11 @@ public class ProcessedOrderBean {
 	private String numeroOrdineFornitore;
 
 	private String idVendita;
-	
+
+	private String requestXML;
+
+	private String responseXML;
+
 	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Boolean orderStatus, String errorCode,
 			String errorDescription, String idVendita) {
 		this.productCode = productCode;
@@ -43,7 +47,8 @@ public class ProcessedOrderBean {
 
 
 	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
-							  String errorDescription, String numeroOrdineFornitore,String idVendita) {
+							  String errorDescription, String numeroOrdineFornitore,String idVendita, String requestXML,
+							  String responseXMl) {
 		this.productCode = productCode;
 		this.orderedQuantity = orderedQuantity;
 		this.missingQuantity = missingQuantity;
@@ -52,10 +57,12 @@ public class ProcessedOrderBean {
 		this.errorDescription = errorDescription;
 		this.numeroOrdineFornitore = numeroOrdineFornitore;
 		this.idVendita = idVendita;
+		this.requestXML = requestXML;
+		this.responseXML = responseXMl;
 	}
 
 	public ProcessedOrderBean(String productCode, String substituteMinsan, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
-							  String errorDescription, String idVendita) {
+							  String errorDescription, String idVendita, String requestXML,String responseXMl) {
 		this.productCode = productCode;
 		this.susbituteMinsan = substituteMinsan;
 		this.orderedQuantity = orderedQuantity;
@@ -63,8 +70,9 @@ public class ProcessedOrderBean {
 		this.orderFailed = orderStatus;
 		this.errorCode = errorCode;
 		this.errorDescription = errorDescription;
-		this.numeroOrdineFornitore = numeroOrdineFornitore;
 		this.idVendita = idVendita;
+		this.requestXML = requestXML;
+		this.responseXML = responseXMl;
 	}
 	
 	public ProcessedOrderBean(String productCode, Integer orderedQuanity, Boolean orderStatus, String idVendita) {
@@ -144,5 +152,21 @@ public class ProcessedOrderBean {
 
 	public void setSusbituteMinsan(String susbituteMinsan) {
 		this.susbituteMinsan = susbituteMinsan;
+	}
+
+	public String getRequestXML() {
+		return requestXML;
+	}
+
+	public void setRequestXML(String requestXML) {
+		this.requestXML = requestXML;
+	}
+
+	public String getResponseXML() {
+		return responseXML;
+	}
+
+	public void setResponseXML(String responseXML) {
+		this.responseXML = responseXML;
 	}
 }

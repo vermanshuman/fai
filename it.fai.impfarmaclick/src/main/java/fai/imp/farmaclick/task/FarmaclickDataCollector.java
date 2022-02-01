@@ -5,6 +5,7 @@ import fai.common.http.Http;
 import fai.common.util.Filesystem;
 import fai.common.util.Timeout;
 import fai.imp.base.bean.ProcessedOrderBean;
+import fai.imp.base.bean.ProcessedOrdersBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
@@ -449,10 +450,11 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 
 
 	@Override
-	protected List<ProcessedOrderBean> do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception {
+	protected ProcessedOrdersBean do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
+		ProcessedOrdersBean processedOrdersBean = new ProcessedOrdersBean();
 		List<ProcessedOrderBean> processedOrders = null;
 		if(productOrderRequests != null && !productOrderRequests.isEmpty()) {
 			loginWebService();
@@ -514,6 +516,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				}
 			}
 		}
-		return processedOrders;
+		processedOrdersBean.setProcessedOrders(processedOrders);
+		return processedOrdersBean;
 	}
 }

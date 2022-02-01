@@ -4,6 +4,7 @@ import fai.broker.db.SqlQueries;
 import fai.broker.models.*;
 import fai.broker.supplier.AbstractSupplierService;
 import fai.imp.base.bean.ProcessedOrderBean;
+import fai.imp.base.bean.ProcessedOrdersBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
@@ -133,12 +134,15 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";
         logger.info(LOG_PREFIX + "...");
 
-        List<ProcessedOrderBean> processedOrders = orderProducts(approvvigionamento
-                        .stream()
-                        .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
-                        .collect(Collectors.toList()));
+        ProcessedOrdersBean processedOrdersBean =  orderProducts(approvvigionamento
+                .stream()
+                .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
+                .collect(Collectors.toList()));
 
+        List<ProcessedOrderBean> processedOrders = processedOrdersBean.getProcessedOrders();
         OrdineOut ordineOut = new OrdineOut();
+//        ordineOut.setRequestXml(processedOrdersBean.getRequestXML());
+//        ordineOut.setResponseXml(processedOrdersBean.getResponseXMl());
         ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
         if(approvvigionamento != null && approvvigionamento.size() > 0)
             ordineOut.setFornitore(approvvigionamento.get(0).getFornitore());
@@ -212,7 +216,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
         return dataCollector.doGetAvailiblityData(products);
     }
 
-    private List<ProcessedOrderBean> orderProducts(List<ProductBean> products) throws Exception {
+    private ProcessedOrdersBean orderProducts(List<ProductBean> products) throws Exception {
         final String METH_NAME = new Object() {
         }.getClass().getEnclosingMethod().getName();
         final String LOG_PREFIX = METH_NAME + "(" + asShortDescr() + ")" + ": ";

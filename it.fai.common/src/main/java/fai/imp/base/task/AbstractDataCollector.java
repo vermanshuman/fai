@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fai.imp.base.bean.ProcessedOrdersBean;
 import org.apache.log4j.Logger;
 
 import fai.imp.base.bean.ProcessedOrderBean;
@@ -231,7 +232,7 @@ public abstract class AbstractDataCollector {
 	}
 
 
-	public List<ProcessedOrderBean> doOrderProducts(List<ProductBean> productOrderRequests) throws Exception {
+	public ProcessedOrdersBean doOrderProducts(List<ProductBean> productOrderRequests) throws Exception {
 		try {
 			reloadConfig();
 			setProductOrderRequests(productOrderRequests);
@@ -251,7 +252,7 @@ public abstract class AbstractDataCollector {
 
 	protected abstract void doCollectData_getDDTList(Date dataInzio, Date dataFine) throws Exception;
 
-	protected abstract List<ProcessedOrderBean> do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception;
+	protected abstract ProcessedOrdersBean do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception;
 
 	public List<String> getProductCodes() {
 		return productCodes;
