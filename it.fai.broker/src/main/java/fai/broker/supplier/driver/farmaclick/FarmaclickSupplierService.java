@@ -141,8 +141,8 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
 
         List<ProcessedOrderBean> processedOrders = processedOrdersBean.getProcessedOrders();
         OrdineOut ordineOut = new OrdineOut();
-//        ordineOut.setRequestXml(processedOrdersBean.getRequestXML());
-//        ordineOut.setResponseXml(processedOrdersBean.getResponseXMl());
+        ordineOut.setRequestXml(processedOrdersBean.getRequestXML());
+        ordineOut.setResponseXml(processedOrdersBean.getResponseXMl());
         ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
         if(approvvigionamento != null && approvvigionamento.size() > 0)
             ordineOut.setFornitore(approvvigionamento.get(0).getFornitore());

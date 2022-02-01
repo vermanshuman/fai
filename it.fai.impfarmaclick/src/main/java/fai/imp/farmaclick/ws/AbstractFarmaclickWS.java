@@ -17,7 +17,9 @@ public abstract class AbstractFarmaclickWS {
   private boolean logRequestAsXml = false; 
   private boolean logReponsesAsXml = false; 
 
-  
+  private String requestXml = null;
+  private String responseXml = null;
+
   public String getEndpointAddress() {
     return endpointAddress;
   }
@@ -70,15 +72,32 @@ public abstract class AbstractFarmaclickWS {
     if (logRequestAsXml == false) return;
     if (logPrefix == null) logPrefix="";
     //
-    logger.info(logPrefix+"richiesta, "+AxisSerializationUtil.serializeAxisObject(o));
+    setRequestXml(AxisSerializationUtil.serializeAxisObject(o));
+    logger.info(logPrefix+"richiesta, "+getRequestXml());
+
   }
 
   protected void logResponseAsXml(String logPrefix, Object o) throws Exception {
     if (logReponsesAsXml == false) return;
     if (logPrefix == null) logPrefix="";
     //
+    setResponseXml(AxisSerializationUtil.serializeAxisObject(o));
     logger.info(logPrefix+"risposta, "+AxisSerializationUtil.serializeAxisObject(o));
   }
 
+  public String getRequestXml() {
+    return requestXml;
+  }
 
+  public void setRequestXml(String requestXml) {
+    this.requestXml = requestXml;
+  }
+
+  public String getResponseXml() {
+    return responseXml;
+  }
+
+  public void setResponseXml(String responseXml) {
+    this.responseXml = responseXml;
+  }
 }

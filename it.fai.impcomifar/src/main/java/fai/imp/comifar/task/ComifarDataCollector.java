@@ -443,7 +443,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 				String orderResponse = ws.orderProducts(orderXML);
 
 				processedOrdersBean.setRequestXML(orderXML);
-				processedOrdersBean.setResponseXMl(orderXML);
+				processedOrdersBean.setResponseXMl(orderResponse);
 
 				OrderResponse response = parseComifarOrdine(orderResponse);
 				List<ProcessedOrderBean> processedOrders = new ArrayList<>();
@@ -457,7 +457,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 							processedOrders.addAll(orderResponseBody.getOrderMissing().getItems()
 							.stream()
 							.map(item -> 
-							new ProcessedOrderBean(item.getProductCode(),null , item.getQuantity(),
+							new ProcessedOrderBean(item.getProductCode(), item.getSubstituteMinsan(), null , item.getQuantity(),
 									Boolean.TRUE, item.getOutcome(), item.getOutcomeDescription(), head.getNumord(), head.getOrderReference(),
 									orderXML, orderResponse))
 							.collect(Collectors.toList()));

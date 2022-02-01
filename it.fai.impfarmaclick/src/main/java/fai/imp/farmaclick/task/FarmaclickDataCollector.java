@@ -516,6 +516,8 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				}
 			}
 		}
+		processedOrdersBean.setRequestXML(ws.getRequestXml());
+		processedOrdersBean.setResponseXMl(ws.getResponseXml());
 		processedOrdersBean.setProcessedOrders(processedOrders);
 		return processedOrdersBean;
 	}

@@ -46,10 +46,11 @@ public class ProcessedOrderBean {
 	}
 
 
-	public ProcessedOrderBean(String productCode, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
+	public ProcessedOrderBean(String productCode, String substituteMinsan, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
 							  String errorDescription, String numeroOrdineFornitore,String idVendita, String requestXML,
 							  String responseXMl) {
 		this.productCode = productCode;
+		this.susbituteMinsan = substituteMinsan;
 		this.orderedQuantity = orderedQuantity;
 		this.missingQuantity = missingQuantity;
 		this.orderFailed = orderStatus;

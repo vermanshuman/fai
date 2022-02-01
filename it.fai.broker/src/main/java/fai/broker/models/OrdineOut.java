@@ -14,7 +14,7 @@ public class OrdineOut extends AbstractModel {
     public static int ALIQUOTA_IVA_INCLUSA;
     public static int STATUS;
     public static int REQUEST_XML;
-    public static int RESPONSE_XMl;
+    public static int RESPONSE_XML;
 
     public static final Attribute[] attributes = buildAttributes(OrdineOut.class, new Attribute[]{ //@formatter:off
             new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -148,11 +148,11 @@ public class OrdineOut extends AbstractModel {
 
   /** RESPONSE_XMl **/
   public boolean setResponseXml(String xml) {
-    return setString(RESPONSE_XMl, xml);
+    return setString(RESPONSE_XML, xml);
   }
 
   public String getResponseXml() {
-    return getString(RESPONSE_XMl);
+    return getString(RESPONSE_XML);
   }
 
 

@@ -120,6 +120,11 @@ public class ComifarSupplierService extends AbstractSupplierService {
                 .collect(Collectors.toList()));
 
         List<ProcessedOrderBean> processedOrders = processedOrdersBean.getProcessedOrders();
+
+        processedOrders.stream()
+                .forEach(p -> {
+                    System.out.println("OOOOOOOOOOOOOOOOOO " + p.getSusbituteMinsan());
+                });
         OrdineOut ordineOut = new OrdineOut();
 
         ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
@@ -129,8 +134,8 @@ public class ComifarSupplierService extends AbstractSupplierService {
             ordineOut.setIdOrdine(processedOrders.get(0).getNumeroOrdineFornitore());
             ordineOut.setIdRicevuta(processedOrders.get(0).getIdVendita());
         }
-//        ordineOut.setRequestXml(processedOrdersBean.getRequestXML());
-//        ordineOut.setResponseXml(processedOrdersBean.getResponseXMl());
+        ordineOut.setRequestXml(processedOrdersBean.getRequestXML());
+        ordineOut.setResponseXml(processedOrdersBean.getResponseXMl());
 
         ordineOut.setFornitore(approvvigionamento != null && approvvigionamento.size() > 0 ? approvvigionamento.get(0).getFornitore() : null);
 
@@ -144,7 +149,11 @@ public class ComifarSupplierService extends AbstractSupplierService {
             final String codiceMinsan = appr.getCodiceMinSan();
             Optional<ProcessedOrderBean> matchedProduct = processedOrders
                     .stream()
-                    .filter(p -> p.getProductCode().equals(codiceMinsan))
+                    .filter(p ->
+                            (StringUtils.isNotBlank(p.getSusbituteMinsan())
+                            && !p.getSusbituteMinsan().equalsIgnoreCase("0") && p.getSusbituteMinsan().equals(codiceMinsan)) ||
+                                    ((StringUtils.isBlank(p.getSusbituteMinsan()) || p.getSusbituteMinsan().equalsIgnoreCase("0") &&
+                                            p.getProductCode().equals(codiceMinsan))))
                     .findFirst();
 
             if (matchedProduct.isPresent()) {
@@ -156,16 +165,29 @@ public class ComifarSupplierService extends AbstractSupplierService {
                     if(approvvigionamentoFarmaco == null){
                         approvvigionamentoFarmaco = new ApprovvigionamentoFarmaco();
                         approvvigionamentoFarmaco.setQuantita(matchedProduct.get().getMissingQuantity());
-                        approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
                         approvvigionamentoFarmaco.setStatus(StatusInfo.newToProcessInstance(null, null));
                         approvvigionamentoFarmaco.setMagazzinoAcronym(appr.getMagazzinoAcronym());
+
+                        if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
+                                !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0")){
+                            appr.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
+                            appr.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
+                        }else {
+                            approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
+                        }
                         SqlQueries.insertApprovvigionamentoFarmaco(approvvigionamentoFarmaco, conn);
                     }else {
                         approvvigionamentoFarmaco.setFornitore(appr.getFornitore());
                         Integer updatedQuantity = approvvigionamentoFarmaco.getQuantita() + matchedProduct.get().getMissingQuantity();
                         approvvigionamentoFarmaco.setQuantita(updatedQuantity);
-                        approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
                         approvvigionamentoFarmaco.setCodiceEan(matchedProduct.get().getProductCode());
+                        if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
+                                !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0")){
+                            appr.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
+                            appr.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
+                        }else {
+                            approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
+                        }
                         SqlQueries.updateApprovvigionamentoFarmaco(approvvigionamentoFarmaco, false, conn);
                     }
                 }
@@ -175,8 +197,9 @@ public class ComifarSupplierService extends AbstractSupplierService {
                     appr.setQuantita(matchedProduct.get().getOrderedQuantity());
                     appr.setStatus(StatusInfo.newProcessedInstance(null, null));
                     appr.setDisponibilitaConfermataReq(Calendar.getInstance());
-                    if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()))
-                        appr.setCodiceSostituitoMinsan(matchedProduct.get().getSusbituteMinsan());
+                    if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
+                            !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0"))
+                        appr.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
                     appr.setOrdineOut(ordineOut);
                     SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
                 }
