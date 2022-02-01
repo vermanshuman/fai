@@ -496,7 +496,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 							oob.getOrdineOutputBean2005001().getArrayArticoli() != null &&
 							oob.getOrdineOutputBean2005001().getArrayArticoli().length > 0){
 						processedOrders = Arrays.stream(oob.getOrdineOutputBean2005001().getArrayArticoli())
-								.map(article -> new ProcessedOrderBean(article.getCodiceProdotto(), article.getQuantitaRichiesta(),
+								.map(article -> new ProcessedOrderBean(article.getCodiceProdotto(), article.getCodiceProdottoSostituito(),  article.getQuantitaRichiesta(),
 										article.getQuantitaMancante(),
 										article.getQuantitaRichiesta() == article.getQuantitaMancante(),
 										article.getCodiceMancanza(), article.getDescrizioneMancanza(),
@@ -506,7 +506,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 							oob.getOrdineOutputBean2010001().getArrayArticoli() != null &&
 							oob.getOrdineOutputBean2010001().getArrayArticoli().length > 0){
 						processedOrders = Arrays.stream(oob.getOrdineOutputBean2010001().getArrayArticoli())
-								.map(article -> new ProcessedOrderBean(article.getCodiceProdotto(), article.getQuantitaRichiesta(),
+								.map(article -> new ProcessedOrderBean(article.getCodiceProdotto(), article.getCodiceProdottoSostituito(), article.getQuantitaRichiesta(),
 										article.getQuantitaMancante(),
 										article.getQuantitaRichiesta() == article.getQuantitaMancante(),
 										article.getCodiceMancanza(), article.getDescrizioneMancanza(),

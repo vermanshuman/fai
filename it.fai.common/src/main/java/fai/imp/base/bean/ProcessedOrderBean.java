@@ -44,6 +44,18 @@ public class ProcessedOrderBean {
 		this.errorDescription = errorDescription;
 		this.idVendita = idVendita;
 	}
+	
+	public ProcessedOrderBean(String productCode, String substituteMinsan, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,
+			  String errorDescription, String idVendita) {
+		this.productCode = productCode;
+		this.susbituteMinsan = substituteMinsan;
+		this.orderedQuantity = orderedQuantity;
+		this.missingQuantity = missingQuantity;
+		this.orderFailed = orderStatus;
+		this.errorCode = errorCode;
+		this.errorDescription = errorDescription;
+		this.idVendita = idVendita;
+	}
 
 
 	public ProcessedOrderBean(String productCode, String substituteMinsan, Integer orderedQuantity, Integer missingQuantity, Boolean orderStatus, String errorCode,

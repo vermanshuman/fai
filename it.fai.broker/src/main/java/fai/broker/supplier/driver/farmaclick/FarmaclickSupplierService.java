@@ -8,6 +8,8 @@ import fai.imp.base.bean.ProcessedOrdersBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
@@ -163,7 +165,11 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
             final String codiceMinsan = appr.getCodiceMinSan();
             Optional<ProcessedOrderBean> matchedProduct = processedOrders
                     .stream()
-                    .filter(p -> p.getProductCode().equals(codiceMinsan))
+                    .filter(p ->
+                    (StringUtils.isNotBlank(p.getSusbituteMinsan())
+                    && !p.getSusbituteMinsan().equalsIgnoreCase("0") && p.getSusbituteMinsan().equals(codiceMinsan)) ||
+                            ((StringUtils.isBlank(p.getSusbituteMinsan()) || p.getSusbituteMinsan().equalsIgnoreCase("0") &&
+                                    p.getProductCode().equals(codiceMinsan))))
                     .findFirst();
 
             if (matchedProduct.isPresent()) {
@@ -172,15 +178,27 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                     ApprovvigionamentoFarmaco approvvigionamentoFarmaco = SqlQueries.checkMissingApprovvigionamentoFarmaco(codiceMinsan, conn);
                     if(approvvigionamentoFarmaco == null){
                         approvvigionamentoFarmaco.setQuantita(matchedProduct.get().getMissingQuantity());
-                        approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
                         approvvigionamentoFarmaco.setStatus(StatusInfo.newToProcessInstance(null, null));
                         approvvigionamentoFarmaco.setMagazzinoAcronym(appr.getMagazzinoAcronym());
+                        if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
+                                !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0")){
+                            appr.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
+                            appr.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
+                        }else {
+                            approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
+                        }
                         SqlQueries.insertApprovvigionamentoFarmaco(approvvigionamentoFarmaco, conn);
                     }else {
                         Integer updatedQuantity = approvvigionamentoFarmaco.getQuantita() + matchedProduct.get().getMissingQuantity();
                         approvvigionamentoFarmaco.setQuantita(updatedQuantity);
-                        approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
                         approvvigionamentoFarmaco.setCodiceEan(matchedProduct.get().getProductCode());
+                        if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
+                                !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0")){
+                            appr.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
+                            appr.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
+                        }else {
+                            approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
+                        }
                         SqlQueries.updateApprovvigionamentoFarmaco(approvvigionamentoFarmaco, false, conn);
                     }
                 }
@@ -190,6 +208,9 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                     appr.setQuantita(matchedProduct.get().getOrderedQuantity());
                     appr.setStatus(StatusInfo.newProcessedInstance(null, null));
                     appr.setDisponibilitaConfermataReq(Calendar.getInstance());
+                    if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
+                            !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0"))
+                        appr.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
                     appr.setOrdineOut(ordineOut);
                     SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
                 }
