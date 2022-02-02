@@ -79,6 +79,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		if (resumePrevSession == true) {
 			codiciFornitoreToSkip = SqlQueries.getAllFornitoreCodiceWithDataAlreadyStored(conn);
 		}
+	    List<Fornitore> allFornitori = SqlQueries.getAllFornitore(conn);
 		List<FornitoreBean> fornitoreBeanList = ws.getFornitoreBeanList();
 		for (FornitoreBean fornitoreBean : fornitoreBeanList) {
 			String codiceFornitore = fornitoreBean.getCodice();
@@ -86,15 +87,22 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" ignorato (dati già scaricati)");
 			}
 			else {
-				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
-				DownloadListinoOutputBean dlob = ws.callDownloadListino(fornitoreBean, onlyVariationQueryType, config.isServiceQureyZippedContent());
-				if (dlob != null) {
-					SqlQueries.storeFornitore(
-							fornitoreBean, false, cleanUrl(dlob.getUrlDownload()),
-								cleanUrl(dlob.getUrlConfermaDownload()),config.getOid(), conn);
-				}
-				else {
-					logger.warn(LOG_PREFIX + " "+codiceFornitore+"; listino non trovato");
+				List<Fornitore> result = allFornitori.stream()
+				    .filter(a -> Objects.equals(a.getCodice(), codiceFornitore))
+				    .collect(Collectors.toList());
+				if (result.size() > 0) {
+					logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
+					DownloadListinoOutputBean dlob = ws.callDownloadListino(fornitoreBean, onlyVariationQueryType, config.isServiceQureyZippedContent());
+					if (dlob != null) {
+						SqlQueries.storeFornitore(
+								fornitoreBean, false, cleanUrl(dlob.getUrlDownload()),
+									cleanUrl(dlob.getUrlConfermaDownload()),config.getOid(), conn);
+					}
+					else {
+						logger.warn(LOG_PREFIX + " "+codiceFornitore+"; listino non trovato");
+					}
+				}else {
+					logger.info(LOG_PREFIX + " "+codiceFornitore+" non presente in FAI_FORNITORE ...");
 				}
 			}
 		}
@@ -364,7 +372,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 
 	@Override
 	protected void doCollectData_prepare_startNewSession() throws Exception {
-		SqlQueries.setAllFornitoreNoLongerExists(conn);    
+		//SqlQueries.setAllFornitoreNoLongerExists(conn);    
 		if (onlyVariationQueryType == false) {
 			SqlQueries.deleteAlLRecordsFromNoLongerExiststingFornitore(conn);
 		}
