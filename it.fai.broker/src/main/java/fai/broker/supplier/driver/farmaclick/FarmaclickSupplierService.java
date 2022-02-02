@@ -187,7 +187,15 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                         }else {
                             approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
                         }
-                        SqlQueries.insertApprovvigionamentoFarmaco(approvvigionamentoFarmaco, conn);
+                        Long approvOID = SqlQueries.insertApprovvigionamentoFarmaco(approvvigionamentoFarmaco, conn);
+                        List<OrdineInRigaDett> ordineInRigaDettList =
+                                SqlQueries.findOrdineInRigaDettaglioByCondition(approvvigionamentoFarmaco.getCodiceMinSan(), conn);
+                        if(ordineInRigaDettList != null && ordineInRigaDettList.size() > 0){
+                            ApprovToRiga approvToRiga = new ApprovToRiga();
+                            approvToRiga.setQuantita(matchedProduct.get().getMissingQuantity());
+                            approvToRiga.setRigaDett(ordineInRigaDettList.get(0));
+                            SqlQueries.insertApprovToRiga(approvOID, approvToRiga, conn);
+                        }
                     }else {
                         Integer updatedQuantity = approvvigionamentoFarmaco.getQuantita() + matchedProduct.get().getMissingQuantity();
                         approvvigionamentoFarmaco.setQuantita(updatedQuantity);
@@ -200,6 +208,8 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                             approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
                         }
                         SqlQueries.updateApprovvigionamentoFarmaco(approvvigionamentoFarmaco, false, conn);
+                        SqlQueries.updateApprovToRigaByApprovvigionamentoFarmaco(
+                                approvvigionamentoFarmaco.getOid(), approvvigionamentoFarmaco.getQuantita(), conn);
                     }
                 }
 

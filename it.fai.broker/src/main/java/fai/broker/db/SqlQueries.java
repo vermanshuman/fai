@@ -972,7 +972,7 @@ public class SqlQueries {
 		}
 	}
 
-	public static void insertApprovvigionamentoFarmaco(ApprovvigionamentoFarmaco approv, Connection conn)
+	public static Long insertApprovvigionamentoFarmaco(ApprovvigionamentoFarmaco approv, Connection conn)
 			throws Exception {
 		final String METH_NAME = new Object() {
 		}.getClass().getEnclosingMethod().getName();
@@ -980,9 +980,11 @@ public class SqlQueries {
 		logger.info(LOG_PREFIX + "...");
 		String sql = null;
 		PreparedStatement stmt = null;
+		Long oid = null;
 		try {
 			if (approv.getOid() == null) {
 				approv.setOid(fai.common.db.SqlQueries.getOidNextVal(conn));
+				oid = approv.getOid();
 			}
 			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertApprovvigionamentoFarmaco.sql");
 			stmt = conn.prepareStatement(sql);
@@ -1018,6 +1020,7 @@ public class SqlQueries {
 			SqlUtilities.closeWithNoException(stmt);
 		}
 
+		return oid;
 	}
 
 	public static void updateApprovvigionamentoFarmaco(ApprovvigionamentoFarmaco approv, boolean updateApprToRigaToo,
@@ -2780,6 +2783,50 @@ public class SqlQueries {
 		}
 		return list;
 
+	}
+
+	public static List<OrdineInRigaDett> findOrdineInRigaDettaglioByCondition(String minsan, Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		String sql;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<OrdineInRigaDett> list = new ArrayList<>();
+		try {
+			String wc = "WHERE ETICHETTA_PERSONALIZZATA=" +  SqlUtilities.getAsStringFieldValue(minsan);
+			Properties params = new Properties();
+			params.setProperty("whereCondition", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getOrdineInRigaDettaglioByCondition.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				OrdineInRigaDett ordineInRigaDett = new OrdineInRigaDett();
+				ordineInRigaDett.setOid(rs.getLong("OID"));
+				list.add(ordineInRigaDett);
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage() + "� nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+
+	}
+
+
+	public static void updateApprovToRigaByApprovvigionamentoFarmaco(long approvvigionamentoFarmacoOID, int quantita, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = "UPDATE FAI_APPROVVIGFARMACO_ORDINRIGA SET QUANTITA = " + quantita + " WHERE OID_APPROVFARMACO = "
+				+ approvvigionamentoFarmacoOID;
+		fai.common.db.SqlQueries.executeUpdate(sql, conn);
 	}
 
 }

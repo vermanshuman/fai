@@ -470,7 +470,6 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 						articles = productOrderRequests
 								.stream()
 								.filter(por -> por != null)
-								//.map(por -> new ArticoloInputBean(false, por.getProductCode(), "", false, por.getQuantity(), ""))
 								.map(por -> new ArticoloInputBean(1, -1, -1, por.getProductCode(), false, por.getQuantity()))
 								.collect(Collectors.toList());
 					}else if(serviceApiLevel.equalsIgnoreCase("2010.001")){
