@@ -499,7 +499,12 @@ public class SqlQueries {
     		break;
       }
       stmt = conn.createStatement();
-      stmt.executeUpdate(sql);
+      int res=stmt.executeUpdate(sql);
+      if (res==0 && !item.getAzione().equals(CsvFarmaclickCommons.AZIONE_INSERIMENTO)) {
+    	SqlUtilities.closeWithNoException(stmt);
+        sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickL.sql", params);
+        stmt.executeUpdate(sql);
+      }
     }
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
@@ -681,8 +686,42 @@ public class SqlQueries {
     }
 
   }
-  
-  
-  
+
+	public static List<Fornitore> getAllFornitore(Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<Fornitore> list = new LinkedList<Fornitore>();
+		try {
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllFornitore.sql");
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			Fornitore f = null;
+			while (rs.next()) {
+				long oid = rs.getLong("OID");
+				f = new Fornitore();
+				f.setOid(oid);
+				f.setCodice(rs.getString("CODICE_FARMACLICK"));
+				list.add(f);
+			}
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", ï¿½" + th.getMessage()
+					+ "ï¿½ nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+	}
 
 }

@@ -50,7 +50,7 @@ public class CsvRecordFarmaclickV extends CsvFarmaclickCommons {
     String value = getString(false, 42, 1);
     if (CollectionsTool.contains(value, allowedValue) == false) {
       //throw new CsvException("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
-      logger.warn("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      //logger.warn("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
     }
     return value;
   }

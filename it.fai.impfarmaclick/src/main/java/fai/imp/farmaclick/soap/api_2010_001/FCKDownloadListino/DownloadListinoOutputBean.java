@@ -221,7 +221,7 @@ public class DownloadListinoOutputBean  implements java.io.Serializable {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:BeanService", "DownloadListinoOutputBean"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("dataOraGenerazioneListino");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "dataOraGenerazioneListino"));
+        elemField.setXmlName(new javax.xml.namespace.QName("", "dataoraAggiornamento"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
         elemField.setNillable(true);
         typeDesc.addFieldDesc(elemField);
@@ -239,7 +239,7 @@ public class DownloadListinoOutputBean  implements java.io.Serializable {
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("tipoRisposta");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "tipoRisposta"));
+        elemField.setXmlName(new javax.xml.namespace.QName("", "TipoRisposta"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
         elemField.setNillable(true);
         typeDesc.addFieldDesc(elemField);

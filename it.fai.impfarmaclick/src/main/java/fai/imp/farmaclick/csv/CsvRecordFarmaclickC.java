@@ -27,12 +27,12 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
   
   public String getCodiceCliente() {
-    return getString(true, 1, 8-2+1, true, "Codice cliente");
+    return getString(true, 1, 8-2+1, false, "Codice cliente");
   }
 
 
   public String getCodiceProdotto() {
-    return getString(true, 9, 16-10+1, true, "Codice prodotto");
+    return getString(true, 9, 16-10+1, false, "Codice prodotto");
   }
 
   public String getCodiceMinSan() {
@@ -44,16 +44,16 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
 
   public String getDescrizioneProdotto() {
-    return getString(true, 38, 78-39+1, true, "Descrizione prodotto");
+    return getString(true, 38, 78-39+1, false, "Descrizione prodotto");
   }
 
   public String getSequenza() {
-    return getString(true, 78, 1, true, "Sequenza");
+    return getString(true, 78, 1, false, "Sequenza");
   }
 
   public Integer getSottosequenza() {
 	try {
-      return getInteger(79, 81-80+1, true, "Sottosequenza");
+      return getInteger(79, 81-80+1, false, "Sottosequenza");
 	}catch(Exception ex) {
 	  logger.warn("problema con parsing getSottosequenza");
 	  return new Integer(0);
@@ -94,7 +94,7 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
 
   public String getFillerNonUtilizzato() {
-    return getString(true, 128, 135-129+1, true, "Filler - Non utilizzato");
+    return getString(true, 128, 135-129+1, false, "Filler - Non utilizzato");
   }
 
   public String getCodiceProdottoOmaggio() {
@@ -106,12 +106,12 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
 
   public Integer getQuantitaProdottoOmaggio() {
-    return getInteger(188, 193-189+1, true, "Quantità prodotto omaggio");
+    return getInteger(188, 193-189+1, false, "Quantità prodotto omaggio");
   }
 
   public Integer getDilazionePagamentoInGiorni() {
 	try {
-      return getInteger(193, 196-194+1, true, "Dilazione pagamento in giorni");
+      return getInteger(193, 196-194+1, false, "Dilazione pagamento in giorni");
 	}catch(Exception ex) {
 	  logger.warn("problema con parsing getDilazionePagamentoInGiorni");
 	  return new Integer(0);
@@ -154,7 +154,7 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
     String value = on0LengthStringNull(getString(true, 210, 1));
     if (CollectionsTool.contains(value, allowedValue) == false) {
       //throw new CsvException("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
-      logger.warn("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      //logger.warn("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
     }
     return value;
   }
@@ -164,7 +164,7 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
     String value = getString(false, 211, 1);
     if (CollectionsTool.contains(value, allowedValue) == false) {
       //throw new CsvException("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
-      logger.warn("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      //logger.warn("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
     }
     return value;
   }
@@ -205,7 +205,7 @@ public class CsvRecordFarmaclickC extends CsvFarmaclickCommons {
   }
 
   public String getFiller() {
-    return getString(true, 244, 278-245+1, true, "Filler");
+    return getString(true, 244, 278-245+1, false, "Filler");
   }
   
 }

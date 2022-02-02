@@ -31,11 +31,11 @@ public class CsvRecordFarmaclickL extends CsvFarmaclickCommons {
   }
   
   public String getCodiceCliente() {
-    return getString(true, 1, 8-2+1, true, "Codice cliente");
+    return getString(true, 1, 8-2+1, false, "Codice cliente");
   }
 
   public String getCodiceProdotto() {
-    return getString(true, 9, 16-10+1, true, "Codice Prodotto");
+    return getString(true, 9, 16-10+1, false, "Codice Prodotto");
   }
 
   public String getCodiceMinSan() {
@@ -47,11 +47,11 @@ public class CsvRecordFarmaclickL extends CsvFarmaclickCommons {
   }
 
   public String getDescrizioneProdotto() {
-    return getString(true, 38, 78-39+1, true, "Descrizione prodotto");
+    return getString(true, 38, 78-39+1, false, "Descrizione prodotto");
   }
 
   public String getCategoriaTipoProdotto() {
-    return getString(true, 78, 80-79+1, true, "Categoria tipo prodotto");
+    return getString(true, 78, 80-79+1, false, "Categoria tipo prodotto");
   }
 
   public Double getPrezzoAlPubblico() {
@@ -68,10 +68,12 @@ public class CsvRecordFarmaclickL extends CsvFarmaclickCommons {
 
   public String getFillerNonUtilizzato() {
     String s = getString(false, 105, 1, false, "Filler - Non utilizzato");
+    /*
     final String EXPECTED_VALUE = " ";
     if (!EXPECTED_VALUE.equals(s)) {
       throw new CsvException("trovato Fine Record "+s+"; valori ammessi: "+EXPECTED_VALUE.length()+" caratteri spazio (riga: "+getLine()+")");
     }
+    */
     return s;
   }
 
@@ -128,7 +130,7 @@ public class CsvRecordFarmaclickL extends CsvFarmaclickCommons {
     String value = getString(false, 131, 1);
     if (CollectionsTool.contains(value, allowedValue) == false) {
       //throw new CsvException("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
-      logger.warn("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      //logger.warn("trovato Allineamento Scadenza "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
     }
     return value;
   }
@@ -138,7 +140,7 @@ public class CsvRecordFarmaclickL extends CsvFarmaclickCommons {
     String value = getString(false, 132, 1);
     if (CollectionsTool.contains(value, allowedValue) == false) {
       //throw new CsvException("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
-      logger.warn("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
+      //logger.warn("trovato Periodicità Fartturazione "+value+"; valori ammessi: "+CollectionsTool.asJson(allowedValue)+" (riga: "+getLine()+")");
     }
     return value;
   }
@@ -165,7 +167,7 @@ public class CsvRecordFarmaclickL extends CsvFarmaclickCommons {
 	try {
       return getDouble(149, 160-150+1, nf4, true, "Prezzo al pubblico deivato");
 	}catch(Exception ex) {
-	  logger.warn("problema con parsing getPrezzoAlPubblicoDeivato");
+	  //logger.warn("problema con parsing getPrezzoAlPubblicoDeivato");
 	  return new Double(0);
 	}
   }
@@ -198,11 +200,15 @@ public class CsvRecordFarmaclickL extends CsvFarmaclickCommons {
 
   
   public Double getSommaSconto1ESconto2() {
-    return getDouble(189, 193-190+1, nf2, true, "Somma sconto 1 e sconto 2");
+	try {
+      return getDouble(189, 193-190+1, nf2, true, "Somma sconto 1 e sconto 2");
+	}catch (CsvException e) {
+	  return new Double(0);
+	}
   }
 
   public String getFiller() {
-    return getString(true, 193, 278-194+1, true, "Filler");
+    return getString(true, 193, 278-194+1, false, "Filler");
   }
 
 }
