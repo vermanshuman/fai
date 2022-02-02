@@ -120,11 +120,6 @@ public class ComifarSupplierService extends AbstractSupplierService {
                 .collect(Collectors.toList()));
 
         List<ProcessedOrderBean> processedOrders = processedOrdersBean.getProcessedOrders();
-
-        processedOrders.stream()
-                .forEach(p -> {
-                    System.out.println("OOOOOOOOOOOOOOOOOO " + p.getSusbituteMinsan());
-                });
         OrdineOut ordineOut = new OrdineOut();
 
         ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
@@ -170,8 +165,8 @@ public class ComifarSupplierService extends AbstractSupplierService {
 
                         if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
                                 !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0")){
-                            appr.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
-                            appr.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
+                            approvvigionamentoFarmaco.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
+                            approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
                         }else {
                             approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
                         }
@@ -183,8 +178,8 @@ public class ComifarSupplierService extends AbstractSupplierService {
                         approvvigionamentoFarmaco.setCodiceEan(matchedProduct.get().getProductCode());
                         if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
                                 !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0")){
-                            appr.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
-                            appr.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
+                            approvvigionamentoFarmaco.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
+                            approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
                         }else {
                             approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
                         }
