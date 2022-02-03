@@ -2828,4 +2828,99 @@ public class SqlQueries {
 		fai.common.db.SqlQueries.executeUpdate(sql, conn);
 	}
 
+	public static List<ApprovToRiga> findOrdineInRigaByCondition(String whereCondition, Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		String sql;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<ApprovToRiga> list = new ArrayList<>();
+		try {
+
+			String wc = StringUtils.isBlank(whereCondition) ? "1=1" : whereCondition;
+			Properties params = new Properties();
+			params.setProperty("whereCondition", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getOrdineInRigaByCondition.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				ApprovToRiga a2r = new ApprovToRiga();
+				a2r.setOid(rs.getLong("OID"));
+				a2r.setQuantita(rs.getInt("QUANTITA"));
+				OrdineInRigaDett riga = new OrdineInRigaDett();
+				riga.setOid(rs.getLong("OID_ORDINEINRIGA"));
+				a2r.setRigaDett(riga);
+				list.add(a2r);
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage() + "� nell'esecuzione del metodo " + METH_NAME;
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+	}
+
+	public static void updateApprovvigionamentoFarmacoMissing(ApprovvigionamentoFarmaco approv, boolean updateApprToRigaToo,
+													   Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		PreparedStatement stmt = null;
+		try {
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "markApprovvigionamentoFarmacoMissing.sql");
+			stmt = conn.prepareStatement(sql);
+			// OID
+			stmt.setLong(1, approv.getOid());
+			stmt.executeUpdate();
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage()
+					+ "� nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
+	}
+
+	public static void updateOrdineInRigaQuantityByCondition(ApprovToRiga approvToRiga, Long approvOID, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		PreparedStatement stmt = null;
+		try {
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateOrdineInRigaQuantityByCondition.sql");
+			stmt = conn.prepareStatement(sql);
+			// QUANTITA
+			stmt.setInt(1, approvToRiga.getQuantita());
+			// OID_APPROVFARMACO
+			stmt.setLong(2, approvOID);
+			// OID
+			stmt.setLong(3, approvToRiga.getOid());
+			stmt.executeUpdate();
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage()
+					+ "� nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
+	}
 }

@@ -155,48 +155,56 @@ public class ComifarSupplierService extends AbstractSupplierService {
                 if (matchedProduct.get().getMissingQuantity() != null &&
                         matchedProduct.get().getMissingQuantity() > 0) {
 
-                    ApprovvigionamentoFarmaco approvvigionamentoFarmaco
-                            = SqlQueries.checkMissingApprovvigionamentoFarmaco(codiceMinsan, conn);
-                    if(approvvigionamentoFarmaco == null){
-                        approvvigionamentoFarmaco = new ApprovvigionamentoFarmaco();
-                        approvvigionamentoFarmaco.setQuantita(matchedProduct.get().getMissingQuantity());
-                        approvvigionamentoFarmaco.setStatus(StatusInfo.newToProcessInstance(null, null));
-                        approvvigionamentoFarmaco.setMagazzinoAcronym(appr.getMagazzinoAcronym());
-
-                        if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
-                                !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0")){
-                            approvvigionamentoFarmaco.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
-                            approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
-                        }else {
-                            approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
-                        }
-                        Long approvOID = SqlQueries.insertApprovvigionamentoFarmaco(approvvigionamentoFarmaco, conn);
-                        List<OrdineInRigaDett> ordineInRigaDettList =
-                                SqlQueries.findOrdineInRigaDettaglioByCondition(approvvigionamentoFarmaco.getCodiceMinSan(), conn);
-                        if(ordineInRigaDettList != null && ordineInRigaDettList.size() > 0){
-                            ApprovToRiga approvToRiga = new ApprovToRiga();
-                            approvToRiga.setQuantita(matchedProduct.get().getMissingQuantity());
-                            approvToRiga.setRigaDett(ordineInRigaDettList.get(0));
-                            SqlQueries.insertApprovToRiga(approvOID, approvToRiga, conn);
-                        }
+                    if(matchedProduct.get().getMissingQuantity().equals(appr.getQuantita())){
+                        SqlQueries.updateApprovvigionamentoFarmacoMissing(appr, false, conn);
                     }else {
-                        approvvigionamentoFarmaco.setFornitore(appr.getFornitore());
-                        Integer updatedQuantity = approvvigionamentoFarmaco.getQuantita() + matchedProduct.get().getMissingQuantity();
-                        approvvigionamentoFarmaco.setQuantita(updatedQuantity);
-                        approvvigionamentoFarmaco.setCodiceEan(matchedProduct.get().getProductCode());
-                        if(StringUtils.isNotBlank(matchedProduct.get().getSusbituteMinsan()) &&
-                                !matchedProduct.get().getSusbituteMinsan().equalsIgnoreCase("0")){
-                            approvvigionamentoFarmaco.setCodiceSostituitoMinsan(matchedProduct.get().getProductCode());
-                            approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getSusbituteMinsan());
-                        }else {
-                            approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
+                        ApprovvigionamentoFarmaco approvvigionamentoFarmaco
+                                = SqlQueries.checkMissingApprovvigionamentoFarmaco(codiceMinsan, conn);
+                        if(approvvigionamentoFarmaco == null){
+                            approvvigionamentoFarmaco = new ApprovvigionamentoFarmaco();
+                            approvvigionamentoFarmaco.setQuantita(matchedProduct.get().getMissingQuantity());
+                            approvvigionamentoFarmaco.setStatus(StatusInfo.newToProcessInstance(null, null));
+                            approvvigionamentoFarmaco.setMagazzinoAcronym(appr.getMagazzinoAcronym());
+                            approvvigionamentoFarmaco.setCodiceMinSan(appr.getCodiceMinSan());
+                            Long approvOID = SqlQueries.insertApprovvigionamentoFarmaco(approvvigionamentoFarmaco, conn);
+
+                            List<OrdineInRigaDett> ordineInRigaDettList =
+                                    SqlQueries.findOrdineInRigaDettaglioByCondition(
+                                            approvvigionamentoFarmaco.getCodiceMinSan(), conn);
+                            if (ordineInRigaDettList != null && ordineInRigaDettList.size() > 0) {
+                                List<ApprovToRiga> approvToRigas =
+                                        SqlQueries.findOrdineInRigaByCondition(" WHERE OID_APPROVFARMACO=" + appr.getOid()
+                                                + " AND OID_ORDINEINRIGA=" + ordineInRigaDettList.get(0).getOid(), conn);
+
+                                ApprovToRiga approvToRiga = approvToRigas.get(0);
+                                Integer currentQuantity = approvToRiga.getQuantita();
+                                if(matchedProduct.get().getMissingQuantity() > currentQuantity){
+                                    approvToRiga.setQuantita(currentQuantity-matchedProduct.get().getMissingQuantity());
+                                    SqlQueries.updateOrdineInRigaQuantityByCondition(approvToRiga,appr.getOid(), conn);
+                                    approvToRiga = new ApprovToRiga();
+                                    approvToRiga.setQuantita(matchedProduct.get().getMissingQuantity());
+                                    approvToRiga.setRigaDett(ordineInRigaDettList.get(0));
+                                    SqlQueries.insertApprovToRiga(approvOID, approvToRiga, conn);
+                                }else {
+                                    SqlQueries.updateOrdineInRigaQuantityByCondition(approvToRiga,approvOID, conn);
+                                }
+                            }
                         }
-                        SqlQueries.updateApprovvigionamentoFarmaco(approvvigionamentoFarmaco, false, conn);
-                        SqlQueries.updateApprovToRigaByApprovvigionamentoFarmaco(
-                                approvvigionamentoFarmaco.getOid(), approvvigionamentoFarmaco.getQuantita(), conn);
+                        else {
+                            approvvigionamentoFarmaco.setFornitore(appr.getFornitore());
+                            Integer updatedQuantity = approvvigionamentoFarmaco.getQuantita() + matchedProduct.get().getMissingQuantity();
+                            approvvigionamentoFarmaco.setQuantita(updatedQuantity);
+                            approvvigionamentoFarmaco.setCodiceEan(matchedProduct.get().getProductCode());
+                            approvvigionamentoFarmaco.setCodiceMinSan(matchedProduct.get().getProductCode());
+                            SqlQueries.updateApprovvigionamentoFarmaco(approvvigionamentoFarmaco, false, conn);
+                            SqlQueries.updateApprovToRigaByApprovvigionamentoFarmaco(
+                                    approvvigionamentoFarmaco.getOid(), approvvigionamentoFarmaco.getQuantita(), conn);
+                        }
+                        Integer updatedQuantity = appr.getQuantita() - matchedProduct.get().getMissingQuantity();
+                        appr.setQuantita(updatedQuantity);
+                        SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
                     }
                 }
-
                 if (matchedProduct.get().getOrderedQuantity() != null &&
                         matchedProduct.get().getOrderedQuantity() > 0) {
                     appr.setQuantita(matchedProduct.get().getOrderedQuantity());
