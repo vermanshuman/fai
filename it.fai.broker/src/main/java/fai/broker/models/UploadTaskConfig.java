@@ -89,12 +89,12 @@ public class UploadTaskConfig extends AbstractModel {
     /**
      * STATUS
      **/
-    public boolean setStatus(UploadStatusInfo status) {
+    public boolean setStatus(StatusInfo status) {
         return setObject(STATUS, status);
     }
 
-    public UploadStatusInfo getStatus() {
-        return (UploadStatusInfo) getObject(STATUS);
+    public StatusInfo getStatus() {
+        return (StatusInfo) getObject(STATUS);
     }
 
 

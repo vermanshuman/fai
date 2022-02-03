@@ -6,6 +6,7 @@ import fai.common.db.SqlQueries;
 import it.fai.be.constant.ValueConstant;
 import it.fai.be.dto.CSVFileDTO;
 import it.fai.be.dto.UploadTaskDTO;
+import it.fai.be.enums.ProcessingStatus;
 import it.fai.be.service.UploadTaskService;
 import it.fai.be.utils.DateUtil;
 import it.fai.be.utils.FilesUtils;
@@ -53,7 +54,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
                 uploadTaskConfig.setDescr("Ordini CSV");
                 uploadTaskConfig.setCsvFileName(filename);
                 uploadTaskConfig.setMagazzinoAcronym(csvFileDTO.getMagazzinoAcronym());
-                uploadTaskConfig.setStatus(UploadStatusInfo.newToProcessInstance(null, null));
+                uploadTaskConfig.setStatus(StatusInfo.newToProcessInstance(null, null));
                 uploadTaskConfig.setCreationTs(Calendar.getInstance());
                 fai.broker.db.SqlQueries.insertUploadTaskConfig(uploadTaskConfig, conn);
             }
@@ -153,7 +154,20 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         if(uploadTaskConfig.getCreationTs() != null)
             uploadTaskDTO.setCreationDate(uploadTaskConfig.getCreationTs().getTime());
         uploadTaskDTO.setCsvFileName(uploadTaskConfig.getCsvFileName());
-        uploadTaskDTO.setExecutionStatus(uploadTaskConfig.getStatus().getStatusDescr());
+        if(uploadTaskConfig.getStatus() != null && uploadTaskConfig.getStatus().getStatus() != null){
+            ItemStatus itemStatus = uploadTaskConfig.getStatus().getStatus();
+           if(StringUtils.isNotBlank(itemStatus.getDescr())){
+               if(itemStatus.getDescr().equalsIgnoreCase("TO PROCESS")){
+                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.ESEGUIRE.toString());
+               }else if(itemStatus.getDescr().equalsIgnoreCase("PROCESSING")){
+                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.INCORSO.toString());
+               }else if(itemStatus.getDescr().equalsIgnoreCase("PROCESSED")){
+                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.COMPLETATO.toString());
+               }else if(itemStatus.getDescr().equalsIgnoreCase("ERROR")){
+                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.ANNULATO.toString());
+               }
+           }
+        }
         uploadTaskDTO.setMagazzinoAcronym(uploadTaskConfig.getMagazzinoAcronym());
         uploadTaskDTO.setOrderStatus(uploadTaskConfig.getOrderStatus());
         uploadTaskDTO.setFulFilledOrderCount(1);

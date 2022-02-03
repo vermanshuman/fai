@@ -9,10 +9,7 @@ import fai.common.util.Timeout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 public class SqlQueries {
@@ -1926,7 +1923,7 @@ public class SqlQueries {
 			// MAGAZZINO_ACRONYM
 			SqlUtilities.setString(stmt, ++col, uploadTaskConfig.getMagazzinoAcronym());
 			// OID_STATUS / STATUS_*
-			col = setUploadCSVStatusInfo(stmt, ++col, uploadTaskConfig.getStatus());
+			col = setStatusInfo(stmt, ++col, uploadTaskConfig.getStatus());
 			// CREATION_TS
 			SqlUtilities.setCalendar(stmt, ++col, uploadTaskConfig.getCreationTs());
 			// RUN_START_TS
@@ -1973,7 +1970,9 @@ public class SqlQueries {
 				uploadTaskConfig.setDescr(rs.getString("TASK_DESCRIPTION"));
 				uploadTaskConfig.setCsvFileName(rs.getString("TASK_CSV_FILE_NAME"));
 				uploadTaskConfig.setMagazzinoAcronym(rs.getString("TASK_MAGAZZINO_ACRONYM"));
-				uploadTaskConfig.setStatus(asUploadStatusInfo(rs, ""));
+				StatusInfo si = StatusInfo.newInstance(ItemStatus.getByOid(rs.getLong("OID_STATUS")), null,
+						null);
+				uploadTaskConfig.setStatus(si);
 				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "TASK_CREATION_TS"));
 				list.add(uploadTaskConfig);
 			}
@@ -2017,7 +2016,7 @@ public class SqlQueries {
 				uploadTaskConfig.setDescr(rs.getString("DESCR"));
 				uploadTaskConfig.setCsvFileName(rs.getString("CSV_FILE_NAME"));
 				uploadTaskConfig.setMagazzinoAcronym(rs.getString("MAGAZZINO_ACRONYM"));
-				uploadTaskConfig.setStatus(asUploadStatusInfo(rs, ""));
+				uploadTaskConfig.setStatus(asStatusInfo(rs, ""));
 				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "CREATION_TS"));
 				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "RUN_START_TS"));
 				uploadTaskConfig.setCreationTs(SqlUtilities.getCalendar(rs, "RUN_END_TS"));
