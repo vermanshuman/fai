@@ -459,6 +459,7 @@ public class SqlQueries {
     logger.debug/* compare in un loop, lo metto a livello debug */(LOG_PREFIX + "...");
     String sql = null;
     Statement stmt = null;
+    Statement stmt2 = null;
     try {
       Properties params = new Properties();
       params.setProperty("OID_FORNITORE", ""+oidFornitore);
@@ -499,11 +500,12 @@ public class SqlQueries {
     		break;
       }
       stmt = conn.createStatement();
+      stmt2 = null;
       int res=stmt.executeUpdate(sql);
       if (res==0 && !item.getAzione().equals(CsvFarmaclickCommons.AZIONE_INSERIMENTO)) {
-    	SqlUtilities.closeWithNoException(stmt);
         sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickL.sql", params);
-        stmt.executeUpdate(sql);
+        stmt2 = conn.createStatement();
+        stmt2.executeUpdate(sql);
       }
     }
     catch (Throwable th) {
@@ -513,6 +515,7 @@ public class SqlQueries {
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
+      SqlUtilities.closeWithNoException(stmt2);
     }
   }
   
