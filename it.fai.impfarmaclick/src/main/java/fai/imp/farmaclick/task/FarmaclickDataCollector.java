@@ -76,6 +76,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		loginWebService();
 
 		Set<String> codiciFornitoreToSkip = new HashSet<String>();
+		Set<String> codiciFornitoreNoListino = new HashSet<String>();
 		if (resumePrevSession == true) {
 			codiciFornitoreToSkip = SqlQueries.getAllFornitoreCodiceWithDataAlreadyStored(conn);
 		}
@@ -100,9 +101,11 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 					}
 					else {
 						logger.warn(LOG_PREFIX + " "+codiceFornitore+"; listino non trovato");
+						codiciFornitoreNoListino.add(codiceFornitore);
 					}
 				}else {
 					logger.info(LOG_PREFIX + " "+codiceFornitore+" non presente in FAI_FORNITORE ...");
+					codiciFornitoreNoListino.add(codiceFornitore);
 				}
 			}
 		}
@@ -112,6 +115,10 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 		//
 		List<Fornitore> fornitori = SqlQueries.findAllFornitoreFromConfig(conn,config.getOid());
 		for (Fornitore fornitore : fornitori) {
+			if (codiciFornitoreNoListino.contains(fornitore.getCodice())){
+				logger.info(LOG_PREFIX + " "+fornitore.getCodice()+" nessun listino aggiornato/nuovo ...");
+				continue;
+			}
 			try {
 				logger.info(LOG_PREFIX + " "+fornitore.getCodice()+" download e registrazione dati in banca dati ...");
 				List<CsvException> errors = doCollect_fornitore(fornitore);
