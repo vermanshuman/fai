@@ -2907,8 +2907,10 @@ public class SqlQueries {
 			stmt.setInt(1, approvToRiga.getQuantita());
 			// OID_APPROVFARMACO
 			stmt.setLong(2, approvOID);
+			// OID_ORDINEINRIGA
+			stmt.setLong(3, approvToRiga.getRigaDett().getOid());
 			// OID
-			stmt.setLong(3, approvToRiga.getOid());
+			stmt.setLong(4, approvToRiga.getOid());
 			stmt.executeUpdate();
 		} catch (Throwable th) {
 			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage()

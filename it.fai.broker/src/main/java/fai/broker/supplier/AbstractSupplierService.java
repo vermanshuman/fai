@@ -3,14 +3,12 @@ package fai.broker.supplier;
 import fai.broker.db.SqlQueries;
 import fai.broker.models.*;
 import fai.common.util.ExceptionsTool;
-import fai.imp.base.models.FaiImportConfig;
+import fai.imp.base.bean.ProcessedOrderBean;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractSupplierService implements SupplierService {
   
@@ -67,7 +65,7 @@ public abstract class AbstractSupplierService implements SupplierService {
    * Il metodo per la "clonazione" serve scongiurare il pericolo che le operazioni sui riferimenti
    * alle istanze in cache alterino il contenuto di quest'ultima.
    * 
-   * @param source
+   * @param masters
    * @return
    * @throws Exception
    */
@@ -257,7 +255,7 @@ public abstract class AbstractSupplierService implements SupplierService {
   /**
    * Fare riferimento a quanto documentato per {@link #setRichiestaDisponibilitaReq(List, ItemStatus, String, String)}
    * 
-   * @param afList
+   * @param af
    * @param status
    * @param statusDescr
    * @param statusTechDescr
@@ -271,7 +269,7 @@ public abstract class AbstractSupplierService implements SupplierService {
   /**
    * Fare riferimento a quanto documentato per {@link #setRichiestaDisponibilitaRes(List, ItemStatus, String, String)}
    * 
-   * @param afList
+   * @param af
    * @param status
    * @param statusDescr
    * @param statusTechDescr
@@ -285,7 +283,7 @@ public abstract class AbstractSupplierService implements SupplierService {
   /**
    * Fare riferimento a quanto documentato per {@link #setConfermaDisponibilitaReq(List, ItemStatus, String, String)}
    * 
-   * @param afList
+   * @param af
    * @param status
    * @param statusDescr
    * @param statusTechDescr
@@ -299,7 +297,7 @@ public abstract class AbstractSupplierService implements SupplierService {
   /**
    * Fare riferimento a quanto documentato per {@link #setConfermaDisponibilitaRes(List, ItemStatus, String, String)}
    * 
-   * @param afList
+   * @param af
    * @param status
    * @param statusDescr
    * @param statusTechDescr
@@ -406,7 +404,78 @@ public abstract class AbstractSupplierService implements SupplierService {
     conn.commit();
   }
 
-
-
-  
+  protected  void manageOrderResponse(ProcessedOrderBean processedOrder, ApprovvigionamentoFarmaco appr, String codiceMinsan, OrdineOut ordineOut) throws Exception {
+    if (processedOrder.getMissingQuantity() != null &&
+            processedOrder.getMissingQuantity() > 0) {
+      if(processedOrder.getMissingQuantity().equals(appr.getQuantita())){
+        SqlQueries.updateApprovvigionamentoFarmacoMissing(appr, false, conn);
+      }else {
+        ApprovvigionamentoFarmaco approvvigionamentoFarmaco
+                = SqlQueries.checkMissingApprovvigionamentoFarmaco(codiceMinsan, conn);
+        if(approvvigionamentoFarmaco == null){
+          approvvigionamentoFarmaco = new ApprovvigionamentoFarmaco();
+          approvvigionamentoFarmaco.setQuantita(processedOrder.getMissingQuantity());
+          approvvigionamentoFarmaco.setStatus(StatusInfo.newToProcessInstance(null, null));
+          approvvigionamentoFarmaco.setMagazzinoAcronym(appr.getMagazzinoAcronym());
+          approvvigionamentoFarmaco.setCodiceMinSan(codiceMinsan);
+          List<OrdineInRigaDett> ordineInRigaDettList =
+                  SqlQueries.findOrdineInRigaDettaglioByCondition(
+                          approvvigionamentoFarmaco.getCodiceMinSan(), conn);
+          if (ordineInRigaDettList != null && ordineInRigaDettList.size() > 0) {
+            OrdineInRigaDett ordineInRigaDett = new OrdineInRigaDett();
+            ordineInRigaDett.setOid(ordineInRigaDettList.get(0).getOid());
+            List<ApprovToRiga> approvToRigas =
+                    SqlQueries.findOrdineInRigaByCondition(" WHERE OID_APPROVFARMACO=" + appr.getOid(), conn);
+            Long approvOID = SqlQueries.insertApprovvigionamentoFarmaco(approvvigionamentoFarmaco, conn);
+            boolean insertApprovToRiga = true;
+            if(approvToRigas.size() > 1){
+              Integer totalQuantityNotMatched = approvToRigas.stream()
+                      .filter(a2r -> !a2r.getRigaDett().getOid().equals(ordineInRigaDett.getOid()))
+                      .mapToInt(ApprovToRiga::getQuantita).sum();
+              Optional<ApprovToRiga> matchedApprovToRiga = approvToRigas.stream()
+                      .filter(a2r -> a2r.getRigaDett().getOid().equals(ordineInRigaDett.getOid()))
+                      .findFirst();
+              ApprovToRiga approvToRiga = matchedApprovToRiga.get();
+              Integer currentQuantity = approvToRiga.getQuantita();
+              Integer missingQuantity = processedOrder.getMissingQuantity();
+              Integer availableQuantity = appr.getQuantita() - missingQuantity;
+              if(currentQuantity > missingQuantity){
+                approvToRiga.setQuantita(availableQuantity-totalQuantityNotMatched);
+                SqlQueries.updateOrdineInRigaQuantityByCondition(approvToRiga,appr.getOid(), conn);
+              }else {
+                insertApprovToRiga = false;
+                SqlQueries.updateOrdineInRigaQuantityByCondition(approvToRiga,approvOID, conn);
+              }
+            }
+            if(insertApprovToRiga){
+              ApprovToRiga approvToRigaMissing = new ApprovToRiga();
+              approvToRigaMissing.setQuantita(processedOrder.getMissingQuantity());
+              approvToRigaMissing.setRigaDett(ordineInRigaDettList.get(0));
+              SqlQueries.insertApprovToRiga(approvOID, approvToRigaMissing, conn);
+            }
+          }
+        }
+        else {
+          approvvigionamentoFarmaco.setFornitore(appr.getFornitore());
+          Integer updatedQuantity = approvvigionamentoFarmaco.getQuantita() + processedOrder.getMissingQuantity();
+          approvvigionamentoFarmaco.setQuantita(updatedQuantity);
+          approvvigionamentoFarmaco.setCodiceEan(processedOrder.getProductCode());
+          approvvigionamentoFarmaco.setCodiceMinSan(processedOrder.getProductCode());
+          SqlQueries.updateApprovvigionamentoFarmaco(approvvigionamentoFarmaco, false, conn);
+          SqlQueries.updateApprovToRigaByApprovvigionamentoFarmaco(
+                  approvvigionamentoFarmaco.getOid(), approvvigionamentoFarmaco.getQuantita(), conn);
+        }
+      }
+    }
+    if (processedOrder.getOrderedQuantity() != null && processedOrder.getOrderedQuantity() > 0) {
+      appr.setQuantita(processedOrder.getOrderedQuantity());
+      appr.setStatus(StatusInfo.newProcessedInstance(null, null));
+      appr.setDisponibilitaConfermataReq(Calendar.getInstance());
+      if(StringUtils.isNotBlank(processedOrder.getSusbituteMinsan()) &&
+              !processedOrder.getSusbituteMinsan().equalsIgnoreCase("0"))
+        appr.setCodiceSostituitoMinsan(processedOrder.getProductCode());
+      appr.setOrdineOut(ordineOut);
+      SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
+    }
+  }
 }
