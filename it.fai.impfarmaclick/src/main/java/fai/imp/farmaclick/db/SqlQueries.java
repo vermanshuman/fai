@@ -334,6 +334,7 @@ public class SqlQueries {
     logger.debug/* compare in un loop, lo metto a livello debug */(LOG_PREFIX + "...");
     String sql = null;
     Statement stmt = null;
+    Statement stmt2 = null;
     try {
       Properties params = new Properties();
       params.setProperty("OID_FORNITORE", ""+oidFornitore);
@@ -352,7 +353,13 @@ public class SqlQueries {
       		break;
       }
       stmt = conn.createStatement();
-      stmt.executeUpdate(sql);
+      stmt2 = null;
+      int res=stmt.executeUpdate(sql);
+      if (res==0 && !record.getAzione().equals(CsvFarmaclickCommons.AZIONE_INSERIMENTO)) {
+        sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickA.sql", params);
+        stmt2 = conn.createStatement();
+        stmt2.executeUpdate(sql);
+      }
     }
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
@@ -361,6 +368,7 @@ public class SqlQueries {
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
+      SqlUtilities.closeWithNoException(stmt2);
     }
   }
 
@@ -371,6 +379,7 @@ public class SqlQueries {
     logger.debug/* compare in un loop, lo metto a livello debug */(LOG_PREFIX + "...");
     String sql = null;
     Statement stmt = null;
+    Statement stmt2 = null;
     try {
       Properties params = new Properties();
       params.setProperty("OID_FORNITORE", ""+oidFornitore);
@@ -411,7 +420,13 @@ public class SqlQueries {
     		break;
       }
       stmt = conn.createStatement();
-      stmt.executeUpdate(sql);
+      stmt2 = null;
+      int res=stmt.executeUpdate(sql);
+      if (res==0 && !item.getAzione().equals(CsvFarmaclickCommons.AZIONE_INSERIMENTO)) {
+        sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickC.sql", params);
+        stmt2 = conn.createStatement();
+        stmt2.executeUpdate(sql);
+      }
     }
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
@@ -420,6 +435,7 @@ public class SqlQueries {
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
+      SqlUtilities.closeWithNoException(stmt2);
     }
   }
 
@@ -526,6 +542,7 @@ public class SqlQueries {
     logger.debug/* compare in un loop, lo metto a livello debug */(LOG_PREFIX + "...");
     String sql = null;
     Statement stmt = null;
+    Statement stmt2 = null;
     try {
       Properties params = new Properties();
       params.setProperty("OID_FORNITORE", ""+oidFornitore);
@@ -543,7 +560,13 @@ public class SqlQueries {
     		break;
       }
       stmt = conn.createStatement();
-      stmt.executeUpdate(sql);
+      stmt2 = null;
+      int res=stmt.executeUpdate(sql);
+      if (res==0 && !item.getAzione().equals(CsvFarmaclickCommons.AZIONE_INSERIMENTO)) {
+        sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickR.sql", params);
+        stmt2 = conn.createStatement();
+        stmt2.executeUpdate(sql);
+      }
     }
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
@@ -552,6 +575,7 @@ public class SqlQueries {
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
+      SqlUtilities.closeWithNoException(stmt2);
     }
   }
 
@@ -561,6 +585,7 @@ public class SqlQueries {
     logger.debug/* compare in un loop, lo metto a livello debug */(LOG_PREFIX + "...");
     String sql = null;
     Statement stmt = null;
+    Statement stmt2 = null;
     try {
       Properties params = new Properties();
       params.setProperty("OID_FORNITORE", ""+oidFornitore);
@@ -583,7 +608,13 @@ public class SqlQueries {
     		break;
       }
       stmt = conn.createStatement();
-      stmt.executeUpdate(sql);
+      stmt2 = null;
+      int res=stmt.executeUpdate(sql);
+      if (res==0 && !item.getAzione().equals(CsvFarmaclickCommons.AZIONE_INSERIMENTO)) {
+        sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickV.sql", params);
+        stmt2 = conn.createStatement();
+        stmt2.executeUpdate(sql);
+      }
     }
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
@@ -592,6 +623,7 @@ public class SqlQueries {
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
+      SqlUtilities.closeWithNoException(stmt2);
     }
   }
 
@@ -601,6 +633,7 @@ public class SqlQueries {
     logger.debug/* compare in un loop, lo metto a livello debug */(LOG_PREFIX + "...");
     String sql = null;
     Statement stmt = null;
+    Statement stmt2 = null;
     try {
       Properties params = new Properties();
       params.setProperty("OID_FORNITORE", ""+oidFornitore);
@@ -616,7 +649,13 @@ public class SqlQueries {
     		break;
       }
       stmt = conn.createStatement();
-      stmt.executeUpdate(sql);
+      stmt2 = null;
+      int res=stmt.executeUpdate(sql);
+      if (res==0 && !item.getAzione().equals(CsvFarmaclickCommons.AZIONE_INSERIMENTO)) {
+        sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertCsvRecordFarmaclickZ.sql", params);
+        stmt2 = conn.createStatement();
+        stmt2.executeUpdate(sql);
+      }
     }
     catch (Throwable th) {
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
@@ -625,6 +664,7 @@ public class SqlQueries {
     }
     finally {
       SqlUtilities.closeWithNoException(stmt);
+      SqlUtilities.closeWithNoException(stmt2);
     }
   }
   
