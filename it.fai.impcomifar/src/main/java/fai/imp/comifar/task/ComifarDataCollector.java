@@ -349,7 +349,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 	}
 
 	@Override
-	protected List<ProductBean> doCollectData_getAvailability(List<ProductBean> products) throws Exception {
+	protected List<ProductBean> doCollectData_getAvailability(List<ProductBean> products, String codiceFornitore) throws Exception {
 		
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
@@ -408,7 +408,7 @@ public class ComifarDataCollector extends AbstractDataCollector{
 	}
 
 	@Override
-	protected ProcessedOrdersBean do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception {
+	protected ProcessedOrdersBean do_OrderProducts(List<ProductBean> productOrderRequests, String codiceFornitore) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");

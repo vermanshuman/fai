@@ -179,7 +179,7 @@ public class ComifarSupplierService extends AbstractSupplierService {
         FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("COMIFAR", null, conn);
         AbstractDataCollector dataCollector =
                 new fai.imp.comifar.task.ComifarDataCollector(config, conn);
-        return dataCollector.doGetAvailiblityData(products);
+        return dataCollector.doGetAvailiblityData(products, fornitore.getCodice());
     }
 
     private ProcessedOrdersBean orderProducts(List<ProductBean> products) throws Exception {
@@ -190,7 +190,7 @@ public class ComifarSupplierService extends AbstractSupplierService {
         FaiImportConfig config = fai.imp.base.db.SqlQueries.getFaiImportConfig("COMIFAR",  conn);
         AbstractDataCollector dataCollector =
                 new fai.imp.comifar.task.ComifarDataCollector(config, conn);
-        return dataCollector.doOrderProducts(products);
+        return dataCollector.doOrderProducts(products, fornitore.getCodice());
     }
 
 }

@@ -214,7 +214,7 @@ public abstract class AbstractDataCollector {
 	 */
 	protected abstract void doCollectData_prepare_startNewSession() throws Exception;
 
-	public List<ProductBean> doGetAvailiblityData(List<ProductBean> products) throws Exception {
+	public List<ProductBean> doGetAvailiblityData(List<ProductBean> products, String  codiceFornitore) throws Exception {
 		try {
 			reloadConfig();
 			setProductCodes(
@@ -222,7 +222,7 @@ public abstract class AbstractDataCollector {
 					.map(p -> p.getProductCode() )
 					.collect(Collectors.toList()));
 			do_prepare_specificSetup();
-			return doCollectData_getAvailability(products);
+			return doCollectData_getAvailability(products, codiceFornitore);
 		}
 		catch (Throwable th) {
 			String error = "Eccezione " + th.getClass().getName() + ", " + th.getMessage() + "";
@@ -232,12 +232,12 @@ public abstract class AbstractDataCollector {
 	}
 
 
-	public ProcessedOrdersBean doOrderProducts(List<ProductBean> productOrderRequests) throws Exception {
+	public ProcessedOrdersBean doOrderProducts(List<ProductBean> productOrderRequests, String codiceFornitore) throws Exception {
 		try {
 			reloadConfig();
 			setProductOrderRequests(productOrderRequests);
 			do_prepare_specificSetup();
-			return do_OrderProducts(productOrderRequests);
+			return do_OrderProducts(productOrderRequests, codiceFornitore);
 		}
 		catch (Throwable th) {
 			String error = "Eccezione " + th.getClass().getName() + ", " + th.getMessage() + "";
@@ -246,13 +246,13 @@ public abstract class AbstractDataCollector {
 		}
 	}
 
-	protected abstract List<ProductBean> doCollectData_getAvailability(List<ProductBean> productCodes) throws Exception;
+	protected abstract List<ProductBean> doCollectData_getAvailability(List<ProductBean> productCodes, String codiceFornitore) throws Exception;
 
 	protected abstract void do_prepare_specificSetup() throws Exception;
 
 	protected abstract void doCollectData_getDDTList(Date dataInzio, Date dataFine) throws Exception;
 
-	protected abstract ProcessedOrdersBean do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception;
+	protected abstract ProcessedOrdersBean do_OrderProducts(List<ProductBean> productOrderRequests, String codiceFornitore) throws Exception;
 
 	public List<String> getProductCodes() {
 		return productCodes;

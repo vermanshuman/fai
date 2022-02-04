@@ -194,7 +194,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
         logger.info(LOG_PREFIX + "...");
         AbstractDataCollector dataCollector =
                 new fai.imp.farmaclick.task.FarmaclickDataCollector(this.importConfig, conn);
-        return dataCollector.doGetAvailiblityData(products);
+        return dataCollector.doGetAvailiblityData(products, fornitore.getCodice());
     }
 
     private ProcessedOrdersBean orderProducts(List<ProductBean> products) throws Exception {
@@ -204,7 +204,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
         logger.info(LOG_PREFIX + "...");
         AbstractDataCollector dataCollector =
                 new fai.imp.farmaclick.task.FarmaclickDataCollector(this.importConfig, conn);
-        return dataCollector.doOrderProducts(products);
+        return dataCollector.doOrderProducts(products, fornitore.getCodice());
     }
     
     public void setImportConfig(FaiImportConfig importConfig) {

@@ -382,7 +382,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 	}
 
 	@Override
-	protected List<ProductBean> doCollectData_getAvailability(List<ProductBean> products) throws Exception {
+	protected List<ProductBean> doCollectData_getAvailability(List<ProductBean> products, String codiceFornitore) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
@@ -391,7 +391,10 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			loginWebService();
 			List<FornitoreBean> fornitoreBeanList = ws.getFornitoreBeanList();
 			for (FornitoreBean fornitoreBean : fornitoreBeanList) {
-				String codiceFornitore = fornitoreBean.getCodice();
+				if (!codiceFornitore.equals(fornitoreBean.getCodice())){
+					logger.info(LOG_PREFIX + " "+fornitoreBean.getCodice()+" in array risultato login ma non da interrogare ...");
+					continue;
+				}
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
 				List<fai.imp.farmaclick.soap.api_2005_001.FCKDisponibilita.ArticoloInputBean> articles = products
 						.stream()
@@ -458,7 +461,7 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 
 
 	@Override
-	protected ProcessedOrdersBean do_OrderProducts(List<ProductBean> productOrderRequests) throws Exception {
+	protected ProcessedOrdersBean do_OrderProducts(List<ProductBean> productOrderRequests, String codiceFornitore) throws Exception {
 		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
 		logger.info(LOG_PREFIX + "...");
@@ -468,7 +471,10 @@ public class FarmaclickDataCollector extends AbstractDataCollector {
 			loginWebService();
 			List<FornitoreBean> fornitoreBeanList = ws.getFornitoreBeanList();
 			for (FornitoreBean fornitoreBean : fornitoreBeanList) {
-				String codiceFornitore = fornitoreBean.getCodice();
+				if (!codiceFornitore.equals(fornitoreBean.getCodice())){
+					logger.info(LOG_PREFIX + " "+fornitoreBean.getCodice()+" in array risultato login ma non da interrogare ...");
+					continue;
+				}
 				logger.info(LOG_PREFIX + " "+codiceFornitore+" recupero dettagli ...");
 				String serviceApiLevel = config.getServiceApiLevel();
 				// && serviceApiLevel.equalsIgnoreCase("2005.001")
