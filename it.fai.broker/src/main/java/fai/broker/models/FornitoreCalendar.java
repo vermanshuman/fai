@@ -13,6 +13,7 @@ public class FornitoreCalendar extends AbstractModel {
   public static int DATE_OF_WEEK;
   public static int HOUR_START;
   public static int HOUR_END;
+  public static int ATTEMPT_NUMBER;
 
   public static final Attribute[] attributes = buildAttributes(FornitoreCalendar.class, new Attribute[] { //@formatter:off
     new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -20,6 +21,7 @@ public class FornitoreCalendar extends AbstractModel {
     new Attribute("dateOfWeek", null, Integer.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("hourStart", null, Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("hourEnd", null, Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+    new Attribute("attemptNumber", null, Integer.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
   }); 
 
 
@@ -73,4 +75,12 @@ public class FornitoreCalendar extends AbstractModel {
     return getCalendar(HOUR_END);
   }
   
+  /** ATTEMPT_NUMBER **/
+  public boolean setAttemptNumber(Integer attemptNumber) {
+    return setInt(ATTEMPT_NUMBER, attemptNumber);
+  }
+
+  public Integer getAttemptNumber() {
+    return getInt(ATTEMPT_NUMBER);
+  }
 }

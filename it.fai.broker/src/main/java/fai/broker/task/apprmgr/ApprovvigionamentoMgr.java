@@ -1,8 +1,11 @@
 package fai.broker.task.apprmgr;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +17,6 @@ import fai.broker.models.ApprovvigionamentoFarmaco;
 import fai.broker.models.Fornitore;
 import fai.broker.models.FornitoreCalendar;
 import fai.broker.models.ItemStatus;
-import fai.broker.models.Magazzino;
 import fai.broker.models.OrdineOut;
 import fai.broker.supplier.SupplierService;
 import fai.broker.supplier.SupplierServiceFactory;
@@ -40,7 +42,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     AnagraficaFarmaciMinSanEanCache anagrafica = new AnagraficaFarmaciMinSanEanCache();//SqlQueries.getAnagraficaFarmaciMinSanEanCache(conn);
     env.setAnagrafica(anagrafica);
     //check FAI_FORNITORE_CALENDAR
-    Calendar current = Calendar.getInstance();
+  /*  Calendar current = Calendar.getInstance();
     int dateOfWeek = current.get(Calendar.DAY_OF_WEEK);
     List<FornitoreCalendar> fornitoriCalendars = SqlQueries.getAllFornitoreCalendarByDateOfWeek(conn, dateOfWeek);
     Set<Long> selectedFornitori =  new HashSet<Long>();
@@ -60,12 +62,12 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
         selectedFornitori.add(c.getOidFornitore());
       }
     }
-    env.setSelectedFornitori(selectedFornitori);
+    env.setSelectedFornitori(selectedFornitori);*/
 
     //
     // --- caricamento dell'Anagrafica di tutti i Fornitori ---
     //
-    List<Fornitore> allFornitori = SqlQueries.getAllFornitore(conn);
+   /* List<Fornitore> allFornitori = SqlQueries.getAllFornitore(conn);
     List<Fornitore> fornitori = new ArrayList<>();
     for(Fornitore f : allFornitori) {
       if(selectedFornitori.contains(f.getOid())) {
@@ -83,7 +85,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
         env.addFornitoreSupplierService(fornitore.getCodice(), ss);
       } catch (ClassNotFoundException e) {
       }
-    }
+    }*/
     //
     // --- caricamento dell'Anagrafica di tutti i Magazzini ---
     //
@@ -152,7 +154,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     if (error != null) return error;
     approvvigionamentoToProcess = magazzini.getApprovvigionamentoToProcess();
     
-    ApprovvigionamentoFornitori fornitori = new ApprovvigionamentoFornitori();
+  /*  ApprovvigionamentoFornitori fornitori = new ApprovvigionamentoFornitori();
     fornitori.setup(env, conn);
     error = fornitori.process(approvvigionamentoToProcess);
     if (error != null) return error;
@@ -177,11 +179,93 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
           OrdineOut ordineOut = service.confirm(approvvigionamentoToOrder);
           logger.info(ordineOut.getIdOrdine());
         }
+    } */
+    //   
+    Calendar current = Calendar.getInstance();
+    DateFormat dateFormat = new SimpleDateFormat("HH:mm");  
+    String currentTime = dateFormat.format(current.getTime());
+    int dateOfWeek = current.get(Calendar.DAY_OF_WEEK);
+    List<FornitoreCalendar> fornitoriCalendars = SqlQueries.getFornitoresCalendarByDateOfWeek(conn, dateOfWeek, currentTime);
+    Integer maxAttemptNumber = SqlQueries.getMaxAttemptNumber(conn, dateOfWeek, currentTime);
+    LinkedHashMap<Integer, Set<Long>> map = new LinkedHashMap<>();
+    Integer counter = 1;
+    for(int i=0; i < maxAttemptNumber; i++) {
+    	Set<Long> fornitoreDb = new HashSet<Long>();
+    	for(FornitoreCalendar fornitoreCalendar : fornitoriCalendars) {
+    		if(counter.intValue() == fornitoreCalendar.getAttemptNumber().intValue()) {
+    			fornitoreDb.add(fornitoreCalendar.getOidFornitore());
+    		}
+    	}
+    	map.put(counter, fornitoreDb);
+		counter++;
     }
-    //
+    
+    Set<Integer> keys = map.keySet();
+    for (Integer key : keys) {
+        Set<Long> selectedFornitori = map.get(key);
+        env.setSelectedFornitori(selectedFornitori);
+        
+        List<Fornitore> allFornitori = SqlQueries.getAllFornitore(conn);
+        List<Fornitore> fornitori = new ArrayList<>();
+        for(Fornitore f : allFornitori) {
+          if(selectedFornitori.contains(f.getOid())) {
+            fornitori.add(f);
+          }
+        }
+        env.setFornitori(fornitori);
+
+        //
+        // --- caricamento dei SupplierService per i Fornitori ---
+        //
+        for (Fornitore fornitore : fornitori) {
+          try {
+            SupplierService ss = SupplierServiceFactory.getSupplierService(fornitore, conn);
+            env.addFornitoreSupplierService(fornitore.getCodice(), ss);
+          } catch (ClassNotFoundException e) {
+          }
+        }
+        
+        error = processSupplierAvailabilityAndOrders(approvvigionamentoToProcess);
+        if(error != null)
+        	return error;
+        approvvigionamentoToProcess = SqlQueries.getAllApprovvigionamentoFarmaco(ItemStatus.VALUE_TO_PROCESS, conn);
+        if(approvvigionamentoToProcess == null)
+        	break;
+    }
     return null;
   }
   
+  private String processSupplierAvailabilityAndOrders(List<ApprovvigionamentoFarmaco> approvvigionamentoToProcess) throws Exception {
+	  String error = null;
+	  ApprovvigionamentoFornitori fornitori = new ApprovvigionamentoFornitori();
+	    fornitori.setup(env, conn);
+	    error = fornitori.process(approvvigionamentoToProcess);
+	    if (error != null) return error;
+	    approvvigionamentoToProcess = fornitori.getApprovvigionamentoToProcess();
+	    //
+	    // --- management of ORDERS_IN to be suspended ---
+	    //
+//	    SospensioneOrdini sospensioneOrdini = new SospensioneOrdini();
+//	    sospensioneOrdini.setup(env, conn);
+//	    error = sospensioneOrdini.doJob();
+//	    if (error != null) return error;
+	    
+	    SqlQueries.deleteApprovvigionamentoWithQuantitaZero(conn);
+	    conn.commit();
+	    
+	    for (Fornitore fornitore : env.getFornitori()) {
+	    	List<ApprovvigionamentoFarmaco> approvvigionamentoToOrder =
+	                SqlQueries.getAllApprovvigionamentoFarmacoByFornitore(ItemStatus.VALUE_PROCESSING, fornitore, conn);
+	        logger.info("approvvigionamentoToOrder size :: "+approvvigionamentoToOrder.size());
+	        if(approvvigionamentoToOrder.size() > 0){
+	          SupplierService service = env.getFornitoreSupplierService(fornitore.getCodice());
+	          OrdineOut ordineOut = service.confirm(approvvigionamentoToOrder);
+	          logger.info(ordineOut.getIdOrdine());
+	        }
+	    }
+	    conn.commit();
+	  return error;
+  }
   
   private String analyze(List<ApprovvigionamentoFarmaco> approvvigionamentoToProcess) throws Exception {
     int recordsWithErrors = 0;

@@ -2846,5 +2846,85 @@ public class SqlQueries {
 			SqlUtilities.closeWithNoException(stmt);
 		}
 	}
+	
+	public static List<FornitoreCalendar> getFornitoresCalendarByDateOfWeek(Connection conn, int dateOfWeek, String currentTime) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<FornitoreCalendar> list = new LinkedList<FornitoreCalendar>();
+		try {
+			Properties params = new Properties();
+			params.setProperty("CURRENT_TIME", SqlUtilities.getAsStringFieldValue(currentTime));
+			params.setProperty("DATE_OF_WEEK", "" + dateOfWeek);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getFornitoresCalendarByDateOfWeek.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			FornitoreCalendar f = null;
+			while (rs.next()) {
+				f = new FornitoreCalendar();
+				f.setOid(rs.getLong("OID"));
+				f.setOidFornitore(rs.getLong("OID_FORNITORE"));
+				f.setDateOfWeek(rs.getInt("DATE_OF_WEEK"));
+				//f.setHourStart(SqlUtilities.getCalendar(rs, "HOUR_START"));
+				//f.setHourEnd(SqlUtilities.getCalendar(rs, "HOUR_END"));
+				f.setAttemptNumber(rs.getInt("ATTEMPT_NUMBER"));
+				list.add(f);
+			}
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage()
+					+ "� nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return list;
+	}
+	
+	public static Integer getMaxAttemptNumber(Connection conn, int dateOfWeek, String currentTime) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<FornitoreCalendar> list = new LinkedList<FornitoreCalendar>();
+		Integer maxAttemptNumber = null;
+		try {
+			Properties params = new Properties();
+			params.setProperty("CURRENT_TIME", SqlUtilities.getAsStringFieldValue(currentTime));
+			params.setProperty("DATE_OF_WEEK", "" + dateOfWeek);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getMaxAttemptNumber.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			
+			while (rs.next()) {
+				maxAttemptNumber = rs.getInt("MAX_ATTEMPT_NUMBER");
+			}
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage()
+					+ "� nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+					? "; sql:" + System.getProperty("line.separator") + sql
+					+ System.getProperty("line.separator")
+					: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return maxAttemptNumber;
+	}
 
 }
