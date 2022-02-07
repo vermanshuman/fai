@@ -15,6 +15,8 @@ public class UploadTaskConfig extends AbstractModel {
     public static int RUN_END_TS;
     public static int RUN_DONE;
     public static int RUN_DESCR;
+    public static int STATUS_DESCR;
+    public static int STATUS_TECH_DESCR;
     public static int ORDER_STATUS;
 
     public static final Attribute[] attributes = buildAttributes(UploadTaskConfig.class, new Attribute[]{ //@formatter:off
@@ -22,13 +24,16 @@ public class UploadTaskConfig extends AbstractModel {
             new Attribute("magazzinoAcronym", null, String.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
             new Attribute("descr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("csvFileName", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
-            new Attribute("status", null, UploadStatusInfo.class, null, false, Attribute.DETAIL, false, Attribute.NO_OPTION),
+            new Attribute("status", null, ItemStatus.class, null, false, Attribute.DETAIL, false, Attribute.NO_OPTION),
             new Attribute("creationTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("runStartTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("runEndTs", null, java.util.Calendar.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("runDone", null, Boolean.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("runDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
             new Attribute("orderStatus", null, String.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
+            new Attribute("statusDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+            new Attribute("statusTechDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+
     }); //@formatter:on
 
 
@@ -170,5 +175,21 @@ public class UploadTaskConfig extends AbstractModel {
 
     public String getOrderStatus() {
         return getString(ORDER_STATUS);
+    }
+
+    public String getStatusDescr() {
+        return getString(STATUS_DESCR);
+    }
+
+    public boolean setStatusDescr(String statusDescr) {
+        return setString(STATUS_DESCR, statusDescr);
+    }
+
+    public String getStatusTechDescr() {
+        return getString(STATUS_TECH_DESCR);
+    }
+
+    public boolean setStatusTechDescr(String statusTechDescr) {
+        return setString(STATUS_TECH_DESCR , statusTechDescr);
     }
 }

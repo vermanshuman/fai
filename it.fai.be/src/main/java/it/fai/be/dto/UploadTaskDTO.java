@@ -22,5 +22,6 @@ public class UploadTaskDTO extends ResponseDto{
     private String orderLinesProcessed;
     private String orderLinesMissed;
     private String executionStatus;
+    private String executionStatusDescription;
     private String magazzinoAcronym;
 }

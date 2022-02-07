@@ -135,9 +135,6 @@ public class UploadTaskServiceImpl implements UploadTaskService {
             genericTask.setup(ValueConstant.PROCUREMENT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
 
             String error = genericTask.doJob();
-            if(error == null){
-                fai.broker.db.SqlQueries.setUploadTaskStatus(taskOID, UploadCSVStatus.VALUE_PROCESSED.getOid(),null , null, conn);
-            }
             uploadTaskDTO = setUploadTask(uploadTask);
             uploadTaskDTO.setMessage(error);
         }
@@ -154,20 +151,32 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         if(uploadTaskConfig.getCreationTs() != null)
             uploadTaskDTO.setCreationDate(uploadTaskConfig.getCreationTs().getTime());
         uploadTaskDTO.setCsvFileName(uploadTaskConfig.getCsvFileName());
-        if(uploadTaskConfig.getStatus() != null && uploadTaskConfig.getStatus().getStatus() != null){
-            ItemStatus itemStatus = uploadTaskConfig.getStatus().getStatus();
-           if(StringUtils.isNotBlank(itemStatus.getDescr())){
-               if(itemStatus.getDescr().equalsIgnoreCase("TO PROCESS")){
-                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.ESEGUIRE.toString());
-               }else if(itemStatus.getDescr().equalsIgnoreCase("PROCESSING")){
-                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.INCORSO.toString());
-               }else if(itemStatus.getDescr().equalsIgnoreCase("PROCESSED")){
-                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.COMPLETATO.toString());
-               }else if(itemStatus.getDescr().equalsIgnoreCase("ERROR")){
-                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.ANNULATO.toString());
-               }
-           }
+
+        if(StringUtils.isNotBlank(uploadTaskConfig.getStatusDescr())){
+            if(uploadTaskConfig.getStatusDescr().equalsIgnoreCase(ExecutionStatus.EXECUTION_FAILED.getAcronym())){
+                uploadTaskDTO.setExecutionStatus(ProcessingStatus.ANNULATO.toString());
+            }else if(uploadTaskConfig.getStatusDescr().equalsIgnoreCase(ExecutionStatus.EXECUTION_SUCCESS.getAcronym())){
+                uploadTaskDTO.setExecutionStatus(ProcessingStatus.COMPLETATO.toString());
+            }else {
+                uploadTaskDTO.setExecutionStatus(ProcessingStatus.INCORSO.toString());
+            }
+        }else {
+            uploadTaskDTO.setExecutionStatus(ProcessingStatus.ESEGUIRE.toString());
         }
+//        if(uploadTaskConfig.getStatus() != null && uploadTaskConfig.getStatus().getStatus() != null){
+//            ItemStatus itemStatus = uploadTaskConfig.getStatus().getStatus();
+//           if(StringUtils.isNotBlank(itemStatus.getDescr())){
+//               if(itemStatus.getDescr().equalsIgnoreCase("TO PROCESS")){
+//                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.ESEGUIRE.toString());
+//               }else if(itemStatus.getDescr().equalsIgnoreCase("PROCESSING")){
+//                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.INCORSO.toString());
+//               }else if(itemStatus.getDescr().equalsIgnoreCase("PROCESSED")){
+//                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.COMPLETATO.toString());
+//               }else if(itemStatus.getDescr().equalsIgnoreCase("ERROR")){
+//                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.ANNULATO.toString());
+//               }
+//           }
+//        }
         uploadTaskDTO.setMagazzinoAcronym(uploadTaskConfig.getMagazzinoAcronym());
         uploadTaskDTO.setOrderStatus(uploadTaskConfig.getOrderStatus());
         uploadTaskDTO.setFulFilledOrderCount(1);

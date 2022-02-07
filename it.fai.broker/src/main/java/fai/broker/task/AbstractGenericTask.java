@@ -1,6 +1,7 @@
 package fai.broker.task;
 
-import fai.broker.models.UploadCSVStatus;
+import fai.broker.models.ExecutionStatus;
+import fai.broker.models.ExecutionStatusInfo;
 import fai.broker.models.UploadTaskConfig;
 import fai.common.db.SqlQueries;
 import fai.common.models.GenericTaskConfig;
@@ -47,7 +48,7 @@ public abstract class AbstractGenericTask implements GenericTask {
   protected GenericTaskConfig taskConfig; 
   protected RichPropertiesDB params = null;
   protected UploadTaskConfig uploadTaskConfig;
-  
+
   @Override
   public void setup(String acronym, Calendar nowReference, Connection conn) throws Exception {
     String[] tokens = acronym.split("\\@");
@@ -78,30 +79,21 @@ public abstract class AbstractGenericTask implements GenericTask {
     }
     //
     String error;
-    if(uploadTaskConfig != null){
-      fai.broker.db.SqlQueries.setUploadTaskNewSession(uploadTaskConfig.getOid(), conn);
-    }else {
+    if(uploadTaskConfig == null){
       SqlQueries.setGenericTaskNewSession(taskConfig.getOid(), conn);
     }
     try {
       error = doJobExecute();
       if (error == null) {
 
-        if(uploadTaskConfig != null){
-          fai.broker.db.SqlQueries.setUploadTaskSessionCompleted(uploadTaskConfig.getOid(), true,
-                  UploadCSVStatus.VALUE_PROCESSING.getOid(), UploadCSVStatus.VALUE_PROCESSING.getDescr(), null, conn);
-        }
-        else
+        if(uploadTaskConfig == null)
           SqlQueries.setGenericTaskSessionCompleted(taskConfig.getOid(), true, null, conn);
         logger.info(SqlQueries.logInfo(LOG_PREFIX + "task completato senza errori", null, null, conn));
       }
       else {
         conn.rollback(); // eventuale rollaback per qualsisi cosa non sia stato commitatto
         logger.error(SqlQueries.logError(LOG_PREFIX+"il task non sarà portato a termine per il seguente motivo: "+error, null, null, conn));
-        if(uploadTaskConfig != null){
-          fai.broker.db.SqlQueries.setUploadTaskSessionCompleted(uploadTaskConfig.getOid(), false,
-                  UploadCSVStatus.VALUE_ERROR.getOid(), UploadCSVStatus.VALUE_ERROR.getDescr(), error, conn);
-        }else {
+        if(uploadTaskConfig == null){
           SqlQueries.setGenericTaskSessionCompleted(taskConfig.getOid(), false, error, conn);
         }
       }
@@ -111,10 +103,7 @@ public abstract class AbstractGenericTask implements GenericTask {
 		th.printStackTrace();
       error = LOG_PREFIX+ExceptionsTool.getExceptionDescription("task interrotto causa eccezione intattesa", th);
       logger.error(SqlQueries.logError(error, null, th, conn), th);
-      if(uploadTaskConfig != null){
-        fai.broker.db.SqlQueries.setUploadTaskSessionCompleted(uploadTaskConfig.getOid(), false,
-                UploadCSVStatus.VALUE_ERROR.getOid(), UploadCSVStatus.VALUE_ERROR.getDescr(), error, conn);
-      }else {
+      if(uploadTaskConfig == null){
         SqlQueries.setGenericTaskSessionCompleted(taskConfig.getOid(), false, error, conn);
       }
       conn.commit();
@@ -147,9 +136,5 @@ public abstract class AbstractGenericTask implements GenericTask {
     }
     throw new IllegalStateException(LOG_PREFIX+"configurazione pattern settimanale errata: "+taskConfig.getScheduledSmtwtfs());
   }
-
-  
-  
-  
 
 }

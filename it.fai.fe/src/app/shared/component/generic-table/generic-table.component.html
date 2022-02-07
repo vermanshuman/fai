@@ -202,9 +202,9 @@
 
           <ng-container *ngIf="rowActionIcons.custom">
             <button class="rounded ml-2 green" mat-raised-button (click)="emitCompleteAction(element)"
-                    *ngIf="element?.executionStatus && (element?.executionStatus === 'ESEGUIRE' || element?.executionStatus === 'IN CORSO')"
+                    *ngIf="element?.executionStatus && (element?.executionStatus === 'ESEGUIRE' || element?.executionStatus === 'INCORSO')"
                     [disabled]="element?.executionStatus && element?.executionStatus !== 'ESEGUIRE'"
-                    [ngStyle]="{'background-color': element?.executionStatus==='IN CORSO' ? '#98AFC7' : ''}">
+                    [ngStyle]="{'background-color': element?.executionStatus==='INCORSO' ? '#98AFC7' : ''}">
               <mat-label>{{element?.executionStatus ? element?.executionStatus : rowActionIcons.custom}}</mat-label>
             </button>
           </ng-container>
