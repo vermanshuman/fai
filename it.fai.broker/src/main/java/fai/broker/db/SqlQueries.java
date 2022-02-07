@@ -2554,7 +2554,7 @@ public class SqlQueries {
 			params.setProperty("ORDERBY", "ORDER BY APPROV.OID, RIGA.OID");
 		}
 
-	 	sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllProdottiByOrder.sql", params);
+	 	sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllProdottiByCondition.sql", params);
 		Statement stmt = null;
 		ResultSet rs = null;
 		List<ApprovvigionamentoFarmaco> list = new LinkedList<>();

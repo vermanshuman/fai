@@ -157,7 +157,7 @@ public class ComifarSupplierService extends AbstractSupplierService {
                         .findFirst();
             }
             if (matchedProduct.isPresent()) {
-                manageOrderResponse(matchedProduct.get(), appr, codiceMinsan, ordineOut);
+                 manageOrderResponse(matchedProduct.get(), appr, codiceMinsan, ordineOut);
             }
             //
             // --- tracciamento nel log della risposta ricevuta ---
