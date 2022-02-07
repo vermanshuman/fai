@@ -42,8 +42,9 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
     //
     error = SqlQueries.isUnableToRunStatusError("FAI_ORDINE_IN", "Ordini", conn);
     if (error != null) {
-      SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
-              "Ordini Failed", conn);
+      if(uploadTaskConfig != null)
+        SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                "Ordini Failed", conn);
       return error;
     }
     //
@@ -63,14 +64,16 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
         conn.rollback();
         error+="; le operazioni eseguite sono state annullate (rollback)";
         logger.error(error);
-        SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+        if(uploadTaskConfig != null)
+          SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
                 " le operazioni eseguite sono state annullate (rollback)", conn);
       }
     }
     catch (Throwable th) {
       SqlUtilities.rollbackWithNoException(conn);
       error = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage() + "� nel calcolo del Fabbisogno/Approvvigionamento di Farmaci (FAI_APPROVVIGIONAMENTO_FARMACO); le operazioni sono state annullate (rollback)";
-      SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+      if(uploadTaskConfig != null)
+        SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
               "FABBISOGNO CALCULATOR FAILED", conn);
       logger.error(error, th);
     }

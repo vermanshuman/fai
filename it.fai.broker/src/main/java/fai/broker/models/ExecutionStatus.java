@@ -24,10 +24,17 @@ public class ExecutionStatus extends AbstractModel {
     public static ExecutionStatus ORDERS_LOADED = new ExecutionStatus(new Long(3), "ORDERS_LOADED", "Orders Loaded");
 
     public static ExecutionStatus CALCULATION_START = new ExecutionStatus(new Long(4), "CALCULATION_START", "Retrieving Rows to approve");
-  public static ExecutionStatus CALCULATION_COMPLETED = new ExecutionStatus(new Long(5), "CALCULATION_COMPLETED", "Retrieved Rows to approve");
+    public static ExecutionStatus CALCULATION_COMPLETED = new ExecutionStatus(new Long(5), "CALCULATION_COMPLETED", "Retrieved Rows to approve");
+
+    public static ExecutionStatus APPROVAL_START = new ExecutionStatus(new Long(6), "APPROVAL_START", "Approvvigionamento Manager");
+    public static ExecutionStatus APPROVAL_TEMP = new ExecutionStatus(new Long(7), "APPROVAL_TEMP", "Approvvigionamento Manager Temp");
+    public static ExecutionStatus APPROVAL_WAREHOUSE_AVAILIBILITY = new ExecutionStatus(new Long(8), "APPROVAL_WAREHOUSE_AVAILIBILITY", "Checking Warehouse Availability");
+    public static ExecutionStatus APPROVAL_SUPPLIER_AVAILIBILITY = new ExecutionStatus(new Long(9), "APPROVAL_SUPPLIER_AVAILIBILITY", "Checking Supplier Availability");
+
+    public static ExecutionStatus APPROVAL_SUPPLIER_ORDER = new ExecutionStatus(new Long(9), "APPROVAL_SUPPLIER_ORDER", "Confirming Order");
 
 
-    public static ExecutionStatus EXECUTION_SUCCESS = new ExecutionStatus(new Long(9), "EXECUTION_SUCCESS", "Execution Completed");
+  public static ExecutionStatus EXECUTION_SUCCESS = new ExecutionStatus(new Long(9), "EXECUTION_SUCCESS", "Execution Completed");
     public static ExecutionStatus EXECUTION_FAILED = new ExecutionStatus(new Long(10), "EXECUTION_FAILED", "Execution Failed");
 
 

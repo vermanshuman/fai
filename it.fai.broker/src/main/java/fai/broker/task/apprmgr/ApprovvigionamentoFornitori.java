@@ -6,6 +6,7 @@ import java.util.List;
 
 import fai.broker.db.SqlQueries;
 import fai.broker.models.ApprovvigionamentoFarmaco;
+import fai.broker.models.ExecutionStatus;
 import fai.broker.models.Fornitore;
 import fai.broker.models.ItemStatus;
 import fai.broker.supplier.SupplierService;
@@ -101,7 +102,11 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
       List<ApprovByFornitore> approvByFornitoreList = groupByFornitore(approvvigionamentoToProcess);
       //
       // --- interrogazione dei Fornitori ---
-      // 
+      //
+      if(uploadTaskConfig != null)
+        SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.APPROVAL_SUPPLIER_AVAILIBILITY.getAcronym(),
+                ExecutionStatus.APPROVAL_SUPPLIER_AVAILIBILITY.getDescr(), conn);
+
       for (ApprovByFornitore abf : approvByFornitoreList) {
         //
         // --- recupero del servizio di accesso al Fornitore ---

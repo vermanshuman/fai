@@ -135,6 +135,10 @@ public class UploadTaskServiceImpl implements UploadTaskService {
             genericTask.setup(ValueConstant.PROCUREMENT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
 
             String error = genericTask.doJob();
+            if(StringUtils.isBlank(error)){
+                fai.broker.db.SqlQueries.seUploadTaskExecutionStatus(taskOID, ExecutionStatus.EXECUTION_SUCCESS.getAcronym(),
+                        ExecutionStatus.EXECUTION_SUCCESS.getDescr(), conn);
+            }
             uploadTaskDTO = setUploadTask(uploadTask);
             uploadTaskDTO.setMessage(error);
         }
@@ -151,7 +155,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         if(uploadTaskConfig.getCreationTs() != null)
             uploadTaskDTO.setCreationDate(uploadTaskConfig.getCreationTs().getTime());
         uploadTaskDTO.setCsvFileName(uploadTaskConfig.getCsvFileName());
-
+        uploadTaskDTO.setExecutionStatusDescription(uploadTaskConfig.getStatusTechDescr());
         if(StringUtils.isNotBlank(uploadTaskConfig.getStatusDescr())){
             if(uploadTaskConfig.getStatusDescr().equalsIgnoreCase(ExecutionStatus.EXECUTION_FAILED.getAcronym())){
                 uploadTaskDTO.setExecutionStatus(ProcessingStatus.ANNULATO.toString());

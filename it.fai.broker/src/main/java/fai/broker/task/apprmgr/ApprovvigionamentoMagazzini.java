@@ -4,14 +4,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import fai.broker.models.*;
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
-import fai.broker.models.ApprovvigionamentoFarmaco;
-import fai.broker.models.ItemStatus;
-import fai.broker.models.Magazzino;
-import fai.broker.models.StatusInfo;
-import fai.broker.models.TipoFarmaco;
 import fai.broker.supplier.SupplierService;
 import fai.broker.supplier.SupplierService.ManagedRequest;
 import fai.broker.supplier.SupplierServiceFactory;
@@ -70,6 +66,7 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
     //
     // --- selezione dei soli ApprovvigionamentoFarmaco supportati dal Magazzino ---
     //
+
     List<ApprovvigionamentoFarmaco> supportedApprovToProcess = new ArrayList<ApprovvigionamentoFarmaco>();
     logger.info("approvvigionamentoToProcess size :: "+approvvigionamentoToProcess.size());
     for (ApprovvigionamentoFarmaco approv : approvvigionamentoToProcess) {
@@ -88,6 +85,9 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
     //
     // --- interrogazione Magazzino ---
     //
+    if(uploadTaskConfig != null)
+      SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.APPROVAL_WAREHOUSE_AVAILIBILITY.getAcronym(),
+              ExecutionStatus.APPROVAL_TEMP.getDescr(), conn);
     List<ManagedRequest> managedRequests = service.getAvailability(supportedApprovToProcess);
     if (service.getError() != null) return service.getError();
     //

@@ -55,7 +55,7 @@ export const FILE_UPLOAD_TABLE_COLUMNS: TableColumn[] = [
     },
     {
         name: 'Stato esecuzione',
-        dataKey: 'executionStatus',
+        dataKey: 'executionStatusDescription',
         position: 'center',
         isSortable: true
     }

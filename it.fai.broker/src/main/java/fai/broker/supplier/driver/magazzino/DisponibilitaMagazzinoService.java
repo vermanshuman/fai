@@ -203,11 +203,11 @@ public class DisponibilitaMagazzinoService extends AbstractSupplierService {
         logger.info(LOG_PREFIX + "...");
         OraInvMgrService os = new OraInvMgrService(Constants.ORA_INV_SERVICE_USERNAME,
                 Constants.ORA_INV_SERVICE_PASSWORD, Constants.ORA_INV_SERVICE_SERVICE_URL);
-//        GetInventoryQuantitiesRes response = os.getInventoryQuantities(organizationCode, prodottoCode);
-//        if (response.getReturnStatus().equals("SUCCESS")) {
-//            logger.info("availability :: " + response.getAvailableToTransact());
-//            return response.getAvailableToTransact();
-//        }
+        GetInventoryQuantitiesRes response = os.getInventoryQuantities(organizationCode, prodottoCode);
+        if (response.getReturnStatus().equals("SUCCESS")) {
+            logger.info("availability :: " + response.getAvailableToTransact());
+            return response.getAvailableToTransact();
+        }
         return 0;
     }
 

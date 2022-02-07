@@ -11,5 +11,6 @@ export interface UploadTask {
     orderLinesProcessed: string;
     orderLinesMissed: string;
     executionStatus: string;
+    executionStatusDescription: string;
     magazzinoAcronym: string;
 }

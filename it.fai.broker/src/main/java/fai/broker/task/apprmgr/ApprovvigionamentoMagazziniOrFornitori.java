@@ -3,6 +3,7 @@ package fai.broker.task.apprmgr;
 import java.sql.Connection;
 import java.util.List;
 
+import fai.broker.models.UploadTaskConfig;
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
@@ -18,7 +19,9 @@ abstract class ApprovvigionamentoMagazziniOrFornitori {
   protected ApprovvigionamentoEnv env = null;
   
   protected List<ApprovvigionamentoFarmaco> approvvigionamentoToProcess = null;
-  
+
+  protected UploadTaskConfig uploadTaskConfig;
+
   public ApprovvigionamentoMagazziniOrFornitori() {
     super();
   }
@@ -27,6 +30,13 @@ abstract class ApprovvigionamentoMagazziniOrFornitori {
     this.env = env;
     this.conn = conn;
   }
+
+  public void setup(ApprovvigionamentoEnv env, UploadTaskConfig uploadTaskConfig, Connection conn) throws Exception {
+    this.env = env;
+    this.conn = conn;
+    this.uploadTaskConfig = uploadTaskConfig;
+  }
+
   
   public List<ApprovvigionamentoFarmaco> getApprovvigionamentoToProcess() {
     return approvvigionamentoToProcess;
