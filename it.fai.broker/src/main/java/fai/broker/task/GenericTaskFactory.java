@@ -52,9 +52,9 @@ public class GenericTaskFactory {
 				con.setAutoCommit(false);
 
 				// step 1
-				GenericTask genericTask = GenericTaskFactory.newGenericTask("IMP_ORDINE_IN", Calendar.getInstance(), con);
+				GenericTask genericTask = GenericTaskFactory.newGenericTask("MAGAZZINO_UPS", Calendar.getInstance(), con);
 				String error = genericTask.doJob();
-				
+
 				// step 2
 				if(error == null) {
 					genericTask = GenericTaskFactory.newGenericTask("FABBISOGNO_CALCULATOR", Calendar.getInstance(), con);
@@ -65,6 +65,11 @@ public class GenericTaskFactory {
 					genericTask = GenericTaskFactory.newGenericTask("APPROVVIGIONAMENTO_MGR", Calendar.getInstance(), con);
 					error = genericTask.doJob();
 				}
+
+//				GenericTask genericTask = GenericTaskFactory.newGenericTask("FABBISOGNO_CALCULATOR", Calendar.getInstance(), con);
+//					String error = genericTask.doJob();
+//					genericTask = GenericTaskFactory.newGenericTask("APPROVVIGIONAMENTO_MGR", Calendar.getInstance(), con);
+//					error = genericTask.doJob();
 				con.close();
 
 			} catch (Exception e) {

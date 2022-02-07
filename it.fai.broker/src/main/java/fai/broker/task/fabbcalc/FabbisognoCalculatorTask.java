@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import fai.broker.models.*;
 import fai.broker.task.AbstractGenericTask;
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
-import fai.broker.models.ApprovToRiga;
-import fai.broker.models.ApprovvigionamentoFarmaco;
-import fai.broker.models.ItemStatus;
-import fai.broker.models.OrdineInRigaDett;
-import fai.broker.models.StatusInfo;
 import fai.common.db.SqlUtilities;
 
 public class FabbisognoCalculatorTask extends AbstractGenericTask {
@@ -37,10 +33,19 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
     // --- verifica che le tabelle di input al processo non siano in stato inconsistente ---
     //
     error = SqlQueries.isUnableToRunStatusError("FAI_ORDINE_IN_COLLECTION", "gruppo di Ordini da elaborare", conn);
-    if (error != null) return error;
+    if (error != null) {
+      if(uploadTaskConfig != null)
+        SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                "gruppo di Ordini da elaborare", conn);
+      return error;
+    }
     //
     error = SqlQueries.isUnableToRunStatusError("FAI_ORDINE_IN", "Ordini", conn);
-    if (error != null) return error;
+    if (error != null) {
+      SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+              "Ordini Failed", conn);
+      return error;
+    }
     //
     // --- verifica che le tabelle di lavoro non siano in stato inconsistente ---
     //
@@ -58,11 +63,15 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
         conn.rollback();
         error+="; le operazioni eseguite sono state annullate (rollback)";
         logger.error(error);
+        SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                " le operazioni eseguite sono state annullate (rollback)", conn);
       }
     }
     catch (Throwable th) {
       SqlUtilities.rollbackWithNoException(conn);
       error = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage() + "� nel calcolo del Fabbisogno/Approvvigionamento di Farmaci (FAI_APPROVVIGIONAMENTO_FARMACO); le operazioni sono state annullate (rollback)";
+      SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+              "FABBISOGNO CALCULATOR FAILED", conn);
       logger.error(error, th);
     }
     //
@@ -81,6 +90,9 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
     // --- recupero delle righe per le quali calcolare il FAI_APPROVVIGIONAMENTO_FARMACO ---
     //     ordinate per CODICE_MINSAN/EAN 
     //
+    if(uploadTaskConfig != null)
+      SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.CALCULATION_START.getAcronym(),
+              ExecutionStatus.CALCULATION_START.getDescr(), conn);
     List<OrdineInRigaDett> righe = SqlQueries.getAllOrdineInRigaDettWithoutFabbisogno(conn);
     //
     // --- determinazione dei record FAI_APPROVVIGIONAMENTO_FARMACO ---
@@ -125,6 +137,9 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
     // --- inserimento degli FAI_APPROVVIGIONAMENTO_FARMACO cos� determinati ---
     //
     SqlQueries.insertAllApprovvigionamentoFarmaco(approvToInsert, conn);
+    if(uploadTaskConfig != null)
+      SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.CALCULATION_COMPLETED.getAcronym(),
+              ExecutionStatus.CALCULATION_COMPLETED.getDescr(), conn);
     //
     return null;
   }
