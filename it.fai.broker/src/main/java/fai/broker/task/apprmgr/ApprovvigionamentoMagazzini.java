@@ -87,7 +87,7 @@ class ApprovvigionamentoMagazzini extends ApprovvigionamentoMagazziniOrFornitori
     //
     if(uploadTaskConfig != null)
       SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.APPROVAL_WAREHOUSE_AVAILIBILITY.getAcronym(),
-              ExecutionStatus.APPROVAL_TEMP.getDescr(), conn);
+              ExecutionStatus.APPROVAL_WAREHOUSE_AVAILIBILITY.getDescr(), conn);
     List<ManagedRequest> managedRequests = service.getAvailability(supportedApprovToProcess);
     if (service.getError() != null) return service.getError();
     //
