@@ -32,7 +32,7 @@ public class GenericTaskServiceImpl implements GenericTaskService {
             GenericTaskConfig taskConfig = SqlQueries.getGenericTaskConfig(acronym, conn);
             if(taskConfig != null && StringUtils.isNotBlank(taskConfig.getScheduledTimes())){
                 List<String> items = Arrays.asList(taskConfig.getScheduledTimes().split(","));
-                csvScheduleDTO.setCsvSchedule(getNextScheduleTime(items));
+                csvScheduleDTO.setCsvSchedule(DateUtil.getNextScheduleTime(items));
             }
         } catch (Exception e) {
             log.error("Exception in getByAcronym" , e);
@@ -80,8 +80,9 @@ public class GenericTaskServiceImpl implements GenericTaskService {
         GenericTaskDTO genericTaskDTO = null;
         try {
             GenericTaskConfig genericTaskConfig = SqlQueries.getGenericTaskConfig(acronym, conn);
-            if(genericTaskConfig != null){
-                genericTaskDTO = new GenericTaskDTO();;
+            if (genericTaskConfig != null) {
+                genericTaskDTO = new GenericTaskDTO();
+                ;
                 genericTaskDTO.setOid(genericTaskConfig.getOid());
                 genericTaskDTO.setAcronym(genericTaskConfig.getAcronym());
                 genericTaskDTO.setScheduleTimes(genericTaskConfig.getScheduledTimes());
@@ -89,24 +90,9 @@ public class GenericTaskServiceImpl implements GenericTaskService {
                 genericTaskDTO.setRichProperties(genericTaskConfig.getRichProperties());
             }
         } catch (Exception e) {
-            log.error("Exception in findTaskByAcronym" , e);
+            log.error("Exception in findTaskByAcronym", e);
         }
 
         return genericTaskDTO;
-    }
-
-    private String getNextScheduleTime(List<String> items){
-        String nextScheduleTime = null;
-        Optional<Date> schedule = items.stream()
-                .filter(item -> StringUtils.isNotBlank(item))
-                .map(item -> DateUtil.getCurrentDay(DateUtil.fromString(item,
-                        DateUtil.getTimePattern())))
-                .filter(date -> date.equals(DateUtil.getNow()) || date.after(DateUtil.getNow()))
-                .findFirst();
-
-        if(schedule.isPresent()){
-            nextScheduleTime = DateUtil.toFormattedString(schedule.get(), DateUtil.getDatePatternWithMinutes(), null);
-        }
-        return nextScheduleTime;
     }
 }

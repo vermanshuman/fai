@@ -25,4 +25,5 @@ public class UploadTaskDTO extends ResponseDto{
     private String executionStatusDescription;
     private String magazzinoAcronym;
     private Boolean buttonDisabled = Boolean.FALSE;
+    private Boolean isScheduled;
 }

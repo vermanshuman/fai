@@ -3,6 +3,7 @@ package it.fai.be.service.impl;
 import fai.broker.models.*;
 import fai.broker.task.GenericTask;
 import fai.common.db.SqlQueries;
+import fai.common.models.GenericTaskConfig;
 import it.fai.be.constant.ValueConstant;
 import it.fai.be.dto.CSVFileDTO;
 import it.fai.be.dto.UploadTaskDTO;
@@ -19,9 +20,7 @@ import javax.swing.text.html.Option;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -91,6 +90,17 @@ public class UploadTaskServiceImpl implements UploadTaskService {
             if(isExecute && inCorso)
                 break;
         }
+
+        List<GenericTaskConfig> genericTaskConfigs = fai.broker.db.SqlQueries.getALlGenericTaskConfig(
+                "FAI_GENERIC_TASK.CLASS_NAME = 'fai.broker.task.impord.OrdineInImporterTask'", conn);
+
+        List<UploadTaskDTO> scheduledTasks = genericTaskConfigs
+                .stream()
+                .filter(genericTaskConfig -> genericTaskConfig.getAllProperty() != null
+                        && genericTaskConfig.getAllProperty().length > 0)
+                .map(genericTaskConfig -> setScheduledTask(genericTaskConfig,magazzini))
+                .collect(Collectors.toList());
+        uploadTaskDTOS.addAll(scheduledTasks);
         return  uploadTaskDTOS;
     }
 
@@ -199,7 +209,6 @@ public class UploadTaskServiceImpl implements UploadTaskService {
 //               }
 //           }
 //        }
-        uploadTaskDTO.setMagazzinoAcronym(uploadTaskConfig.getMagazzinoAcronym());
         uploadTaskDTO.setOrderStatus(uploadTaskConfig.getOrderStatus());
         uploadTaskDTO.setFulFilledOrderCount(1);
         uploadTaskDTO.setProcessedOrderCount(0);
@@ -232,4 +241,57 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         return uploadTaskDTO;
     }
 
+    private UploadTaskDTO setScheduledTask(GenericTaskConfig genericTaskConfig, List<Magazzino> magazzini) {
+        UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();
+        uploadTaskDTO.setOid(genericTaskConfig.getOid());
+        uploadTaskDTO.setIsScheduled(Boolean.TRUE);
+        if(genericTaskConfig != null && StringUtils.isNotBlank(genericTaskConfig.getScheduledTimes())){
+            List<String> items = Arrays.asList(genericTaskConfig.getScheduledTimes().split(","));
+            String schedule = getNextScheduleTime(items);
+            uploadTaskDTO.setCreationDate(DateUtil.fromString(schedule, DateUtil.getDatePatternWithMinutes()));
+        }
+
+        uploadTaskDTO.setCsvFileName(genericTaskConfig
+                .getRichProperties().getProperty("csvInFileName"));
+        uploadTaskDTO.setExecutionStatusDescription(null);
+        uploadTaskDTO.setExecutionStatus(ProcessingStatus.ESEGUIRE.toString());
+        uploadTaskDTO.setMagazzinoAcronym(genericTaskConfig
+                .getRichProperties().getProperty("magazzino_acronym"));
+        uploadTaskDTO.setOrderStatus(ItemStatus.VALUE_TO_PROCESS.toString());
+        uploadTaskDTO.setFulFilledOrderCount(1);
+        uploadTaskDTO.setProcessedOrderCount(0);
+        uploadTaskDTO.setMissingOrderCount(0);
+        uploadTaskDTO.setButtonDisabled(Boolean.FALSE);
+        if(magazzini != null && !magazzini.isEmpty() &&
+                StringUtils.isNotBlank(uploadTaskDTO.getMagazzinoAcronym())){
+            Optional<Magazzino> warehouse = magazzini
+                    .stream()
+                    .filter(m -> m.getAcronym().equalsIgnoreCase(genericTaskConfig
+                            .getRichProperties().getProperty("magazzino_acronym")))
+                    .findFirst();
+            if(warehouse.isPresent())
+                uploadTaskDTO.setMagazzinoAcronym(warehouse.get().getDescr());
+        }
+        return uploadTaskDTO;
+    }
+
+    private  String getNextScheduleTime(List<String> items){
+        String nextScheduleTime = null;
+        Optional<Date> schedule = items.stream()
+                .filter(item -> StringUtils.isNotBlank(item))
+                .map(item -> DateUtil.getCurrentDay(DateUtil.fromString(item,
+                        DateUtil.getTimePattern())))
+                .filter(date -> date.equals(DateUtil.getNow()) || date.after(DateUtil.getNow()))
+                .findFirst();
+
+        if(schedule.isPresent()){
+            nextScheduleTime = DateUtil.toFormattedString(schedule.get(), DateUtil.getDatePatternWithMinutes(), null);
+        }else {
+            if(items.size() > 0)
+                nextScheduleTime = DateUtil.toFormattedString(DateUtil.getNextDay(DateUtil.fromString(items.get(0),
+                    DateUtil.getTimePattern())), DateUtil.getDatePatternWithMinutes(), null);
+
+        }
+        return nextScheduleTime;
+    }
 }

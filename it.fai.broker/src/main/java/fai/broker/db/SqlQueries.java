@@ -2927,4 +2927,67 @@ public class SqlQueries {
 		return maxAttemptNumber;
 	}
 
+
+	public static List<GenericTaskConfig> getALlGenericTaskConfig(String whereCondition, Connection conn) throws Exception {
+		final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		List<GenericTaskConfig> configs = new ArrayList<>();
+		try {
+			Properties params = new Properties();
+			String wc = "WHERE 1=1";
+			if (whereCondition != null) {
+				wc += " AND " + whereCondition;
+			}
+			params.setProperty("WHERECONDITION", wc);
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "getAllScheduledTask.sql", params);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			Long prevOID = null;
+			GenericTaskConfig cfg = null;
+			while (rs.next()) {
+				Long cfgOID = rs.getLong("GENTASK_OID");
+				if(null == prevOID || !cfgOID.equals(prevOID)){
+
+					cfg = new GenericTaskConfig();
+					cfg.setOid(rs.getLong("GENTASK_OID"));
+					cfg.setAcronym(rs.getString("GENTASK_ACRONYM"));
+					cfg.setDescr(rs.getString("GENTASK_DESCR"));
+					cfg.setImplClassName(rs.getString("GENTASK_CLASS_NAME"));
+					cfg.setScheduledTimes(rs.getString("GENTASK_SCHEDULED_TIMES"));
+					cfg.setScheduledSmtwtfs(rs.getString("GENTASK_SCHEDULED_SMTWTFS"));
+					cfg.setLastRunStartTs(SqlUtilities.getCalendar(rs, "GENTASK_LAST_RUN_START_TS"));
+					cfg.setLastRunEndTs(SqlUtilities.getCalendar(rs, "GENTASK_LAST_RUN_END_TS"));
+					cfg.setLastRunDone(SqlUtilities.asBoolean(rs.getString("GENTASK_LAST_RUN_DONE")));
+					cfg.setLastRunDescr(rs.getString("GENTASK_LAST_RUN_DESCR"));
+					cfg.setEnabled(SqlUtilities.asBoolean(rs.getString("GENTASK_ENABLED")));
+					configs.add(cfg);
+				}
+				prevOID = cfgOID;
+				long propertyOid = rs.getLong("PROP_OID");
+				if (!rs.wasNull() ) {
+					fai.common.models.Property p = new fai.common.models.Property();
+					p.setOid(propertyOid);
+					p.setKey(rs.getString("PROP_KEY"));
+					p.setValue(rs.getString("PROP_VALUE"));
+					cfg.addProperty(p);
+				}
+			}
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+			SqlUtilities.closeWithNoException(rs);
+		}
+		return configs;
+	}
+
 }
