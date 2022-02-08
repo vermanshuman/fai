@@ -20,13 +20,13 @@ export class UploadTaskService extends ObservableApiService<UploadTask> {
     findAll = (startDate: string, endDate: string):
         Observable<UploadTasks> => this.apiService.get(`/upload?startDate=` + startDate + '&endDate=' + endDate)
 
-    executeImportCSV = (taskOID: number):
-        Observable<UploadTask> => this.apiService.get(`/upload/importCSV/${taskOID}`)
+    executeImportCSV = (taskOID: number, isScheduled: boolean):
+        Observable<UploadTask> => this.apiService.get(`/upload/importCSV/${taskOID}?isScheduled=${isScheduled}`)
 
-    executeCalculator = (taskOID: number):
-        Observable<UploadTask> => this.apiService.get(`/upload/fabbisognoCalculator/${taskOID}`)
+    executeCalculator = (taskOID: number, isScheduled: boolean):
+        Observable<UploadTask> => this.apiService.get(`/upload/fabbisognoCalculator/${taskOID}?isScheduled=${isScheduled}`)
 
-    procurementTask = (taskOID: number):
-        Observable<UploadTask> => this.apiService.get(`/upload/approvvigionamentoManager/${taskOID}`)
+    procurementTask = (taskOID: number, isScheduled: boolean):
+        Observable<UploadTask> => this.apiService.get(`/upload/approvvigionamentoManager/${taskOID}?isScheduled=${isScheduled}`)
 }
 

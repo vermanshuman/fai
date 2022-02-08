@@ -87,11 +87,12 @@ public class UploadTaskController extends AbstractController {
 
     @GetMapping(MappingConstants.EXECUTE_IMPORT_TASK)
     @ApiOperation(value = "import Ordini CSV", response = UploadTaskDTO.class)
-    public ResponseEntity<UploadTaskDTO> executeImportTask(@PathVariable Long taskOID) {
+    public ResponseEntity<UploadTaskDTO> executeImportTask(@PathVariable Long taskOID,
+                                                           @ApiParam boolean isScheduled) {
         Connection conn = null;
         try {
             conn = getConnection();
-            return new ResponseEntity<>(service.executeImportTask(taskOID, conn), HttpStatus.OK);
+            return new ResponseEntity<>(service.executeImportTask(taskOID, isScheduled, conn), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();
@@ -104,11 +105,12 @@ public class UploadTaskController extends AbstractController {
 
     @GetMapping(MappingConstants.EXECUTE_CALCULATOR_TASK)
     @ApiOperation(value = "fabbisogno calculator", response = UploadTaskDTO.class)
-    public ResponseEntity<UploadTaskDTO> calculatorTask(@PathVariable Long taskOID) {
+    public ResponseEntity<UploadTaskDTO> calculatorTask(@PathVariable Long taskOID,
+                                                        @ApiParam boolean isScheduled) {
         Connection conn = null;
         try {
             conn = getConnection();
-            return new ResponseEntity<>(service.calculatorTask(taskOID, conn), HttpStatus.OK);
+            return new ResponseEntity<>(service.calculatorTask(taskOID,  isScheduled, conn), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();
@@ -121,11 +123,12 @@ public class UploadTaskController extends AbstractController {
 
     @GetMapping(MappingConstants.PROCUREMENT_MANAGER_TASK)
     @ApiOperation(value = "procurement manager", response = UploadTaskDTO.class)
-    public ResponseEntity<UploadTaskDTO> procurementManagerTask(@PathVariable Long taskOID) {
+    public ResponseEntity<UploadTaskDTO> procurementManagerTask(@PathVariable Long taskOID,
+                                                                @ApiParam boolean isScheduled) {
         Connection conn = null;
         try {
             conn = getConnection();
-            return new ResponseEntity<>(service.procurementManagerTask(taskOID, conn), HttpStatus.OK);
+            return new ResponseEntity<>(service.procurementManagerTask(taskOID,  isScheduled, conn), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             UploadTaskDTO uploadTaskDTO = new UploadTaskDTO();

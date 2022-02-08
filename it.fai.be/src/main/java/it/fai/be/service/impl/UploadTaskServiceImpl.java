@@ -105,71 +105,85 @@ public class UploadTaskServiceImpl implements UploadTaskService {
     }
 
     @Override
-    public UploadTaskDTO executeImportTask(Long taskOID, Connection conn) throws Exception {
+    public UploadTaskDTO executeImportTask(Long taskOID, boolean isScheduled,Connection conn) throws Exception {
         log.debug("Execute Task" , taskOID);
         UploadTaskDTO uploadTaskDTO = null;
-        UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
-        if(uploadTask != null){
-            uploadTaskDTO = setUploadTask(uploadTask);
+        if(isScheduled){
 
-            String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.IMPORT_ACRONYM, conn);
-            if (className == null || "".equals(className))
-                throw new IllegalArgumentException(
-                        "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
-            //
-            GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
-            genericTask.setup(ValueConstant.IMPORT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
-            String error = genericTask.doJob();
-            uploadTaskDTO.setMessage(error);
+        }else {
+            UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
+            if(uploadTask != null){
+                uploadTaskDTO = setUploadTask(uploadTask);
+
+                String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.IMPORT_ACRONYM, conn);
+                if (className == null || "".equals(className))
+                    throw new IllegalArgumentException(
+                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
+                //
+                GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
+                genericTask.setup(ValueConstant.IMPORT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
+                String error = genericTask.doJob();
+                uploadTaskDTO.setMessage(error);
+            }
         }
         return uploadTaskDTO;
     }
 
     @Override
-    public UploadTaskDTO calculatorTask(Long taskOID, Connection conn) throws Exception {
+    public UploadTaskDTO calculatorTask(Long taskOID, boolean isScheduled, Connection conn) throws Exception {
         log.debug("Calculate Task" , taskOID);
         UploadTaskDTO uploadTaskDTO = null;
-        UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
-        if(uploadTask != null){
-            uploadTaskDTO = setUploadTask(uploadTask);
+        if(isScheduled){
 
-            String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.CALCULATOR_ACRONYM, conn);
-            if (className == null || "".equals(className))
-                throw new IllegalArgumentException(
-                        "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
-            //
-            GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
-            genericTask.setup(ValueConstant.CALCULATOR_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
-            String error = genericTask.doJob();
-            uploadTaskDTO.setMessage(error);
+        }else {
+            UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
+            if(uploadTask != null){
+                uploadTaskDTO = setUploadTask(uploadTask);
+
+                String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.CALCULATOR_ACRONYM, conn);
+                if (className == null || "".equals(className))
+                    throw new IllegalArgumentException(
+                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
+                //
+                GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
+                genericTask.setup(ValueConstant.CALCULATOR_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
+                String error = genericTask.doJob();
+                uploadTaskDTO.setMessage(error);
+            }
         }
+
         return uploadTaskDTO;
     }
 
     @Override
-    public UploadTaskDTO procurementManagerTask(Long taskOID, Connection conn) throws Exception {
+    public UploadTaskDTO procurementManagerTask(Long taskOID,  boolean isScheduled, Connection conn) throws Exception {
         log.debug("Procurement Task" , taskOID);
         UploadTaskDTO uploadTaskDTO = null;
-        UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
-        if(uploadTask != null){
+        if(isScheduled){
+
+        }else {
+            UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
+            if(uploadTask != null){
 
 
-            String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.PROCUREMENT_ACRONYM, conn);
-            if (className == null || "".equals(className))
-                throw new IllegalArgumentException(
-                        "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
-            //
-            GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
-            genericTask.setup(ValueConstant.PROCUREMENT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
+                String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.PROCUREMENT_ACRONYM, conn);
+                if (className == null || "".equals(className))
+                    throw new IllegalArgumentException(
+                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
+                //
+                GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
+                genericTask.setup(ValueConstant.PROCUREMENT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
 
-            String error = genericTask.doJob();
-            if(StringUtils.isBlank(error)){
-                fai.broker.db.SqlQueries.seUploadTaskExecutionStatus(taskOID, ExecutionStatus.EXECUTION_SUCCESS.getAcronym(),
-                        ExecutionStatus.EXECUTION_SUCCESS.getDescr(), conn);
+                String error = genericTask.doJob();
+                if(StringUtils.isBlank(error)){
+                    fai.broker.db.SqlQueries.seUploadTaskExecutionStatus(taskOID, ExecutionStatus.EXECUTION_SUCCESS.getAcronym(),
+                            ExecutionStatus.EXECUTION_SUCCESS.getDescr(), conn);
+                }
+                uploadTaskDTO = setUploadTask(uploadTask);
+                uploadTaskDTO.setMessage(error);
             }
-            uploadTaskDTO = setUploadTask(uploadTask);
-            uploadTaskDTO.setMessage(error);
         }
+
         return uploadTaskDTO;
     }
 
@@ -248,6 +262,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         if(genericTaskConfig != null && StringUtils.isNotBlank(genericTaskConfig.getScheduledTimes())){
             List<String> items = Arrays.asList(genericTaskConfig.getScheduledTimes().split(","));
             String schedule = getNextScheduleTime(items);
+            System.out.println(DateUtil.fromString(schedule, DateUtil.getMySQLDateTimePattern()));
             uploadTaskDTO.setCreationDate(DateUtil.fromString(schedule, DateUtil.getDatePatternWithMinutes()));
         }
 

@@ -12,9 +12,9 @@ public interface UploadTaskService {
 
     List<UploadTaskDTO> findAll(String startDate, String endDate, Connection conn) throws Exception;
 
-    UploadTaskDTO executeImportTask(Long taskOID, Connection conn) throws Exception;
+    UploadTaskDTO executeImportTask(Long taskOID, boolean isScheduled, Connection conn) throws Exception;
 
-    UploadTaskDTO calculatorTask(Long taskOID, Connection conn) throws Exception;
+    UploadTaskDTO calculatorTask(Long taskOID,  boolean isScheduled,Connection conn) throws Exception;
 
-    UploadTaskDTO procurementManagerTask(Long taskOID, Connection conn) throws Exception;
+    UploadTaskDTO procurementManagerTask(Long taskOID,  boolean isScheduled,Connection conn) throws Exception;
 }
