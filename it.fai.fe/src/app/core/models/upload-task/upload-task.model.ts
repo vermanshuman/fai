@@ -13,4 +13,5 @@ export interface UploadTask {
     executionStatus: string;
     executionStatusDescription: string;
     magazzinoAcronym: string;
+    buttonDisabled: boolean;
 }

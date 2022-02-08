@@ -69,11 +69,29 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         log.debug("Find All Upload Tasks");
         List<UploadTaskConfig> uploadTasks = fai.broker.db.SqlQueries.getAllUploadTask(conn);
         List<Magazzino> magazzini = fai.broker.db.SqlQueries.getAllMagazzino(ValueConstant.MAGAZZINO_CONTEXT, conn);
-        return uploadTasks
+        List<UploadTaskDTO> uploadTaskDTOS = uploadTasks
                 .stream()
                 .map(uploadTask -> setUploadTask(uploadTask,magazzini))
                 .map(uploadTaskDTO -> setOrderCount(uploadTaskDTO, conn))
                 .collect(Collectors.toList());
+
+        boolean isExecute = false;
+        boolean inCorso = false;
+        for(UploadTaskDTO uploadTaskDTO : uploadTaskDTOS){
+            if(!isExecute && StringUtils.isNotBlank(uploadTaskDTO.getExecutionStatus()) &&
+                    uploadTaskDTO.getExecutionStatus().equalsIgnoreCase(ProcessingStatus.ESEGUIRE.toString())){
+                uploadTaskDTO.setButtonDisabled(Boolean.FALSE);
+                isExecute = true;
+            }
+            if(!inCorso && StringUtils.isNotBlank(uploadTaskDTO.getExecutionStatus()) &&
+                    uploadTaskDTO.getExecutionStatus().equalsIgnoreCase(ProcessingStatus.INCORSO.toString())){
+                uploadTaskDTO.setButtonDisabled(Boolean.FALSE);
+                inCorso = true;
+            }
+            if(isExecute && inCorso)
+                break;
+        }
+        return  uploadTaskDTOS;
     }
 
     @Override
@@ -187,6 +205,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         uploadTaskDTO.setProcessedOrderCount(0);
         uploadTaskDTO.setMissingOrderCount(0);
         uploadTaskDTO.setMagazzinoAcronym(uploadTaskConfig.getMagazzinoAcronym());
+        uploadTaskDTO.setButtonDisabled(Boolean.TRUE);
         if(magazzini != null && !magazzini.isEmpty() &&
                 StringUtils.isNotBlank(uploadTaskConfig.getMagazzinoAcronym())){
             Optional<Magazzino> warehouse = magazzini

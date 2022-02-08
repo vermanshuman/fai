@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {GenericTaskService} from '../../core/http';
 import {
@@ -13,7 +13,7 @@ import {
 import {NotificationService} from '../../services/notification.service';
 import {UploadTaskService} from '../../core/http/upload-task/upload-task.service';
 import {TableColumn} from '../../shared/component/generic-table/generic-table.component';
-import {Observable, of} from 'rxjs';
+import {Observable, of, Subject, timer} from 'rxjs';
 import {OrdersService} from '../../core/http/order/orders.service';
 import {WEEK_DAYS} from '../../config/weekdays';
 import {WEEK_DAYS_DD_CONFIG} from '../../config/weekdays-dd-config';
@@ -24,13 +24,15 @@ import {WarehouseService} from '../../core/http/warehouses/warehouse.service';
 import {SupplierService} from '../../core/http/supplier/supplier.service';
 import {PRODUCT_TABLE_COLUMNS} from '../../config/product-table-columns';
 import {ProductService} from '../../core/http/product/product.service';
+import {retry, share, switchMap, takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy{
+    private stopPolling = new Subject();
     ftpConfigForm: FormGroup;
     fileUploadForm: FormGroup;
     base64SelectedFile = '';
@@ -116,6 +118,10 @@ export class HomeComponent implements OnInit {
             this.allWarehouseList = this.warehouseList =  data.warehouses;
         });
 
+    }
+
+    ngOnDestroy() {
+        this.stopPolling.next();
     }
 
     initFileUploadForm(): void {
@@ -377,7 +383,14 @@ export class HomeComponent implements OnInit {
     }
 
     refreshUploadedFiles(): void {
-        this.uploadTaskService.findAll(null, null).subscribe(data => {
+
+        const response = timer(1, 10000).pipe(
+            switchMap(() =>   this.uploadTaskService.findAll(null, null)),
+            retry(),
+            share(),
+            takeUntil(this.stopPolling)
+        );
+        response.subscribe(data => {
                 console.log('Tasks ', data);
                 if (data && data.uploadTasks) {
                     this.uploadedFiles$ = of(data.uploadTasks);
