@@ -6,9 +6,11 @@ import it.fai.be.controller.mapping.MappingConstants;
 import it.fai.be.dto.CSVFileDTO;
 import it.fai.be.dto.UploadTaskDTO;
 import it.fai.be.dto.UploadTasksDTO;
+import it.fai.be.enums.ProcessingStatus;
 import it.fai.be.service.UploadTaskService;
 import it.fai.be.utils.DbUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +61,18 @@ public class UploadTaskController extends AbstractController {
         try {
             conn = getConnection();
             List<UploadTaskDTO> uploadTasks = service.findAll(startDate, endDate, conn);
+            Optional<UploadTaskDTO> runningTask = uploadTasks
+                    .stream()
+                            .filter(uploadTaskDTO ->
+                                    StringUtils.isNotBlank(uploadTaskDTO.getExecutionStatus()) &&
+                                            uploadTaskDTO.getExecutionStatus()
+                                                    .equalsIgnoreCase(ProcessingStatus.INCORSO.toString()))
+                                    .findFirst();
+
+            if(runningTask.isPresent())
+                uploadTasksDTO.setIsRunning(Boolean.TRUE);
+            else
+                uploadTasksDTO.setIsRunning(Boolean.FALSE);
             uploadTasksDTO.setUploadTasks(uploadTasks);
             return new ResponseEntity<>(uploadTasksDTO, HttpStatus.OK);
         } catch (Exception e) {

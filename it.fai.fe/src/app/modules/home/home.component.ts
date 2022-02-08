@@ -392,6 +392,9 @@ export class HomeComponent implements OnInit, OnDestroy{
         );
         response.subscribe(data => {
                 console.log('Tasks ', data);
+                if (!data.isRunning) {
+                    this.stopPolling.next();
+                }
                 if (data && data.uploadTasks) {
                     this.uploadedFiles$ = of(data.uploadTasks);
                 }

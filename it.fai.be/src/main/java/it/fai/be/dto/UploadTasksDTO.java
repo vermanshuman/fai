@@ -10,5 +10,6 @@ import java.util.List;
 @Setter
 public class UploadTasksDTO extends ResponseDto {
 
+    private Boolean isRunning;
     private List<UploadTaskDTO> uploadTasks;
 }
