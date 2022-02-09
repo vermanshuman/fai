@@ -1,6 +1,7 @@
 package fai.broker.task.apprmgr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -28,6 +29,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
   
   protected Hashtable<String, Offer> offersByMinSan = null; 
   protected Hashtable<String, Offer> offersByEan = null; 
+  private List<HashMap<String, Long>> fornitoreIgnorareList = new ArrayList<>();
   
   
   protected void loadBestOffers() throws Exception {
@@ -126,6 +128,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
         //
         // --- aggiornamento della FAI_LISTINI_DISPONIBILITA_TEMP in funzione delle risposte ottenute  ---
         //
+        HashMap<String, Long> fornitoreIgnorareMap = new HashMap<>();
         for (ManagedRequest mr : managedRequests) {
           ApprovvigionamentoFarmaco richiesto = mr.getRequested();
           ApprovvigionamentoFarmaco disponibile = mr.getAvailableBestMatch(false);
@@ -134,11 +137,15 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
           }
           else if (disponibile.getQuantita() < richiesto.getQuantita()) {
             SqlQueries.deleteListiniDisponibilitaTemp(disponibile.getCodiceMinSan(), disponibile.getCodiceEan(), abf.fornitore.getOid(), conn);
+            logger.info("---------------------------------------:: "+disponibile.getCodiceMinSan() + " :: "+abf.fornitore.getOid());
+            fornitoreIgnorareMap.put(disponibile.getCodiceMinSan(), abf.fornitore.getOid());
           }
           else {
 //            throw new IllegalStateException("inammissibile, richieste "+richiesto.getQuantita()+" unità di MinSan \""+richiesto.getCodiceMinSan()+"\"/EAN \""+richiesto.getCodiceEan()+"\", ma ottenuta dispponibilità per "+disponibile.getQuantita()+" unità");
           }
         }
+        
+        fornitoreIgnorareList.add(fornitoreIgnorareMap);
         //
         // --- gestione delle risposte/aggiornamento banca dati ---
         //
@@ -153,6 +160,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
       this.approvvigionamentoToProcess = SqlQueries.getAllApprovvigionamentoFarmaco(ItemStatus.VALUE_TO_PROCESS, conn);
       //
     }
+    env.setFornitoreIgnorare(fornitoreIgnorareList);
     return null;
   }
     

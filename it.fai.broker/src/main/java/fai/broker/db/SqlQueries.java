@@ -2989,5 +2989,30 @@ public class SqlQueries {
 		}
 		return configs;
 	}
+	
+	public static void updateApprovvigionamentoFarmacoStatusToProcess(Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		PreparedStatement stmt = null;
+		try {
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateApprovvigionamentoFarmacoStatusToProcess.sql");
+			stmt = conn.prepareStatement(sql);
+			stmt.executeUpdate();
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage()
+					+ "� nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+							? "; sql:" + System.getProperty("line.separator") + sql
+									+ System.getProperty("line.separator")
+							: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
+	}
 
 }
