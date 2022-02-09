@@ -261,8 +261,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         uploadTaskDTO.setIsScheduled(Boolean.TRUE);
         if(genericTaskConfig != null && StringUtils.isNotBlank(genericTaskConfig.getScheduledTimes())){
             List<String> items = Arrays.asList(genericTaskConfig.getScheduledTimes().split(","));
-            String schedule = getNextScheduleTime(items);
-            System.out.println(DateUtil.fromString(schedule, DateUtil.getMySQLDateTimePattern()));
+            String schedule = DateUtil.getNextScheduleTime(items);
             uploadTaskDTO.setCreationDate(DateUtil.fromString(schedule, DateUtil.getDatePatternWithMinutes()));
         }
 
