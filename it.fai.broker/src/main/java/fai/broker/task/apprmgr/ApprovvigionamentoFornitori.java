@@ -1,8 +1,10 @@
 package fai.broker.task.apprmgr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
 import fai.broker.models.ApprovvigionamentoFarmaco;
@@ -13,6 +15,7 @@ import fai.broker.supplier.SupplierService;
 import fai.broker.supplier.SupplierService.ManagedRequest;
 
 class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori {
+  static Logger logger = Logger.getLogger(ApprovvigionamentoFornitori.class);
 
   protected class Offer {
     Fornitore fornitore;
@@ -28,6 +31,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
   
   protected Hashtable<String, Offer> offersByMinSan = null; 
   protected Hashtable<String, Offer> offersByEan = null; 
+  private List<HashMap<String, Long>> fornitoreIgnorareList = new ArrayList<>();
   
   
   protected void loadBestOffers() throws Exception {
@@ -56,6 +60,8 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
   }
   
   protected List<ApprovByFornitore> groupByFornitore(List<ApprovvigionamentoFarmaco> approvList) {
+    final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+    final String LOG_PREFIX = METH_NAME + ": ";
     Hashtable<Long, ApprovByFornitore> ht = new Hashtable<Long, ApprovByFornitore>();
     List<ApprovByFornitore> list = new ArrayList<ApprovByFornitore>();
     for (ApprovvigionamentoFarmaco approv : approvList) {
@@ -63,7 +69,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
       if (offer == null) offer = offersByEan.get(approv.getCodiceEan());
 //      if (offer == null)  throw new IllegalStateException("inammissibile, nessuna offerta trovata, né per il MinSan \""+approv.getCodiceMinSan()+"\", né per l'EAN \""+approv.getCodiceEan()+"\"");
       if (offer == null) {
-    	  System.out.println("product code " + approv.getCodiceMinSan() + approv.getCodiceEan() + " is not existed in supplier");
+    	  logger.info(LOG_PREFIX + "... product code " + approv.getCodiceMinSan() + "\\" +  approv.getCodiceEan() + " not available from suppliers");
     	  continue;
       }
       //
@@ -126,6 +132,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
         //
         // --- aggiornamento della FAI_LISTINI_DISPONIBILITA_TEMP in funzione delle risposte ottenute  ---
         //
+        HashMap<String, Long> fornitoreIgnorareMap = new HashMap<>();
         for (ManagedRequest mr : managedRequests) {
           ApprovvigionamentoFarmaco richiesto = mr.getRequested();
           ApprovvigionamentoFarmaco disponibile = mr.getAvailableBestMatch(false);
@@ -134,11 +141,15 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
           }
           else if (disponibile.getQuantita() < richiesto.getQuantita()) {
             SqlQueries.deleteListiniDisponibilitaTemp(disponibile.getCodiceMinSan(), disponibile.getCodiceEan(), abf.fornitore.getOid(), conn);
+            logger.info("---------------------------------------:: "+disponibile.getCodiceMinSan() + " :: "+abf.fornitore.getOid());
+            fornitoreIgnorareMap.put(disponibile.getCodiceMinSan(), abf.fornitore.getOid());
           }
           else {
 //            throw new IllegalStateException("inammissibile, richieste "+richiesto.getQuantita()+" unità di MinSan \""+richiesto.getCodiceMinSan()+"\"/EAN \""+richiesto.getCodiceEan()+"\", ma ottenuta dispponibilità per "+disponibile.getQuantita()+" unità");
           }
         }
+        
+        fornitoreIgnorareList.add(fornitoreIgnorareMap);
         //
         // --- gestione delle risposte/aggiornamento banca dati ---
         //
@@ -153,6 +164,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
       this.approvvigionamentoToProcess = SqlQueries.getAllApprovvigionamentoFarmaco(ItemStatus.VALUE_TO_PROCESS, conn);
       //
     }
+    env.setFornitoreIgnorare(fornitoreIgnorareList);
     return null;
   }
     

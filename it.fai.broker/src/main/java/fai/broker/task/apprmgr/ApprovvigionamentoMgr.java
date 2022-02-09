@@ -4,7 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -142,7 +144,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     // --- predisposizione della FAI_LISTINI_DISPONIBILITA_TEMP ---
     //
     SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
-    SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), conn);
+    SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
     //
     // --- cancellazione della tabella FAI_DISPONIBILITA_TEMP (e tabelle dipendenti) ---
     //     NOTA:
@@ -245,6 +247,16 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
         error = processSupplierAvailabilityAndOrders(approvvigionamentoToProcess);
         if(error != null)
         	return error;
+        
+        error = riTentativo();
+        if(error != null)
+        	return error;
+        
+        SqlQueries.updateApprovvigionamentoFarmacoStatusToProcess(conn);
+		conn.commit();
+		SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
+		SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
+		conn.commit();
         approvvigionamentoToProcess = SqlQueries.getAllApprovvigionamentoFarmaco(ItemStatus.VALUE_TO_PROCESS, conn);
         if(approvvigionamentoToProcess == null)
         	break;
@@ -263,6 +275,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
                     "Fornitori Processing Failed", conn);
           return error;
         }
+	    conn.commit();
 	    approvvigionamentoToProcess = fornitori.getApprovvigionamentoToProcess();
 	    //
 	    // --- management of ORDERS_IN to be suspended ---
@@ -289,6 +302,29 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
 	    }
 	    conn.commit();
 	  return error;
+  }
+  
+  private String riTentativo() throws Exception {
+	SqlQueries.updateApprovvigionamentoFarmacoStatusToProcess(conn);
+	conn.commit();
+	SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
+	SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
+	conn.commit();
+	List<HashMap<String, Long>> fornitoreIgnorare = env.getFornitoreIgnorare();
+	
+	for (HashMap<String, Long> fornitoreIgnorareMap : fornitoreIgnorare) {
+		logger.info("fornitoreIgnorareMap size :: "+fornitoreIgnorareMap.size());
+		Iterator<String> iterator = fornitoreIgnorareMap.keySet().iterator();
+	    while (iterator.hasNext()) {
+	        String key = iterator.next();
+	        logger.info("delete from ListiniDisponibilitaTemp :: "+ key + " :: " + fornitoreIgnorareMap.get(key));
+	        SqlQueries.deleteListiniDisponibilitaTemp(key, null, fornitoreIgnorareMap.get(key), conn);
+	    }
+	}
+	conn.commit();
+	List<ApprovvigionamentoFarmaco> approvvigionamentoToProcess = SqlQueries.getAllApprovvigionamentoFarmaco(ItemStatus.VALUE_TO_PROCESS, conn);
+	String error = processSupplierAvailabilityAndOrders(approvvigionamentoToProcess);
+	return error;
   }
   
   private String analyze(List<ApprovvigionamentoFarmaco> approvvigionamentoToProcess) throws Exception {

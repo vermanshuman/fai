@@ -2,6 +2,7 @@ package fai.broker.task.apprmgr;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -33,6 +34,7 @@ class ApprovvigionamentoEnv {
   private Hashtable<Long, Fornitore> fornitoreByOid = new Hashtable<Long, Fornitore>();
   private List<Magazzino> magazzini = new ArrayList<Magazzino>();
   private Set<Long> selectedFornitori = new HashSet<Long>();
+  List<HashMap<String, Long>> fornitoreIgnorare = new ArrayList<>();
 
   public AnagraficaFarmaciMinSanEanCache getAnagrafica() {
     return anagrafica;
@@ -105,4 +107,14 @@ class ApprovvigionamentoEnv {
   public void setSelectedFornitori(Set<Long> selectedFornitori) {
 	this.selectedFornitori = selectedFornitori;
   }
+
+  public List<HashMap<String, Long>> getFornitoreIgnorare() {
+	return fornitoreIgnorare;
+  }
+
+  public void setFornitoreIgnorare(List<HashMap<String, Long>> fornitoreIgnorare) {
+	this.fornitoreIgnorare = fornitoreIgnorare;
+  }
+  
+  
 }

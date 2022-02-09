@@ -1384,7 +1384,7 @@ public class SqlQueries {
 		fai.common.db.SqlQueries.executeUpdate("DELETE FROM FAI_LISTINI_DISPONIBILITA_TEMP", conn);
 	}
 
-	public static int insertListiniDisponibilitaTempByApprovvFarmaco(long oidStatus, Connection conn) throws Exception {
+	public static int insertListiniDisponibilitaTempByApprovvFarmaco(long oidStatus, Set<Long> selectedFornitori, Connection conn) throws Exception {
 		final String METH_NAME = new Object() {
 		}.getClass().getEnclosingMethod().getName();
 		final String LOG_PREFIX = METH_NAME + ": ";
@@ -1393,8 +1393,18 @@ public class SqlQueries {
 		Statement stmt = null;
 		int recordCount = 0;
 		try {
+			String oidList = "(";
+			for (Long oid : selectedFornitori) {
+				oidList += oid + ",";
+			}
+			if(oidList.length() > 1)
+				oidList = oidList.substring(0, oidList.length() - 1);
+			else
+				oidList += 0;
+			oidList += ")";
 			Properties params = new Properties();
 			params.setProperty("OID_STATUS", "" + oidStatus);
+			params.setProperty("OID_LIST", oidList);
 			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "insertListiniDisponibilitaTempByApprovvFarmaco.sql", params);
 			stmt = conn.createStatement();
 			recordCount = stmt.executeUpdate(sql);
@@ -2988,6 +2998,31 @@ public class SqlQueries {
 			SqlUtilities.closeWithNoException(rs);
 		}
 		return configs;
+	}
+	
+	public static void updateApprovvigionamentoFarmacoStatusToProcess(Connection conn) throws Exception {
+		final String METH_NAME = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		final String LOG_PREFIX = METH_NAME + ": ";
+		logger.info(LOG_PREFIX + "...");
+		String sql = null;
+		PreparedStatement stmt = null;
+		try {
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "updateApprovvigionamentoFarmacoStatusToProcess.sql");
+			stmt = conn.prepareStatement(sql);
+			stmt.executeUpdate();
+		} catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage()
+					+ "� nell'esecuzione del metodo " + METH_NAME
+					+ (sql != null
+							? "; sql:" + System.getProperty("line.separator") + sql
+									+ System.getProperty("line.separator")
+							: "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		} finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
 	}
 
 }
