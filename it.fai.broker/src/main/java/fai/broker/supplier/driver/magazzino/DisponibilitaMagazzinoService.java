@@ -53,13 +53,26 @@ public class DisponibilitaMagazzinoService extends AbstractSupplierService {
             //
             logger.info("magazzino.getOrganizationCode() :: "+magazzino.getOrganizationCode());
             DisponibilitaReqTemp[] req = fabb.getAllReq();
-           for (int i = 0; i < req.length; i++) {
-                int quantitaDisponibile = getAvailabilityOraService(magazzino.getOrganizationCode(),
+            for (int i = 0; i < req.length; i++) {
+        	  for (int retry = 0; retry < 3; retry++) {
+        		try {
+                  int quantitaDisponibile = getAvailabilityOraService(magazzino.getOrganizationCode(),
                         req[i].getCodiceMinSan());
-                logger.info("CodiceMinSan :: "+req[i].getCodiceMinSan() + " :: quantitaDisponibile :: "+quantitaDisponibile);
-                DisponibilitaResTemp res = new DisponibilitaResTemp();
-                res.setQuantitaDisponibile(quantitaDisponibile);
-                req[i].addResp(res);
+                  logger.info("CodiceMinSan :: "+req[i].getCodiceMinSan() + " :: quantitaDisponibile :: "+quantitaDisponibile);
+                  DisponibilitaResTemp res = new DisponibilitaResTemp();
+                  res.setQuantitaDisponibile(quantitaDisponibile);
+                  req[i].addResp(res);
+                  break; // retry non necessario
+                } catch (Exception ex) {
+                  /* sperimentato in test errore "Permission denied" su eccessive richieste in poco tempo
+                   * implementato quindi un meccanismo di retry con pausa di un secondo 
+                   */
+                  if (retry == 2) throw ex;
+                  logger.error("Errore in chiamata Rest API 'disponibilità' in Inventory Oracle: " + ex.getMessage());
+                  logger.info("pausa 1 sec e nuovo tentativo...");
+                  Thread.sleep(1000);
+                }
+        	  }
             }
             //
             // --- tracciamento nel log della risposta ricevuta ---

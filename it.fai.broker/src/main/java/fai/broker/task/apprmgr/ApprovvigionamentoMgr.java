@@ -144,7 +144,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     // --- predisposizione della FAI_LISTINI_DISPONIBILITA_TEMP ---
     //
     SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
-    SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), conn);
+    SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
     //
     // --- cancellazione della tabella FAI_DISPONIBILITA_TEMP (e tabelle dipendenti) ---
     //     NOTA:
@@ -255,7 +255,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
         SqlQueries.updateApprovvigionamentoFarmacoStatusToProcess(conn);
 		conn.commit();
 		SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
-		SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), conn);
+		SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
 		conn.commit();
         approvvigionamentoToProcess = SqlQueries.getAllApprovvigionamentoFarmaco(ItemStatus.VALUE_TO_PROCESS, conn);
         if(approvvigionamentoToProcess == null)
@@ -308,7 +308,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
 	SqlQueries.updateApprovvigionamentoFarmacoStatusToProcess(conn);
 	conn.commit();
 	SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
-	SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), conn);
+	SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
 	conn.commit();
 	List<HashMap<String, Long>> fornitoreIgnorare = env.getFornitoreIgnorare();
 	

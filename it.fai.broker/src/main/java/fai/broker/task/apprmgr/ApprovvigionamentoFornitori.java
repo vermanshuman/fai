@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
 import fai.broker.models.ApprovvigionamentoFarmaco;
@@ -14,6 +15,7 @@ import fai.broker.supplier.SupplierService;
 import fai.broker.supplier.SupplierService.ManagedRequest;
 
 class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori {
+  static Logger logger = Logger.getLogger(ApprovvigionamentoFornitori.class);
 
   protected class Offer {
     Fornitore fornitore;
@@ -58,6 +60,8 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
   }
   
   protected List<ApprovByFornitore> groupByFornitore(List<ApprovvigionamentoFarmaco> approvList) {
+    final String METH_NAME = new Object() { }.getClass().getEnclosingMethod().getName();
+    final String LOG_PREFIX = METH_NAME + ": ";
     Hashtable<Long, ApprovByFornitore> ht = new Hashtable<Long, ApprovByFornitore>();
     List<ApprovByFornitore> list = new ArrayList<ApprovByFornitore>();
     for (ApprovvigionamentoFarmaco approv : approvList) {
@@ -65,7 +69,7 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
       if (offer == null) offer = offersByEan.get(approv.getCodiceEan());
 //      if (offer == null)  throw new IllegalStateException("inammissibile, nessuna offerta trovata, né per il MinSan \""+approv.getCodiceMinSan()+"\", né per l'EAN \""+approv.getCodiceEan()+"\"");
       if (offer == null) {
-    	  System.out.println("product code " + approv.getCodiceMinSan() + approv.getCodiceEan() + " is not existed in supplier");
+    	  logger.info(LOG_PREFIX + "... product code " + approv.getCodiceMinSan() + "\\" +  approv.getCodiceEan() + " not available from suppliers");
     	  continue;
       }
       //

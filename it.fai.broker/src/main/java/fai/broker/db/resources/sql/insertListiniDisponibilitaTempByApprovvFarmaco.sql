@@ -14,7 +14,8 @@ FROM
     V_FAI_LISTINI_FORNITORI v
     inner join FAI_APPROVVIGIONAMENTO_FARMACO faf on v.codice_minsan = faf.codice_minsan
 WHERE
-    faf.oid_status = ?OID_STATUS?
+    V.OID_FORNITORE IN ?OID_LIST?
+	and faf.oid_status = ?OID_STATUS?
 union
 SELECT 
     v.OID_FORNITORE
@@ -25,5 +26,6 @@ FROM
     V_FAI_LISTINI_FORNITORI v
     inner join FAI_APPROVVIGIONAMENTO_FARMACO faf on v.CODICE_EAN = faf.CODICE_EAN
 WHERE
-    faf.oid_status = ?OID_STATUS?
+    V.OID_FORNITORE IN ?OID_LIST?
+	and faf.oid_status = ?OID_STATUS?
 )
