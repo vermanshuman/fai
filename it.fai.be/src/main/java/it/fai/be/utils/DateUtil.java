@@ -75,8 +75,7 @@ public class DateUtil {
         return simpleDateFormat.format(new Date()).replaceAll("\\s", ValueConstant.DASH).replace(":", ValueConstant.DASH);
     }
 
-
-    public static String getNextScheduleTime(List<String> items){
+    public static  String getNextScheduleTime(List<String> items){
         String nextScheduleTime = null;
         Optional<Date> schedule = items.stream()
                 .filter(item -> StringUtils.isNotBlank(item))
@@ -87,6 +86,11 @@ public class DateUtil {
 
         if(schedule.isPresent()){
             nextScheduleTime = DateUtil.toFormattedString(schedule.get(), DateUtil.getDatePatternWithMinutes(), null);
+        }else {
+            if(items.size() > 0)
+                nextScheduleTime = DateUtil.toFormattedString(DateUtil.getNextDay(DateUtil.fromString(items.get(0),
+                        DateUtil.getTimePattern())), DateUtil.getDatePatternWithMinutes(), null);
+
         }
         return nextScheduleTime;
     }

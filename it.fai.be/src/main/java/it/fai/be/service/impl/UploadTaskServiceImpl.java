@@ -289,24 +289,4 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         }
         return uploadTaskDTO;
     }
-
-    private  String getNextScheduleTime(List<String> items){
-        String nextScheduleTime = null;
-        Optional<Date> schedule = items.stream()
-                .filter(item -> StringUtils.isNotBlank(item))
-                .map(item -> DateUtil.getCurrentDay(DateUtil.fromString(item,
-                        DateUtil.getTimePattern())))
-                .filter(date -> date.equals(DateUtil.getNow()) || date.after(DateUtil.getNow()))
-                .findFirst();
-
-        if(schedule.isPresent()){
-            nextScheduleTime = DateUtil.toFormattedString(schedule.get(), DateUtil.getDatePatternWithMinutes(), null);
-        }else {
-            if(items.size() > 0)
-                nextScheduleTime = DateUtil.toFormattedString(DateUtil.getNextDay(DateUtil.fromString(items.get(0),
-                    DateUtil.getTimePattern())), DateUtil.getDatePatternWithMinutes(), null);
-
-        }
-        return nextScheduleTime;
-    }
 }
