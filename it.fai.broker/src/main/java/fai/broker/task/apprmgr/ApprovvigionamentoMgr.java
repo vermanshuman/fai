@@ -143,8 +143,8 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     //
     // --- predisposizione della FAI_LISTINI_DISPONIBILITA_TEMP ---
     //
-    SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
-    SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
+    //SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
+    //SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
     //
     // --- cancellazione della tabella FAI_DISPONIBILITA_TEMP (e tabelle dipendenti) ---
     //     NOTA:
@@ -158,7 +158,7 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     //     (al momento, 2021.07.27, neppure il prezzo ottenuto in risposta
     //     dai fornitori, viene conservato nella FAI_DISPONIBILITA_RES_TEMP)
     //
-    SqlQueries.deleteAllDisponibilitaTemp(conn);
+    //SqlQueries.deleteAllDisponibilitaTemp(conn);
     //
     // --- determination of availability for FAI_APPROVIGIONAMENTO_FARMACO in Warehouses and at Suppliers ---
     //
@@ -244,6 +244,27 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
           }
         }
         
+        //
+  	    // --- predisposizione della FAI_LISTINI_DISPONIBILITA_TEMP ---
+  	    //
+  	    SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
+  	    SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
+  	    //
+        // --- cancellazione della tabella FAI_DISPONIBILITA_TEMP (e tabelle dipendenti) ---
+        //     NOTA:
+        //     nel momento in cui dovesse presentarsi l'esigenza, i criteri di 
+        //     cancellazione del contenuto potrebbero essere resi pi� articolati 
+        //     rispetto a quelli attuali, ed il contenuo della tabella (almeno
+        //     inizialmente - 2021.07.27 - conservato solo a scopo di tracciamento 
+        //     dettagliato delle richieste e delle risposte, ma mai successivamente 
+        //     recuperato per essere utilizzato negli algoritmi) utilizzato per  
+        //     ottimizzare l'algoritmo di determinazione della fornitura migliore
+        //     (al momento, 2021.07.27, neppure il prezzo ottenuto in risposta
+        //     dai fornitori, viene conservato nella FAI_DISPONIBILITA_RES_TEMP)
+        //
+        SqlQueries.deleteAllDisponibilitaTemp(conn);
+        conn.commit();
+        
         error = processSupplierAvailabilityAndOrders(approvvigionamentoToProcess);
         if(error != null)
         	return error;
@@ -253,9 +274,6 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
         	return error;
         
         SqlQueries.updateApprovvigionamentoFarmacoStatusToProcess(conn);
-		conn.commit();
-		SqlQueries.deleteAllListiniDisponibilitaTemp(conn);
-		SqlQueries.insertListiniDisponibilitaTempByApprovvFarmaco(ItemStatus.VALUE_TO_PROCESS.getOid(), env.getSelectedFornitori(), conn);
 		conn.commit();
         approvvigionamentoToProcess = SqlQueries.getAllApprovvigionamentoFarmaco(ItemStatus.VALUE_TO_PROCESS, conn);
         if(approvvigionamentoToProcess == null)
