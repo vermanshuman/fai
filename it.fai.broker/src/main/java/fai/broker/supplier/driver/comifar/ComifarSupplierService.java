@@ -8,14 +8,14 @@ import fai.imp.base.bean.ProcessedOrdersBean;
 import fai.imp.base.bean.ProductBean;
 import fai.imp.base.models.FaiImportConfig;
 import fai.imp.base.task.AbstractDataCollector;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.text.html.Option;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class ComifarSupplierService extends AbstractSupplierService {
@@ -120,9 +120,9 @@ public class ComifarSupplierService extends AbstractSupplierService {
                 .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
                 .collect(Collectors.toList()));
 
+       // ProcessedOrdersBean processedOrdersBean = createDummyResponse(approvvigionamento);
         List<ProcessedOrderBean> processedOrders = processedOrdersBean.getProcessedOrders();
         OrdineOut ordineOut = new OrdineOut();
-
         ordineOut.setStatus(ItemStatus.VALUE_PROCESSED);
         if(approvvigionamento != null && approvvigionamento.size() > 0)
             ordineOut.setFornitore(approvvigionamento.get(0).getFornitore());

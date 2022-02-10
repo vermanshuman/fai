@@ -4,11 +4,16 @@ import fai.broker.db.SqlQueries;
 import fai.broker.models.*;
 import fai.common.util.ExceptionsTool;
 import fai.imp.base.bean.ProcessedOrderBean;
+import fai.imp.base.bean.ProcessedOrdersBean;
+import fai.imp.base.bean.ProductBean;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public abstract class AbstractSupplierService implements SupplierService {
   
@@ -477,5 +482,30 @@ public abstract class AbstractSupplierService implements SupplierService {
       appr.setOrdineOut(ordineOut);
       SqlQueries.updateApprovvigionamentoFarmacoOrdine(appr, conn);
     }
+  }
+
+  protected ProcessedOrdersBean createDummyResponse(List<ApprovvigionamentoFarmaco> approvvigionamento){
+
+    List<ProductBean> products = approvvigionamento
+            .stream()
+            .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
+            .collect(Collectors.toList());
+
+    AtomicInteger numord = new AtomicInteger(1);
+    List<ProcessedOrderBean> processedOrderBeans = products
+            .stream()
+            .map(item ->
+                    new ProcessedOrderBean(item.getProductCode(), null, null , item.getQuantity(),
+                            Boolean.FALSE, null, null,
+                            String.format("%04d",numord.getAndIncrement()),
+                            RandomStringUtils.random(8, "0123456789abcdef"),
+                            null, null))
+            .collect(Collectors.toList());
+    Collections.shuffle(processedOrderBeans);
+
+    ProcessedOrdersBean processedOrdersBean = new ProcessedOrdersBean();
+    processedOrdersBean.setProcessedOrders(processedOrderBeans);
+
+    return  processedOrdersBean;
   }
 }

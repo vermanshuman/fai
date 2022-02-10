@@ -141,6 +141,7 @@ public class FarmaclickSupplierService extends AbstractSupplierService {
                 .map(appr -> new ProductBean(appr.getCodiceMinSan(), appr.getQuantita()))
                 .collect(Collectors.toList()));
 
+//        ProcessedOrdersBean processedOrdersBean = createDummyResponse(approvvigionamento);
         List<ProcessedOrderBean> processedOrders = processedOrdersBean.getProcessedOrders();
         OrdineOut ordineOut = new OrdineOut();
         ordineOut.setRequestXml(processedOrdersBean.getRequestXML());
