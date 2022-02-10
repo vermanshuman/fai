@@ -495,7 +495,7 @@ public abstract class AbstractSupplierService implements SupplierService {
     List<ProcessedOrderBean> processedOrderBeans = products
             .stream()
             .map(item ->
-                    new ProcessedOrderBean(item.getProductCode(), null, null , item.getQuantity(),
+                    new ProcessedOrderBean(item.getProductCode(), null, item.getQuantity() , null,
                             Boolean.FALSE, null, null,
                             String.format("%04d",numord.getAndIncrement()),
                             RandomStringUtils.random(8, "0123456789abcdef"),
@@ -503,6 +503,13 @@ public abstract class AbstractSupplierService implements SupplierService {
             .collect(Collectors.toList());
     Collections.shuffle(processedOrderBeans);
 
+    int productsTobeUpdated = (3*processedOrderBeans.size())/100;
+    for(int i=0; i < productsTobeUpdated;i++){
+      int quantity = processedOrderBeans.get(i).getOrderedQuantity();
+      processedOrderBeans.get(i).setMissingQuantity(1);
+      processedOrderBeans.get(i).setOrderedQuantity(quantity - 1);
+      processedOrderBeans.get(i).setOrderFailed(Boolean.TRUE);
+    }
     ProcessedOrdersBean processedOrdersBean = new ProcessedOrdersBean();
     processedOrdersBean.setProcessedOrders(processedOrderBeans);
 
