@@ -92,6 +92,9 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     if(uploadTaskConfig != null){
       SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.IMPORT_CSV.getAcronym(),
               ExecutionStatus.IMPORT_CSV.getDescr(), conn);
+    }else {
+      SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.IMPORT_CSV.getAcronym(),
+              ExecutionStatus.IMPORT_CSV.getDescr(), conn);
     }
     Ftp ftp = null;
     InputStream is = null;
@@ -127,6 +130,10 @@ public class OrdineInImporterTask extends AbstractGenericTask {
       if(uploadTaskConfig != null)
         SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
               "Importing CSV Failed", conn);
+      else {
+        SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                "Importing CSV Failed", conn);
+      }
       String msg = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME;
       logger.error(msg, th);
       throw new Exception(msg, th);
@@ -150,6 +157,10 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     if(uploadTaskConfig != null)
       SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.PARSE_CSV.getAcronym(),
               ExecutionStatus.PARSE_CSV.getDescr(), conn);
+    else {
+      SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.PARSE_CSV.getAcronym(),
+              ExecutionStatus.PARSE_CSV.getDescr(), conn);
+    }
     Ftp ftp = null;
     InputStream is = null;
     String magazzinoAcronym = uploadTaskConfig != null ? uploadTaskConfig.getMagazzinoAcronym() : params.getProperty("magazzino_acronym", true);
@@ -209,6 +220,10 @@ public class OrdineInImporterTask extends AbstractGenericTask {
       if(uploadTaskConfig != null)
         SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
                 "Parsing CSV Failed", conn);
+      else {
+        SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                "Parsing CSV Failed", conn);
+      }
       String lineParsingInf = lineCount == 0 ? "nessuna riga processata" : "parsing riuscito fino alla riga n."+lineCount+" inclusa";
       String humanReadableError = "parsing del file "+csvInFileName+" non riuscito ("+th.getMessage()+"); "+lineParsingInf;
       String techError = "Eccezione " + th.getClass().getName() + ", «" + th.getMessage() + "» nell'esecuzione del metodo " + METH_NAME+"; "+lineParsingInf;
@@ -272,13 +287,21 @@ public class OrdineInImporterTask extends AbstractGenericTask {
     if(uploadTaskConfig != null)
       SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.ORDERS_LOADED.getAcronym(),
             ExecutionStatus.ORDERS_LOADED.getDescr(), conn);
+    else {
+      SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.ORDERS_LOADED.getAcronym(),
+              ExecutionStatus.ORDERS_LOADED.getDescr(), conn);
+    }
     logger.info(LOG_PREFIX+"analisi eventuali icongurenze negli ordini caricati ...");
     String error = (new OrdineInAnalyzer()).analyze(ordini);
     if (error != null) {
       oic.setStatus(SqlQueries.setOrdineInCollectionStatus(oic.getOid(), ItemStatus.VALUE_ERROR.getOid(), error, error, conn));
       if(uploadTaskConfig != null)
         SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
-                error, conn);
+                "Analysis Failed", conn);
+      else {
+        SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                "Analysis Failed", conn);
+      }
       conn.commit();
       return error;
     }

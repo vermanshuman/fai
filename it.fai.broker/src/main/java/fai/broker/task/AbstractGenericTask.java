@@ -1,7 +1,5 @@
 package fai.broker.task;
 
-import fai.broker.models.ExecutionStatus;
-import fai.broker.models.ExecutionStatusInfo;
 import fai.broker.models.UploadTaskConfig;
 import fai.common.db.SqlQueries;
 import fai.common.models.GenericTaskConfig;
@@ -48,6 +46,7 @@ public abstract class AbstractGenericTask implements GenericTask {
   protected GenericTaskConfig taskConfig; 
   protected RichPropertiesDB params = null;
   protected UploadTaskConfig uploadTaskConfig;
+  private String executionStatus;
 
   @Override
   public void setup(String acronym, Calendar nowReference, Connection conn) throws Exception {
@@ -137,4 +136,11 @@ public abstract class AbstractGenericTask implements GenericTask {
     throw new IllegalStateException(LOG_PREFIX+"configurazione pattern settimanale errata: "+taskConfig.getScheduledSmtwtfs());
   }
 
+  public String getExecutionStatus() {
+    return executionStatus;
+  }
+
+  public void setExecutionStatus(String executionStatus) {
+    this.executionStatus = executionStatus;
+  }
 }

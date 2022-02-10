@@ -37,6 +37,9 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
       if(uploadTaskConfig != null)
         SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
                 "gruppo di Ordini da elaborare", conn);
+      else
+        SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                "gruppo di Ordini da elaborare", conn);
       return error;
     }
     //
@@ -44,6 +47,9 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
     if (error != null) {
       if(uploadTaskConfig != null)
         SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                "Ordini Failed", conn);
+      else
+        SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
                 "Ordini Failed", conn);
       return error;
     }
@@ -66,7 +72,10 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
         logger.error(error);
         if(uploadTaskConfig != null)
           SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
-                " le operazioni eseguite sono state annullate (rollback)", conn);
+                "le operazioni eseguite sono state annullate (rollback)", conn);
+        else
+          SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                  "le operazioni eseguite sono state annullate (rollback)", conn);
       }
     }
     catch (Throwable th) {
@@ -75,6 +84,9 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
       if(uploadTaskConfig != null)
         SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
               "FABBISOGNO CALCULATOR FAILED", conn);
+      else
+        SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                "FABBISOGNO CALCULATOR FAILED", conn);
       logger.error(error, th);
     }
     //
@@ -96,6 +108,10 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
     if(uploadTaskConfig != null)
       SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.CALCULATION_START.getAcronym(),
               ExecutionStatus.CALCULATION_START.getDescr(), conn);
+    else
+      SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.CALCULATION_START.getAcronym(),
+              ExecutionStatus.CALCULATION_START.getDescr(), conn);
+
     List<OrdineInRigaDett> righe = SqlQueries.getAllOrdineInRigaDettWithoutFabbisogno(conn);
     //
     // --- determinazione dei record FAI_APPROVVIGIONAMENTO_FARMACO ---
@@ -142,6 +158,9 @@ public class FabbisognoCalculatorTask extends AbstractGenericTask {
     SqlQueries.insertAllApprovvigionamentoFarmaco(approvToInsert, conn);
     if(uploadTaskConfig != null)
       SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.CALCULATION_COMPLETED.getAcronym(),
+              ExecutionStatus.CALCULATION_COMPLETED.getDescr(), conn);
+    else
+      SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.CALCULATION_COMPLETED.getAcronym(),
               ExecutionStatus.CALCULATION_COMPLETED.getDescr(), conn);
     //
     return null;

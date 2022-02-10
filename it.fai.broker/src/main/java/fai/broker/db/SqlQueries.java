@@ -2856,6 +2856,32 @@ public class SqlQueries {
 			SqlUtilities.closeWithNoException(stmt);
 		}
 	}
+
+	public static void seGenericTaskExecutionStatus(long oidConfig, String statusDescription, String statusTechDescription, Connection conn) throws Exception {
+		final String METH_NAME = new Object() {    }.getClass().getEnclosingMethod().getName();
+		logger.debug("method: " + METH_NAME);
+		//
+		String sql = null;
+		Statement stmt = null;
+		try {
+			Properties params = new Properties();
+			params.setProperty("OID", ""+oidConfig);
+			params.setProperty("STATUS_DESCR", SqlUtilities.getAsStringFieldValue(statusDescription));
+			params.setProperty("STATUS_TECH_DESCR", SqlUtilities.getAsStringFieldValue(statusTechDescription));
+			sql = SqlUtilities.getSql(SQL_RESOURCE_PATH, "setGenericTaskStatus.sql", params);
+
+			stmt = conn.createStatement();
+			stmt.executeUpdate(sql);
+		}
+		catch (Throwable th) {
+			String msg = "Eccezione " + th.getClass().getName() + ", �" + th.getMessage() + "� nell'esecuzione del metodo " + METH_NAME + (sql != null ? "; sql:" + System.getProperty("line.separator") + sql + System.getProperty("line.separator") : "");
+			logger.error(msg, th);
+			throw new Exception(msg, th);
+		}
+		finally {
+			SqlUtilities.closeWithNoException(stmt);
+		}
+	}
 	
 	public static List<FornitoreCalendar> getFornitoresCalendarByDateOfWeek(Connection conn, int dateOfWeek, String currentTime) throws Exception {
 		final String METH_NAME = new Object() {
@@ -2975,6 +3001,8 @@ public class SqlQueries {
 					cfg.setLastRunDone(SqlUtilities.asBoolean(rs.getString("GENTASK_LAST_RUN_DONE")));
 					cfg.setLastRunDescr(rs.getString("GENTASK_LAST_RUN_DESCR"));
 					cfg.setEnabled(SqlUtilities.asBoolean(rs.getString("GENTASK_ENABLED")));
+					cfg.setStatusDescr(rs.getString("GENTASK_STATUS_DESCR"));
+					cfg.setStatusTechDescr(rs.getString("GENTASK_STATUS_TECH_DESCR"));
 					configs.add(cfg);
 				}
 				prevOID = cfgOID;

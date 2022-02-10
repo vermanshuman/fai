@@ -1,9 +1,11 @@
 package fai.broker.task.apprmgr;
 
+import java.awt.geom.GeneralPath;
 import java.sql.Connection;
 import java.util.List;
 
 import fai.broker.models.UploadTaskConfig;
+import fai.common.models.GenericTaskConfig;
 import org.apache.log4j.Logger;
 
 import fai.broker.db.SqlQueries;
@@ -22,6 +24,8 @@ abstract class ApprovvigionamentoMagazziniOrFornitori {
 
   protected UploadTaskConfig uploadTaskConfig;
 
+  protected GenericTaskConfig genericTaskConfig;
+
   public ApprovvigionamentoMagazziniOrFornitori() {
     super();
   }
@@ -31,13 +35,14 @@ abstract class ApprovvigionamentoMagazziniOrFornitori {
     this.conn = conn;
   }
 
-  public void setup(ApprovvigionamentoEnv env, UploadTaskConfig uploadTaskConfig, Connection conn) throws Exception {
+  public void setup(ApprovvigionamentoEnv env, UploadTaskConfig uploadTaskConfig,
+                    GenericTaskConfig genericTaskConfig,Connection conn) throws Exception {
     this.env = env;
     this.conn = conn;
     this.uploadTaskConfig = uploadTaskConfig;
+    this.genericTaskConfig = genericTaskConfig;
   }
 
-  
   public List<ApprovvigionamentoFarmaco> getApprovvigionamentoToProcess() {
     return approvvigionamentoToProcess;
   }

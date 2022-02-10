@@ -112,6 +112,9 @@ class ApprovvigionamentoFornitori extends ApprovvigionamentoMagazziniOrFornitori
       if(uploadTaskConfig != null)
         SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.APPROVAL_SUPPLIER_AVAILIBILITY.getAcronym(),
                 ExecutionStatus.APPROVAL_SUPPLIER_AVAILIBILITY.getDescr(), conn);
+      else
+        SqlQueries.seGenericTaskExecutionStatus(genericTaskConfig.getOid(), ExecutionStatus.APPROVAL_SUPPLIER_AVAILIBILITY.getAcronym(),
+                ExecutionStatus.APPROVAL_SUPPLIER_AVAILIBILITY.getDescr(), conn);
 
       for (ApprovByFornitore abf : approvByFornitoreList) {
         //

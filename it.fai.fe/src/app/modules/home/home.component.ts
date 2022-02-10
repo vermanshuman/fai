@@ -407,11 +407,13 @@ export class HomeComponent implements OnInit, OnDestroy{
 
     onExecute(uploadTask: UploadTask): void {
         console.log('execute import: ', uploadTask);
-        this.uploadTaskService.executeImportCSV(uploadTask?.oid, uploadTask?.isScheduled).subscribe(() => {
+        this.uploadTaskService.executeImportCSV(uploadTask?.oid, uploadTask.isScheduled ? uploadTask.isScheduled : false).subscribe(() => {
             this.refreshUploadedFiles();
-            this.uploadTaskService.executeCalculator(uploadTask?.oid, uploadTask?.isScheduled).subscribe(() => {
+            this.uploadTaskService.executeCalculator(uploadTask?.oid, uploadTask.isScheduled ?
+                uploadTask.isScheduled : false).subscribe(() => {
                 this.refreshUploadedFiles();
-                this.uploadTaskService.procurementTask(uploadTask?.oid, uploadTask?.isScheduled).subscribe(() => {
+                this.uploadTaskService.procurementTask(uploadTask?.oid, uploadTask.isScheduled ?
+                    uploadTask.isScheduled : false).subscribe(() => {
                     this.refreshUploadedFiles();
                 });
             });

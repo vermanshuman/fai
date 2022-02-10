@@ -74,6 +74,18 @@ public class UploadTaskServiceImpl implements UploadTaskService {
                 .map(uploadTaskDTO -> setOrderCount(uploadTaskDTO, conn))
                 .collect(Collectors.toList());
 
+
+        List<GenericTaskConfig> genericTaskConfigs = fai.broker.db.SqlQueries.getALlGenericTaskConfig(
+                "FAI_GENERIC_TASK.CLASS_NAME = 'fai.broker.task.impord.OrdineInImporterTask'", conn);
+
+        List<UploadTaskDTO> scheduledTasks = genericTaskConfigs
+                .stream()
+                .filter(genericTaskConfig -> genericTaskConfig.getAllProperty() != null
+                        && genericTaskConfig.getAllProperty().length > 0)
+                .map(genericTaskConfig -> setScheduledTask(genericTaskConfig,magazzini))
+                .collect(Collectors.toList());
+        uploadTaskDTOS.addAll(scheduledTasks);
+
         boolean isExecute = false;
         boolean inCorso = false;
         for(UploadTaskDTO uploadTaskDTO : uploadTaskDTOS){
@@ -91,16 +103,6 @@ public class UploadTaskServiceImpl implements UploadTaskService {
                 break;
         }
 
-        List<GenericTaskConfig> genericTaskConfigs = fai.broker.db.SqlQueries.getALlGenericTaskConfig(
-                "FAI_GENERIC_TASK.CLASS_NAME = 'fai.broker.task.impord.OrdineInImporterTask'", conn);
-
-        List<UploadTaskDTO> scheduledTasks = genericTaskConfigs
-                .stream()
-                .filter(genericTaskConfig -> genericTaskConfig.getAllProperty() != null
-                        && genericTaskConfig.getAllProperty().length > 0)
-                .map(genericTaskConfig -> setScheduledTask(genericTaskConfig,magazzini))
-                .collect(Collectors.toList());
-        uploadTaskDTOS.addAll(scheduledTasks);
         return  uploadTaskDTOS;
     }
 
@@ -109,7 +111,19 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         log.debug("Execute Task" , taskOID);
         UploadTaskDTO uploadTaskDTO = null;
         if(isScheduled){
-
+            GenericTaskConfig genericTaskConfig = SqlQueries.getGenericTaskConfig(taskOID, conn);
+            if(genericTaskConfig != null){
+                uploadTaskDTO = setScheduledTask(genericTaskConfig, null);
+                String className = SqlQueries.getGenericTaskConfigClassName(genericTaskConfig.getAcronym(), conn);
+                if (className == null || "".equals(className))
+                    throw new IllegalArgumentException(
+                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM " + genericTaskConfig.getAcronym());
+                //
+                GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
+                genericTask.setup(genericTaskConfig.getAcronym() ,  Calendar.getInstance(), conn);
+                String error = genericTask.doJob();
+                uploadTaskDTO.setMessage(error);
+            }
         }else {
             UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
             if(uploadTask != null){
@@ -134,7 +148,19 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         log.debug("Calculate Task" , taskOID);
         UploadTaskDTO uploadTaskDTO = null;
         if(isScheduled){
-
+            GenericTaskConfig genericTaskConfig = SqlQueries.getGenericTaskConfig(taskOID, conn);
+            if(genericTaskConfig != null) {
+                uploadTaskDTO = setScheduledTask(genericTaskConfig, null);
+                String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.CALCULATOR_ACRONYM, conn);
+                if (className == null || "".equals(className))
+                    throw new IllegalArgumentException(
+                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM FABBISOGNO_CALCULATOR");
+                //
+                GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
+                genericTask.setup(ValueConstant.CALCULATOR_ACRONYM,  Calendar.getInstance(), conn);
+                String error = genericTask.doJob();
+                uploadTaskDTO.setMessage(error);
+            }
         }else {
             UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
             if(uploadTask != null){
@@ -143,7 +169,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
                 String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.CALCULATOR_ACRONYM, conn);
                 if (className == null || "".equals(className))
                     throw new IllegalArgumentException(
-                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
+                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM FABBISOGNO_CALCULATOR");
                 //
                 GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
                 genericTask.setup(ValueConstant.CALCULATOR_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
@@ -160,16 +186,32 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         log.debug("Procurement Task" , taskOID);
         UploadTaskDTO uploadTaskDTO = null;
         if(isScheduled){
-
-        }else {
-            UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
-            if(uploadTask != null){
-
+            GenericTaskConfig genericTaskConfig = SqlQueries.getGenericTaskConfig(taskOID, conn);
+            if(genericTaskConfig != null) {
 
                 String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.PROCUREMENT_ACRONYM, conn);
                 if (className == null || "".equals(className))
                     throw new IllegalArgumentException(
-                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM IMP_ORDINE_IN");
+                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM APPROVVIGIONAMENTO_MGR");
+                //
+                GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
+                genericTask.setup(ValueConstant.PROCUREMENT_ACRONYM,  Calendar.getInstance(), conn);
+
+                String error = genericTask.doJob();
+                if(StringUtils.isBlank(error)){
+                    fai.broker.db.SqlQueries.seGenericTaskExecutionStatus(taskOID, ExecutionStatus.EXECUTION_SUCCESS.getAcronym(),
+                            ExecutionStatus.EXECUTION_SUCCESS.getDescr(), conn);
+                }
+                uploadTaskDTO = setScheduledTask(genericTaskConfig, null);
+                uploadTaskDTO.setMessage(error);
+            }
+        }else {
+            UploadTaskConfig uploadTask = fai.broker.db.SqlQueries.findUploadTask(taskOID, conn);
+            if(uploadTask != null){
+                String className = SqlQueries.getGenericTaskConfigClassName(ValueConstant.PROCUREMENT_ACRONYM, conn);
+                if (className == null || "".equals(className))
+                    throw new IllegalArgumentException(
+                            "inammissibile, nessun " + GenericTask.class.getName() + " per l'ACRONYM APPROVVIGIONAMENTO_MGR");
                 //
                 GenericTask genericTask = (GenericTask) Class.forName(className).newInstance();
                 genericTask.setup(ValueConstant.PROCUREMENT_ACRONYM + "@" + taskOID,  Calendar.getInstance(), conn);
@@ -209,20 +251,7 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         }else {
             uploadTaskDTO.setExecutionStatus(ProcessingStatus.ESEGUIRE.toString());
         }
-//        if(uploadTaskConfig.getStatus() != null && uploadTaskConfig.getStatus().getStatus() != null){
-//            ItemStatus itemStatus = uploadTaskConfig.getStatus().getStatus();
-//           if(StringUtils.isNotBlank(itemStatus.getDescr())){
-//               if(itemStatus.getDescr().equalsIgnoreCase("TO PROCESS")){
-//                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.ESEGUIRE.toString());
-//               }else if(itemStatus.getDescr().equalsIgnoreCase("PROCESSING")){
-//                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.INCORSO.toString());
-//               }else if(itemStatus.getDescr().equalsIgnoreCase("PROCESSED")){
-//                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.COMPLETATO.toString());
-//               }else if(itemStatus.getDescr().equalsIgnoreCase("ERROR")){
-//                   uploadTaskDTO.setExecutionStatus(ProcessingStatus.ANNULATO.toString());
-//               }
-//           }
-//        }
+
         uploadTaskDTO.setOrderStatus(uploadTaskConfig.getOrderStatus());
         uploadTaskDTO.setFulFilledOrderCount(1);
         uploadTaskDTO.setProcessedOrderCount(0);
@@ -262,21 +291,30 @@ public class UploadTaskServiceImpl implements UploadTaskService {
         if(genericTaskConfig != null && StringUtils.isNotBlank(genericTaskConfig.getScheduledTimes())){
             List<String> items = Arrays.asList(genericTaskConfig.getScheduledTimes().split(","));
             String schedule = DateUtil.getNextScheduleTime(items);
-            System.out.println(DateUtil.fromString(schedule, DateUtil.getMySQLDateTimePattern()));
             uploadTaskDTO.setCreationDate(DateUtil.fromString(schedule, DateUtil.getDatePatternWithMinutes()));
         }
 
         uploadTaskDTO.setCsvFileName(genericTaskConfig
                 .getRichProperties().getProperty("csvInFileName"));
-        uploadTaskDTO.setExecutionStatusDescription(null);
+
+        // uploadTaskDTO.setExecutionStatusDescription(genericTaskConfig.getStatusTechDescr());
         uploadTaskDTO.setExecutionStatus(ProcessingStatus.ESEGUIRE.toString());
+        if(StringUtils.isNotBlank(genericTaskConfig.getStatusDescr())){
+            if(!genericTaskConfig.getStatusDescr().equalsIgnoreCase(ExecutionStatus.EXECUTION_FAILED.getAcronym())
+            && !genericTaskConfig.getStatusDescr().equalsIgnoreCase(ExecutionStatus.EXECUTION_SUCCESS.getAcronym())){
+                uploadTaskDTO.setExecutionStatus(ProcessingStatus.INCORSO.toString());
+            }
+        }
+
+
+
         uploadTaskDTO.setMagazzinoAcronym(genericTaskConfig
                 .getRichProperties().getProperty("magazzino_acronym"));
         uploadTaskDTO.setOrderStatus(ItemStatus.VALUE_TO_PROCESS.toString());
         uploadTaskDTO.setFulFilledOrderCount(1);
         uploadTaskDTO.setProcessedOrderCount(0);
         uploadTaskDTO.setMissingOrderCount(0);
-        uploadTaskDTO.setButtonDisabled(Boolean.FALSE);
+        uploadTaskDTO.setButtonDisabled(Boolean.TRUE);
         if(magazzini != null && !magazzini.isEmpty() &&
                 StringUtils.isNotBlank(uploadTaskDTO.getMagazzinoAcronym())){
             Optional<Magazzino> warehouse = magazzini

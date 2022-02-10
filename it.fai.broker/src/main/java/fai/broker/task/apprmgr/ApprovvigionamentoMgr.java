@@ -36,6 +36,9 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
       if(uploadTaskConfig != null)
           SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.APPROVAL_START.getAcronym(),
                   ExecutionStatus.APPROVAL_START.getDescr(), conn);
+      else
+          SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.APPROVAL_START.getAcronym(),
+                  ExecutionStatus.APPROVAL_START.getDescr(), conn);
     env = new ApprovvigionamentoEnv();
     //
     // --- loading of the registry of all known drugs ---
@@ -120,6 +123,9 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
         if(uploadTaskConfig != null)
             SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
                 "Approvvigionamento Farmaci per Gruppo di Ordini", conn);
+        else
+            SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                    "Approvvigionamento Farmaci per Gruppo di Ordini", conn);
         return error;
     }
     //
@@ -130,7 +136,10 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     if (error != null) {
         if(uploadTaskConfig != null)
             SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
-                "Analysis Failed", conn);
+                "ApprovvigionamentoMgr Analysis Failed", conn);
+        else
+            SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                    "ApprovvigionamentoMgr Analysis Failed", conn);
         return error;
     }
     //
@@ -140,6 +149,9 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     if(uploadTaskConfig != null)
             SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.APPROVAL_TEMP.getAcronym(),
                     ExecutionStatus.APPROVAL_TEMP.getDescr(), conn);
+    else
+        SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.APPROVAL_TEMP.getAcronym(),
+                ExecutionStatus.APPROVAL_TEMP.getDescr(), conn);
     //
     // --- predisposizione della FAI_LISTINI_DISPONIBILITA_TEMP ---
     //
@@ -163,12 +175,15 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
     // --- determination of availability for FAI_APPROVIGIONAMENTO_FARMACO in Warehouses and at Suppliers ---
     //
     ApprovvigionamentoMagazzini magazzini = new ApprovvigionamentoMagazzini();
-    magazzini.setup(env, uploadTaskConfig, conn);
+    magazzini.setup(env, uploadTaskConfig, taskConfig,  conn);
     error = magazzini.process(approvvigionamentoToProcess);
     if (error != null) {
       if(uploadTaskConfig != null)
         SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
                 "Magazzini Processing Failed", conn);
+      else
+          SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                  "Magazzini Processing Failed", conn);
       return error;
     }
     approvvigionamentoToProcess = magazzini.getApprovvigionamentoToProcess();
@@ -285,12 +300,15 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
   private String processSupplierAvailabilityAndOrders(List<ApprovvigionamentoFarmaco> approvvigionamentoToProcess) throws Exception {
 	  String error = null;
 	  ApprovvigionamentoFornitori fornitori = new ApprovvigionamentoFornitori();
-	    fornitori.setup(env, uploadTaskConfig, conn);
+	    fornitori.setup(env, uploadTaskConfig, taskConfig, conn);
 	    error = fornitori.process(approvvigionamentoToProcess);
 	    if (error != null){
           if(uploadTaskConfig != null)
             SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
                     "Fornitori Processing Failed", conn);
+          else
+              SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.EXECUTION_FAILED.getAcronym(),
+                      "Fornitori Processing Failed", conn);
           return error;
         }
 	    conn.commit();
@@ -308,6 +326,9 @@ public class ApprovvigionamentoMgr extends AbstractGenericTask {
         if(uploadTaskConfig != null)
           SqlQueries.seUploadTaskExecutionStatus(uploadTaskConfig.getOid(), ExecutionStatus.APPROVAL_SUPPLIER_ORDER.getAcronym(),
                   ExecutionStatus.APPROVAL_SUPPLIER_ORDER.getDescr(), conn);
+        else
+            SqlQueries.seGenericTaskExecutionStatus(taskConfig.getOid(), ExecutionStatus.APPROVAL_SUPPLIER_ORDER.getAcronym(),
+                    ExecutionStatus.APPROVAL_SUPPLIER_ORDER.getDescr(), conn);
 	    for (Fornitore fornitore : env.getFornitori()) {
 	    	List<ApprovvigionamentoFarmaco> approvvigionamentoToOrder =
 	                SqlQueries.getAllApprovvigionamentoFarmacoByFornitore(ItemStatus.VALUE_PROCESSING, fornitore, conn);

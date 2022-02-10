@@ -18,6 +18,8 @@ public class GenericTaskConfig extends AbstractModel {
   public static int LAST_RUN_DESCR;
   public static int ENABLED;
   public static int PROPERTIES;
+  public static int STATUS_DESCR;
+  public static int STATUS_TECH_DESCR;
 
   public static final Attribute[] attributes = buildAttributes(GenericTaskConfig.class, new Attribute[] { //@formatter:off
     new Attribute("oid", null, Long.class, null, false, Attribute.NOREF, true, Attribute.NO_OPTION),
@@ -32,6 +34,8 @@ public class GenericTaskConfig extends AbstractModel {
     new Attribute("lastRunDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("enabled", null, Boolean.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
     new Attribute("properties", null, Property[].class, null, false, Attribute.DETAIL, false, Attribute.NO_OPTION),
+          new Attribute("statusDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
+          new Attribute("statusTechDescr", null, String.class, null, false, Attribute.NOREF, false, Attribute.NO_OPTION),
   }); //@formatter:on
 
 
@@ -213,6 +217,23 @@ public class GenericTaskConfig extends AbstractModel {
       rp.setProperty(p[i].getKey(), p[i].getValue());
     }
   	return rp;
+  }
+
+
+  public String getStatusDescr() {
+    return getString(STATUS_DESCR);
+  }
+
+  public boolean setStatusDescr(String statusDescr) {
+    return setString(STATUS_DESCR, statusDescr);
+  }
+
+  public String getStatusTechDescr() {
+    return getString(STATUS_TECH_DESCR);
+  }
+
+  public boolean setStatusTechDescr(String statusTechDescr) {
+    return setString(STATUS_TECH_DESCR , statusTechDescr);
   }
 
  //@formatter:on
