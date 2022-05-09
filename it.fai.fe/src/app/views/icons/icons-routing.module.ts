@@ -24,13 +24,13 @@ const routes: Routes = [
           title: 'CoreUI Icons'
         }
       },
-      {
-        path: 'flags',
-        component: FlagsComponent,
-        data: {
-          title: 'Flags'
-        }
-      },
+      // {
+      //   path: 'flags',
+      //   component: FlagsComponent,
+      //   data: {
+      //     title: 'Flags'
+      //   }
+      // },
       {
         path: 'font-awesome',
         component: FontAwesomeComponent,
